@@ -13,19 +13,23 @@ Abertura sugerida:
 | 1 | O que você vende e em que unidade você vende? | O preço é sempre por unidade de venda. | Se a medida é outra (litro, mas vende bombona de 20 L), a conta é por bombona: custo, frete e preço da bombona inteira. |
 | 2 | Quantos produtos, quantos vendedores e quantas tabelas de preço você tem? | Diz o tamanho da operação e até onde a conversa vai. | Ofereça faixas: "até 20 itens e só eu vendo", "algumas centenas e uma equipe", "milhares, com tabela por canal ou região". |
 | 3 | Você cobra diferente de algum grupo de cliente? | Margem e fatores podem mudar por grupo. Explique a lista abaixo. | Se não, siga com um preço só. Se sim, abra o aprofundamento de níveis. |
-| 4 | Quanto custa cada unidade para você, e o que entra nesse custo? | É a base de tudo. Custo esquecido infla a margem. | Última nota de compra ÷ quantidade. Leia a lista do ramo abaixo. |
-| 5 | Qual o regime tributário da empresa? | Muda os impostos. | `impostos.md`, seção 2. |
+| 4 | Quanto custa cada unidade para você, e o que entra nesse custo? | É a base de tudo. Custo esquecido infla a margem. | Última nota de compra ÷ quantidade. Leia a lista do ramo abaixo. No comércio, pergunte a perda em seguida, numa pergunta própria. |
+| 5 | Qual o regime tributário da empresa? | Muda os impostos. | `impostos.md`, seção 2. No Simples, a pergunta de caso da alíquota efetiva vem logo depois. |
 | 6 | O produto tem algum benefício de imposto? | Alíquota zero, monofásico, redução de base e ST mudam a conta inteira. | Pergunte só no ramo de risco (lista em `impostos.md`, seção 8). Sem resposta, faça os dois cenários. |
-| 7 | Para onde você vende: mesma UF, outra, as duas? | O ICMS muda com a rota. | Pule no Simples com venda no balcão. Se "as duas", cada rota é uma linha no simulador. |
+| 7 | Para onde você vende e, se souber, com que alíquota de ICMS em cada rota? | O ICMS muda com a rota. | Pule no Simples com venda no balcão. Sem a alíquota, use a da UF em `impostos.md`, seção 4, marcada como **hipótese**. Se "as duas", cada rota é uma linha no simulador. |
 | 8 | Paga comissão a vendedor, representante ou aplicativo? Quanto? | Sai do preço, igual ao imposto. | Base: sobre o valor da nota. Na indústria, "sem impostos" quer dizer sem IPI, que é a receita bruta. |
 | 9 | Você paga a entrega? Quanto custa uma entrega e quantas unidades vão nela? | Frete de entrega é despesa da venda. | Cliente leva: 0. Você entrega e não sabe: 3% do preço, **hipótese**. |
-| 10 | Quanto das vendas é no cartão, e qual a taxa? Tem marketplace? | A taxa só pesa na parte que passa na maquininha. | Taxa × parte no cartão. Sem a parte: 60% no cartão, **hipótese**. |
+| 10 | Varejo: quanto das vendas é no cartão, e qual a taxa? B2B: vende a prazo ou no boleto, e quanto custa (tarifa, antecipação)? | A taxa só pesa na parte que passa por ela. | Varejo: taxa × parte no cartão; sem a parte, 60% no cartão, **hipótese**. B2B no boleto sem antecipação: 0. Não pergunte cartão a quem vende para empresa. Marketplace só se a pessoa vender por um. |
 | 11 | Quanto você cobra hoje? Costuma dar desconto? | Com preço, dá para auditar. | Siga só com a formação. |
 | 12 | Quanto o concorrente cobra pelo mesmo produto? | O preço formado precisa caber no mercado. | Siga sem; avise que falta a checagem. |
 
-Depois da 11, **mostre a margem de hoje** e só então pergunte: "com essa margem na frente, qual você quer?". Leigo não responde margem desejada sem ver a atual.
+Depois da 11, **mostre a margem de hoje** e só então pergunte: "com essa margem na frente, qual você quer?". Leigo não responde margem desejada sem ver a atual. Se ela já disse a margem antes, pule a pergunta.
 
-Não repita as premissas numa pergunta própria. Elas vão na entrega, marcadas, e a pessoa corrige se precisar.
+**Quando a resposta vem em "lucro"** ("quero 20% de lucro", "20% limpo"): explique em duas frases que são duas contas diferentes. A margem de contribuição é o que cada venda deixa depois de imposto, comissão, frete e custo; o lucro é o que sobra no mês depois do custo fixo. Ofereça as duas: "quer que eu mostre a margem por venda e também o preço para 20% de lucro depois do custo fixo?". Se ela escolher só o lucro, siga sem meta de margem (a página diz "sem meta") e faça a conta do lucro (pergunta de caso do custo fixo). A meta é a que a pessoa disse; tirada da margem de hoje, a página ficaria verde por construção.
+
+**Sem resposta** ("vou ter que pensar"): siga sem meta, marque na entrega, e deixe o campo da meta no simulador para ela preencher.
+
+As premissas vão na entrega, marcadas, e a pessoa corrige ali mesmo, sem pergunta própria.
 
 ## A pergunta 3: o que muda conforme o quê
 
@@ -48,21 +52,26 @@ A resposta decide a profundidade:
 
 Uma pergunta por vez, até 4:
 
-1. Qual a margem do preço cheio, o teto? (Se a pessoa não sabe, use a margem do grupo que mais vende.)
+1. Qual a margem do preço cheio, o teto? (Se a pessoa não sabe, use a maior margem que ela disse para algum grupo, marcada como **hipótese**. Nunca a margem que o preço de hoje deixa.)
 2. Para cada grupo que paga menos: qual a margem combinada para ele?
 3. Algum cliente ou rede tem preço fechado? Qual preço, ou qual margem?
 4. Quanto de desconto o vendedor costuma dar em cada grupo?
 
+E uma pergunta curta de volume, sempre que houver mais de uma linha: **"Quanto você vende por mês de cada um?"**. O consolidado pondera pelo volume; sem ele, cada linha pesa igual e o número engana. Sem resposta, use 1 por linha e marque `volume` como hipótese.
+
 Cada grupo entra como uma linha do simulador, com os fatores dele: imposto da rota, comissão do canal, frete da rota. A explicação dos níveis está em `niveis.md`.
+
+Antes de entregar, confira os níveis entre si e avise na entrega: margem de algum grupo acima do teto (o teto está errado ou é de outro grupo), e preço formado de um nível inferior acima da tabela real de outro grupo (a revenda pagaria mais que o produtor grande). O simulador mostra os dois avisos.
 
 ## Perguntas que só entram quando o caso pede
 
 | Quando | Pergunta |
 |---|---|
 | Lucro Real e o custo pode ter crédito | O custo da nota vem com crédito de ICMS, PIS e Cofins? Se não souber: dois cenários, com e sem crédito (`impostos.md`, seção 3). |
-| Simples, sem o extrato do PGDAS | Quanto a empresa faturou nos últimos 12 meses? Dá a faixa. |
+| Simples, sem o extrato do PGDAS | Quanto a empresa faturou nos últimos 12 meses? Se não souber, quanto fatura num mês normal (× 12). Explique: a tabela do Simples tem a alíquota **nominal** da faixa; o que se paga é a **efetiva**, menor, que sai da receita de 12 meses (`impostos.md`, seção 3). Se o número que a pessoa trouxe é igual a uma nominal (4%, 7,3%, 9,5% no comércio; 6%, 11,2% em serviço), avise que pode ser a nominal e calcule a efetiva. Confronte a receita informada com a que sai do volume × preço: se não baterem, pergunte o que falta. |
 | A pessoa quer "lucro limpo", "X% depois de tudo" | Quanto é o custo fixo do mês, e quantas unidades você vende por mês? É outra conta, abaixo da margem. |
-| Comércio com perda (hortifrúti, validade) | Quanto se perde, em % do que se compra? Entra no custo: custo ÷ (1 − perda). |
+| Comércio (logo depois da pergunta 4) | Perde alguma parte do que compra, por quebra ou validade? Quanto, em %? Toda perda informada entra no custo, em qualquer ramo: custo ÷ (1 − perda), campo `perda_pct` do simulador. |
+| Desconto ou promoção que "vende mais" | Quanto vende com o desconto, e quanto vendia sem ele? O simulador compara a margem do mês nos dois volumes (`quantidade_sem_desconto`) e diz se compensa. |
 | Transporte | Quantos km roda vazio para cada km cobrado? Quanto tempo fica parado por corrida? É intermunicipal? |
 | Serviço por hora | Quantas horas do mês são cobradas? |
 | Vende para empresa e a pergunta é 2027 ou IPI | Seu cliente toma crédito de imposto? |

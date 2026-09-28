@@ -21,6 +21,7 @@ import simulador  # noqa: E402
 AQUI = os.path.dirname(os.path.abspath(__file__))
 MODELO = os.path.join(AQUI, "..", "assets", "simulador.html")
 EXEMPLOS = os.path.join(AQUI, "..", "..", "..", "exemplos")
+SIMULACOES = os.path.join(AQUI, "..", "..", "..", "simulacoes-v2")
 
 NODE = r"""
 const fs = require('fs');
@@ -29,6 +30,16 @@ const motor = html.split('/*MOTOR*/')[1].split('/*FIM-MOTOR*/')[0];
 const Motor = new Function(motor + '; return Motor;')();
 const cens = JSON.parse(fs.readFileSync(0, 'utf8'));
 process.stdout.write(JSON.stringify(cens.map(c => Motor.numeros(Motor.calcular(c)))));
+"""
+
+# O mesmo, mas a partir do arquivo cru: o JS mescla os cenários com Motor.cenarios, como a página faz.
+NODE_BRUTO = r"""
+const fs = require('fs');
+const html = fs.readFileSync(process.argv[1], 'utf8');
+const motor = html.split('/*MOTOR*/')[1].split('/*FIM-MOTOR*/')[0];
+const Motor = new Function(motor + '; return Motor;')();
+const brutos = JSON.parse(fs.readFileSync(0, 'utf8'));
+process.stdout.write(JSON.stringify(brutos.map(b => Motor.cenarios(b).map(c => Motor.numeros(Motor.calcular(c))))));
 """
 
 PROVA_A = {"linha": {"nome": "Prova A", "custo": 11.60, "impostos": {"ICMS": 12}, "frete_rs_kg": 1.7776, "peso_kg": 0.12,
@@ -65,6 +76,10 @@ def aleatorio(rng):
         if rng.random() < 0.15:
             l["custo_real"] = round(l["custo"] * rng.uniform(0.9, 1.2), 2)
         if rng.random() < 0.2:
+            l["perda_pct"] = rng.choice([0.5, 2, 5])
+        if rng.random() < 0.2 and (l.get("desconto") or l.get("preco_praticado")):
+            l["quantidade_sem_desconto"] = rng.choice([1, 10, 80])
+        if rng.random() < 0.2:
             l["por_fora"] = [{"nome": "IPI", "aliq": 9.75}, {"nome": "CBS", "aliq": 9.11, "base": "sem_icms_iss"}]
         linhas.append(l)
     c = {"linhas": linhas, "mc_teto": rng.choice([25, 35, 50, 60.5])}
@@ -72,6 +87,27 @@ def aleatorio(rng):
         c["custo_fixo_mes"] = rng.choice([800, 4800, 25000])
         c["meta_lucro_pct"] = rng.choice([5, 10, 20])
     return c
+
+
+def bruto_com_cenarios(rng):
+    """Um arquivo com campos de topo (margens, hipóteses, custo fixo, linhas) e cenários que sobrepõem só parte deles."""
+    base = aleatorio(rng)
+    base["hipoteses"] = ["outras"]
+    base["rotulos"] = {"teto": "Planejado", "desconto": "Promoção"}
+    base["custo_fixo_mes"] = rng.choice([800, 4800])
+    base["meta_lucro_pct"] = rng.choice([5, 20])
+    cens = []
+    for i in range(rng.randint(2, 4)):
+        c = {"nome_cenario": f"C{i}"}
+        r = rng.random()
+        if r < 0.4:
+            c["linhas"] = aleatorio(rng)["linhas"]  # linhas próprias, margens e fixo herdados
+        elif r < 0.7:
+            c["mc_teto"] = rng.choice([18, 28, 40])   # só a margem muda, as linhas vêm do topo
+        # senão: o cenário não traz nada e herda tudo
+        cens.append(c)
+    base["cenarios"] = cens
+    return base
 
 
 class Regua(unittest.TestCase):
@@ -154,6 +190,94 @@ class Regua(unittest.TestCase):
         self.assertIsNone(e["receita_pe"])
         self.assertIsNone(e["unidades_pe"])
 
+    def test_meta_e_a_margem_desejada_e_nao_o_preco_de_hoje(self):
+        # o preço de hoje é o nível usado, mas a leitura principal é contra a meta de 30%
+        c = {"mc_teto": 30, "linhas": [{"nome": "Arroz", "custo": 22.40, "impostos": {"DAS": 7.3}, "outras_pct": 1.32,
+                                        "preco_especifico": 29.12}]}
+        l = simulador.calcular(c)["linhas"][0]
+        self.assertEqual(l["usado"]["chave"], "especifico")
+        self.assertEqual(l["meta"], D(30))
+        self.assertEqual(simulador.r2(l["leituras"]["meta"][0]), D("-14.18"))
+        self.assertEqual(l["faixa"], "atencao")  # 15,82 ÷ 30 = 53% mantido
+        # canal é a meta da linha quando existe
+        l = simulador.calcular(cen(PROVA_A))["linhas"][0]
+        self.assertEqual(l["meta"], D(45))
+        # sem meta: neutro, mesmo com margem boa
+        c = {"linhas": [{"nome": "x", "custo": 10, "preco_especifico": 30}]}
+        l = simulador.calcular(c)["linhas"][0]
+        self.assertIsNone(l["meta"])
+        self.assertEqual(l["faixa"], "neutro")
+
+    def test_custo_fixo_com_varias_linhas(self):
+        c = {"custo_fixo_mes": 4800, "meta_lucro_pct": 20, "linhas": [
+            {"nome": "Avulsa", "quantidade": 2952, "custo": 1.3052, "impostos": {"DAS": 6}, "comissao": 30,
+             "outras_pct": 1.75, "preco_especifico": 3.80},
+            {"nome": "Contrato", "quantidade": 2952, "custo": 1.3052, "impostos": {"DAS": 6}, "comissao": 30,
+             "outras_pct": 1.75, "preco_especifico": 3.20}]}
+        r = simulador.calcular(c)
+        e = r["equilibrio"]
+        self.assertIsNotNone(e["unidades_pe"])
+        self.assertEqual(len(e["precos_meta"]), 2)
+        # vendendo cada linha no preço da meta, o lucro depois do fixo é 20% da receita, a menos do arredondamento
+        for l, pm in zip(c["linhas"], e["precos_meta"]):
+            l["preco_especifico"] = float(pm)
+        r2 = simulador.calcular(c)
+        lucro = r2["total"]["mc"] - 4800
+        self.assertLess(abs(lucro / r2["total"]["rb"] * 100 - 20), D("0.1"))
+
+    def test_desconto_que_vende_mais(self):
+        l = simulador.calcular({"mc_teto": 30, "linhas": [{
+            "nome": "Promo", "quantidade": 90, "quantidade_sem_desconto": 30, "custo": 22.40,
+            "impostos": {"DAS": 7.3}, "outras_pct": 1.32, "preco_especifico": 29.12, "preco_praticado": 26.90}]})["linhas"][0]
+        self.assertEqual(l["sem_desconto"]["mc"], D("126.2957"))
+        self.assertGreater(l["real"]["mc"], l["sem_desconto"]["mc"])
+
+    def test_perda_entra_no_custo(self):
+        l = simulador.calcular({"mc_teto": 30, "linhas": [{"nome": "x", "custo": 22.40, "perda_pct": 0.5,
+                                                           "preco_especifico": 29.12}]})["linhas"][0]
+        self.assertEqual(l["p"].custo, D("22.5126"))
+
+    def test_avisos_de_nivel(self):
+        base = {"custo": 284, "impostos": {"ICMS": 18, "PIS": 1.65, "COFINS": 7.6}, "comissao": 4, "frete_rs": 18}
+        r = simulador.calcular({"mc_teto": 22, "linhas": [
+            dict(base, nome="Revenda", grupo="Revenda", mc_canal=18),
+            dict(base, nome="Grande", grupo="Grande", preco_especifico=489),
+            dict(base, nome="Pequeno", grupo="Pequeno", mc_canal=28)]})
+        self.assertTrue(any("Revenda: o preço do canal" in a for a in r["avisos"]))
+        self.assertTrue(any("Pequeno: a margem" in a and "passa do teto" in a for a in r["avisos"]))
+        # rede com meta menor e contrato mais barato é o esperado: sem aviso
+        r = simulador.calcular({"mc_teto": 50, "linhas": [
+            dict(base, nome="Varejo", grupo="Varejo", mc_canal=45),
+            dict(base, nome="Rede", grupo="Rede", mc_canal=30, preco_especifico=420)]})
+        self.assertEqual(r["avisos"], [])
+
+    def test_cenarios_herdam_o_topo(self):
+        bruto = {"mc_teto": 30, "hipoteses": ["outras"], "custo_fixo_mes": 100,
+                 "linhas": [{"nome": "x", "custo": 10, "preco_especifico": 20}],
+                 "cenarios": [{"nome_cenario": "a"}, {"nome_cenario": "b", "mc_teto": 40}]}
+        a, b = simulador.mesclar(bruto)
+        self.assertEqual((a["mc_teto"], b["mc_teto"]), (30, 40))
+        self.assertEqual(a["linhas"], bruto["linhas"])
+        self.assertEqual(b["custo_fixo_mes"], 100)
+        self.assertNotIn("cenarios", a)
+
+    def test_apendice_um_por_cenario(self):
+        bruto = {"mc_teto": 30, "linhas": [{"nome": "x", "custo": 10, "impostos": {"PIS": 0.65}, "preco_especifico": 20}],
+                 "cenarios": [{"nome_cenario": "2026"},
+                              {"nome_cenario": "2027", "linhas": [{"nome": "x", "custo": 10, "preco_especifico": 20,
+                                                                   "por_fora": [{"nome": "CBS", "aliq": 9.11}]}]}]}
+        h = simulador.gerar_html(bruto)
+        self.assertIn('data-cen="0"', h)
+        self.assertIn('data-cen="1" hidden', h)
+        c0, c1 = h.split('data-cen="0"')[1].split('data-cen="1"')
+        self.assertNotIn("CBS", c0)
+        self.assertIn("CBS", c1)
+
+    def test_pagina_usa_o_merge_do_motor(self):
+        with open(MODELO, encoding="utf-8") as f:
+            h = f.read()
+        self.assertIn("Motor.cenarios(BRUTO)", h.split("/*FIM-MOTOR*/")[1])
+
     def test_html_leva_o_cenario_e_o_apendice(self):
         with tempfile.TemporaryDirectory() as tmp:
             arq = os.path.join(tmp, "s.html")
@@ -161,7 +285,7 @@ class Regua(unittest.TestCase):
             with open(arq, encoding="utf-8") as f:
                 h = f.read()
         self.assertIn('"preco_especifico": 23.0', h)
-        self.assertIn("Receita líquida, base da margem", h)
+        self.assertIn("Receita líquida gerencial", h)
         self.assertIn("data:image/png;base64,", h)
         self.assertNotIn("<!--APENDICE-->", h)
         self.assertNotIn("http://", h.replace("http://www.w3.org", ""))
@@ -190,6 +314,23 @@ class Paridade(unittest.TestCase):
                     raiz, lista = simulador.carregar(os.path.join(EXEMPLOS, nome))
                     cens += lista
         self.conferir(cens)
+
+    def test_cenarios_multiplos_js_herda_como_python(self):
+        """O bug da v2: com `cenarios`, o JS não herdava mc_teto, hipóteses, linhas e custo fixo do topo."""
+        rng = random.Random(20260929)
+        brutos = [bruto_com_cenarios(rng) for _ in range(300)]
+        if os.path.isdir(SIMULACOES):
+            for caso in sorted(os.listdir(SIMULACOES)):
+                arq = os.path.join(SIMULACOES, caso, "cenario.json")
+                if os.path.exists(arq):
+                    with open(arq, encoding="utf-8") as f:
+                        brutos.append(json.load(f))
+        out = subprocess.run(["node", "-e", NODE_BRUTO, MODELO], input=json.dumps(brutos), capture_output=True,
+                             text=True, check=True)
+        js = json.loads(out.stdout)
+        for b, j in zip(brutos, js):
+            py = [json.loads(json.dumps(simulador.numeros(simulador.calcular(c)))) for c in simulador.mesclar(b)]
+            self.assertEqual(py, j, json.dumps(b, ensure_ascii=False)[:400])
 
     def test_mil_casos_aleatorios(self):
         rng = random.Random(20260928)

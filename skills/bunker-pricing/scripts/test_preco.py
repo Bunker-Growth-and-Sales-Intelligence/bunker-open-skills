@@ -51,12 +51,12 @@ QUEIJO_CLI = ["--custo", "8.12", "--impostos", "13.25", "--comissao", "3", "--fr
 
 class Formula(unittest.TestCase):
     def test_possibilidade_3_da_planilha(self):
-        # Planilha "Conceitos de Precificação": custo 8,12, impostos 13,25%, margem 46,25% sobre a receita líquida
+        # Planilha "Conceitos de Precificação": custo 8,12, impostos 13,25%, margem 46,25% sobre a receita líquida gerencial
         p = premissas(custo="8.12", impostos="13.25", margem="46.25")
         self.assertEqual(preco.formar(p), D("17.41"))
         d = preco.dre(D("17.41"), p)
         self.assertEqual(preco.r2(d["mc_rl"]), D("46.24"))
-        # Sem arredondar o preço, a margem sobre a receita líquida é a desejada, exata
+        # Sem arredondar o preço, a margem sobre a receita líquida gerencial é a desejada, exata
         exato = D("8.12") / D("0.5375") / D("0.8675")
         rl = exato * D("0.8675")
         self.assertEqual(round((rl - D("8.12")) / rl * 100, 10), D("46.25"))
@@ -73,7 +73,7 @@ class Formula(unittest.TestCase):
             p = premissas(**kw)
             d = preco.dre(preco.formar(p), p)
             self.assertTrue(fecha(d), kw)
-            # sem arredondar, o preço entrega a margem exata sobre a receita líquida
+            # sem arredondar, o preço entrega a margem exata sobre a receita líquida gerencial
             exato = (p.custo / (1 - p.margem / 100) + p.variaveis_rs()) / (1 - p.variaveis_pct() / 100)
             rl = exato * (1 - p.variaveis_pct() / 100) - p.variaveis_rs()
             self.assertEqual(round((rl - p.custo) / rl * 100, 10), p.margem, kw)
@@ -82,7 +82,7 @@ class Formula(unittest.TestCase):
             baixo = preco.dre(d["preco"] - D("0.01"), p)["mc_rl"]
             alto = preco.dre(d["preco"] + D("0.01"), p)["mc_rl"]
             self.assertTrue(baixo < p.margem < alto, kw)
-            # e sobre a receita bruta a mesma margem vale menos: margem × receita líquida ÷ receita bruta
+            # e sobre a receita bruta a mesma margem vale menos: margem × receita líquida gerencial ÷ receita bruta
             self.assertEqual(preco.r4(d["mc_rb"]), preco.r4(d["mc_rl"] * d["rl"] / d["rb"]))
 
 
@@ -213,8 +213,8 @@ class Exemplos(unittest.TestCase):
 class Bordas(unittest.TestCase):
     def test_auditoria_sem_margem(self):
         out = rodar("--custo", "22.40", "--impostos", "7.3", "--outras", "2.2", "--preco-atual", "29.12")
-        self.assertNotIn("PLANEJADO", out)
-        self.assertIn("Margem no preço de tabela: R$ 3,9536, ou 15,00% da receita líquida, 13,58% da receita bruta", out)
+        self.assertNotIn("PLANEJADA", out)
+        self.assertIn("Margem no preço de tabela: R$ 3,9536, ou 15,00% da receita líquida gerencial, 13,58% da receita bruta", out)
 
     def test_sem_margem_nem_preco_recusa(self):
         with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
@@ -252,7 +252,7 @@ class Bordas(unittest.TestCase):
         self.assertIn("Comissão <span class='hip'>hipótese</span>", h)
         self.assertIn("(+) IPI 9,75%", h)
         self.assertIn("R$ 119,6275", h)
-        self.assertIn("Margem em % da receita líquida", h)
+        self.assertIn("Margem em % da receita líquida gerencial", h)
         self.assertIn("Margem em % da receita bruta", h)
 
 

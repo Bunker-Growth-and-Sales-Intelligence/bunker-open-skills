@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Forma ou audita o preço de um produto ou serviço e emite o DRE da linha.
+"""Forma ou audita o preço de um produto ou serviço e emite a DRE da linha.
 
 Só usa a biblioteca padrão do Python 3.8 ou mais novo.
 
 Regras da conta:
-- A margem planejada é medida sobre a receita líquida: o preço menos impostos sobre a
+- A margem planejada é medida sobre a receita líquida gerencial: o preço menos impostos sobre a
   venda, comissão, frete e outras despesas variáveis. É a mesma conta do nível 0 do
   Pricing Designer da Bunker.
 - Preço formado em duas etapas:
     Preço = (Custo ÷ (1 − margem %) + despesas variáveis em R$) ÷ (1 − (impostos % + comissão % + frete % + outras %))
-- Preço arredonda em 2 casas. Cada linha do DRE arredonda em 4 casas, e as linhas de
-  total saem da subtração das linhas já arredondadas. Assim o DRE fecha exato.
+- Preço arredonda em 2 casas. Cada linha da DRE arredonda em 4 casas, e as linhas de
+  total saem da subtração das linhas já arredondadas. Assim a DRE fecha exato.
 - Percentuais entram em pontos: 18 quer dizer 18%.
 - A margem planejada é opcional. Sem ela, o script só audita o preço informado.
 
@@ -179,7 +179,7 @@ def dre(preco, p, custo=None, comissao=None, frete=None, frete_valor=None):
         avisos.append("A receita bruta é zero ou negativa. Não há base para calcular margem em %.")
     elif rl <= 0:
         avisos.append(
-            "A receita líquida é zero ou negativa: impostos, comissão e frete levam o preço inteiro. "
+            "A receita líquida gerencial é zero ou negativa: impostos, comissão e frete levam o preço inteiro. "
             "Margem em % perde sentido nessa situação, então ela não é calculada. "
             "Confira as alíquotas antes de seguir."
         )
@@ -221,7 +221,7 @@ def dre(preco, p, custo=None, comissao=None, frete=None, frete_valor=None):
 
 
 def formar(p, margem=None):
-    """Preço formado com a margem sobre a receita líquida. None se não existe preço."""
+    """Preço formado com a margem sobre a receita líquida gerencial. None se não existe preço."""
     m = p.margem if margem is None else margem
     if m is None or m >= CEM or p.variaveis_pct() >= CEM:
         return None
@@ -230,7 +230,7 @@ def formar(p, margem=None):
 
 
 def margem_maxima(p, preco):
-    """A maior margem sobre a receita líquida que cabe num preço dado."""
+    """A maior margem sobre a receita líquida gerencial que cabe num preço dado."""
     rl = preco * (CEM - p.variaveis_pct()) / CEM - p.variaveis_rs()
     if rl <= 0:
         return None
@@ -261,7 +261,7 @@ def explicar_impossivel(p, preco_ref=None):
         )
     if p.margem is not None and p.margem >= CEM:
         out.append(
-            f"A margem planejada é {pct(p.margem)} da receita líquida. Margem de 100% quer dizer custo zero, "
+            f"A margem planejada é {pct(p.margem)} da receita líquida gerencial. Margem de 100% quer dizer custo zero, "
             "então ela tem que ficar abaixo de 100%."
         )
         if v < CEM:
@@ -271,7 +271,7 @@ def explicar_impossivel(p, preco_ref=None):
     if preco_ref is not None and preco_ref > 0:
         m_max = margem_maxima(p, preco_ref)
         if m_max is not None and m_max > 0:
-            out.append(f"No preço de {rs(preco_ref)}, a maior margem que cabe é {pct(m_max)} da receita líquida.")
+            out.append(f"No preço de {rs(preco_ref)}, a maior margem que cabe é {pct(m_max)} da receita líquida gerencial.")
         else:
             out.append(f"No preço de {rs(preco_ref)}, a venda não cobre nem o custo e as despesas variáveis.")
     return out
@@ -280,7 +280,7 @@ def explicar_impossivel(p, preco_ref=None):
 def fmt_margens(d):
     if d["mc_rl"] is None:
         return "% não calculada"
-    return f"{pct(d['mc_rl'])} da receita líquida, {pct(d['mc_rb'])} da receita bruta"
+    return f"{pct(d['mc_rl'])} da receita líquida gerencial, {pct(d['mc_rb'])} da receita bruta"
 
 
 def rotulos(p):
@@ -323,11 +323,11 @@ def bloco_dre(titulo, d, p, visiveis):
     out.append(f"  {'(=) Receita líquida contábil (depois das deduções)':<{w}}{rs(d['rl_contabil'], 4)}{perc(d['rl_contabil'])}")
     for k, nome, _, hips in visiveis:
         out.append(f"  {'(−) ' + nome + marca(p, *hips):<{w}}{rs(d['despesas'][k], 4)}{perc(d['despesas'][k])}")
-    out.append(f"  {'(=) Receita líquida, base da margem':<{w}}{rs(d['rl'], 4)}{perc(d['rl'])}")
+    out.append(f"  {'(=) Receita líquida gerencial':<{w}}{rs(d['rl'], 4)}{perc(d['rl'])}")
     out.append(f"  {'(−) ' + custo_rot + marca(p, 'custo'):<{w}}{rs(d['cpv'], 4)}{perc(d['cpv'])}")
     out.append(f"  {'(=) Margem de contribuição':<{w}}{rs(d['mc'], 4)}")
     if d["mc_rl"] is not None:
-        out.append(f"      em % da receita líquida (base da margem): {pct(d['mc_rl'])}")
+        out.append(f"      em % da receita líquida gerencial: {pct(d['mc_rl'])}")
         out.append(f"      em % da receita bruta: {pct(d['mc_rb'])}")
     for nome, aliq, base, v in d["fora"]:
         rot = "base sem ICMS e ISS" if base == "sem_icms_iss" else "base no preço"
@@ -340,7 +340,7 @@ def bloco_dre(titulo, d, p, visiveis):
 
 
 def tabela_dre(p, colunas):
-    """A tabela do DRE da linha, uma coluna por preço, com o % da receita bruta ao lado."""
+    """A tabela da DRE da linha, uma coluna por preço, com o % da receita bruta ao lado."""
     def e(s):
         return html.escape(str(s))
 
@@ -390,12 +390,12 @@ def tabela_dre(p, colunas):
     linha("(=) Receita líquida contábil", lambda d: d["rl_contabil"], "tot", "receita bruta menos as deduções")
     for k, nome, explica, hips in visiveis:
         linha("(−) " + nome, lambda d, k=k: d["despesas"][k], "", explica, p.hip(*hips))
-    linha("(=) Receita líquida, base da margem", lambda d: d["rl"], "tot",
+    linha("(=) Receita líquida gerencial", lambda d: d["rl"], "tot",
           "o que sobra do preço depois de impostos, comissão e frete")
     linha("(−) " + custo_rot, lambda d: d["cpv"], "", custo_exp, p.hip("custo"))
     linha("(=) Margem de contribuição", lambda d: d["mc"], "tot mc",
           "o que a venda deixa para as despesas fixas e o lucro; não é lucro")
-    linha_pct("Margem em % da receita líquida", lambda d: d["mc_rl"], "a base em que a margem é planejada")
+    linha_pct("Margem em % da receita líquida gerencial", lambda d: d["mc_rl"], "a base em que a margem é planejada")
     linha_pct("Margem em % da receita bruta", lambda d: d["mc_rb"], "a mesma margem, medida sobre o preço")
     if base["fora"]:
         linhas.append(f"<tr class='sec'><th colspan='{1 + 2 * len(colunas) + (1 if varias else 0)}'>Fora da receita bruta, somado na nota</th></tr>")
@@ -482,7 +482,7 @@ def desvio_de(ref_pct, d):
     """Desvio da margem realizada contra uma margem de referência, como no Pricing Designer.
 
     Pontos = realizada − referência. Relativo = realizada ÷ referência − 1.
-    Em R$ = receita líquida realizada × pontos ÷ 100.
+    Em R$ = receita líquida gerencial realizada × pontos ÷ 100.
     """
     if ref_pct is None or d["mc_rl"] is None:
         return None
@@ -503,12 +503,12 @@ def desvio(texto, rotulo, ref_pct, ref_nome, d):
     if dv is None:
         texto.append(f"  {rotulo}: em pontos não se calcula, veja o aviso acima.")
         return None
-    texto.append(f"  {rotulo} ({pct(ref_pct, 4)}): {fmt_desvio(dv)} na receita líquida realizada")
+    texto.append(f"  {rotulo} ({pct(ref_pct, 4)}): {fmt_desvio(dv)} na receita líquida gerencial realizada")
     return dv
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="Forma ou audita preço e emite o DRE da linha.")
+    ap = argparse.ArgumentParser(description="Forma ou audita preço e emite a DRE da linha.")
     ap.add_argument("--produto")
     ap.add_argument("--unidade")
     ap.add_argument("--quantidade", default="1")
@@ -524,7 +524,7 @@ def main(argv=None):
     ap.add_argument("--frete-valor", default="0", help="frete em R$ por unidade")
     ap.add_argument("--outras", default="0", help="outras despesas variáveis em %% do preço")
     ap.add_argument("--outras-valor", default="0", help="outras despesas variáveis em R$ por unidade")
-    ap.add_argument("--margem", help="margem de contribuição planejada, em %% da receita líquida. Sem ela, só audita")
+    ap.add_argument("--margem", help="margem de contribuição planejada, em %% da receita líquida gerencial. Sem ela, só audita")
     ap.add_argument("--preco-atual", help="preço de tabela, o que a pessoa cobra hoje antes do desconto")
     ap.add_argument("--desconto", help="desconto em %% sobre o preço de tabela (ou sobre o formado, sem tabela)")
     ap.add_argument("--preco-praticado", help="preço efetivamente cobrado, já com desconto")
@@ -554,7 +554,7 @@ def main(argv=None):
         + f"; outras {pct(p.outras)}"
         + (f" + {rs(p.outras_valor)}" if p.outras_valor else "") + marca(p, "outras", "outras-valor")
         + ("; sem margem planejada, só auditoria." if p.margem is None
-           else f"; margem planejada {pct(p.margem)} da receita líquida{marca(p, 'margem')}.")
+           else f"; margem planejada {pct(p.margem)} da receita líquida gerencial{marca(p, 'margem')}.")
     )
 
     # Planejado
@@ -568,14 +568,14 @@ def main(argv=None):
             v = p.variaveis_pct()
             alvo = p.custo / ((CEM - p.margem) / CEM)
             texto.append("")
-            texto.append("FORMAÇÃO DO PREÇO (margem sobre a receita líquida)")
+            texto.append("FORMAÇÃO DO PREÇO (margem sobre a receita líquida gerencial)")
             texto.append(
                 f"  1. Receita líquida que o preço precisa deixar: custo ÷ (1 − margem) = "
                 f"{rs(p.custo, 4)} ÷ {br((CEM - p.margem) / CEM, 4)} = {rs(r4(alvo), 4)}"
             )
             soma_rs = f" + frete e outras em R$, {rs(p.variaveis_rs(), 4)}" if p.variaveis_rs() else ""
             texto.append(
-                f"  2. Preço: (receita líquida{soma_rs}) ÷ (1 − impostos, comissão e frete de {pct(v)}) = "
+                f"  2. Preço: (receita líquida gerencial{soma_rs}) ÷ (1 − impostos, comissão e frete de {pct(v)}) = "
                 f"{rs(r4(alvo + p.variaveis_rs()), 4)} ÷ {br((CEM - v) / CEM, 4)} = {rs(preco_plan)}"
             )
             plan = dre(preco_plan, p)
@@ -618,8 +618,8 @@ def main(argv=None):
 
     for nome, _, d in colunas:
         texto.append("")
-        titulo = {"Planejado": "DRE PLANEJADO (preço formado)", "Tabela": "DRE NO PREÇO DE TABELA",
-                  "Realizado": "DRE REALIZADO"}[nome]
+        titulo = {"Planejado": "DRE PLANEJADA (preço formado)", "Tabela": "DRE NO PREÇO DE TABELA",
+                  "Realizado": "DRE REALIZADA"}[nome]
         texto += bloco_dre(titulo, d, p, visiveis)
         if nome == "Planejado" and d["mc_rl"] is not None and r2(d["mc_rl"]) != r2(p.margem):
             texto.append("  A margem no preço formado fica a centésimos da planejada porque o preço é arredondado em 2 casas.")
@@ -632,7 +632,7 @@ def main(argv=None):
         texto.append(
             f"  {rs(p.custo + p.variaveis_rs(), 4)} × {br(1 + p.margem / CEM, 4)} = {rs(mult)}. Nesse preço a margem de contribuição "
             f"seria {rs(dm['mc'], 4)} {'por ' + p.unidade if p.qtd == 1 else 'no total'}, ou {fmt_margens(dm)}, "
-            f"e não {pct(p.margem)} da receita líquida."
+            f"e não {pct(p.margem)} da receita líquida gerencial."
         )
         texto.append(
             "  O multiplicador põe a margem em cima do custo. Impostos, comissão e frete são cobrados "
@@ -642,7 +642,7 @@ def main(argv=None):
     # Comparações
     cards = []
     if p.margem is not None:
-        cards.append(("Margem planejada", f"{pct(p.margem)} da receita líquida"))
+        cards.append(("Margem planejada", f"{pct(p.margem)} da receita líquida gerencial"))
     if plan:
         cards.append(("Preço formado", rs(plan["preco"])))
         cards.append(("Margem no preço formado", fmt_margens(plan)))
@@ -722,8 +722,8 @@ def main(argv=None):
         texto.append("")
         texto.append("Premissas marcadas como hipótese: " + ", ".join(sorted(p.hipoteses)) + ". Confirme antes de decidir.")
     texto.append("")
-    texto.append("A margem é medida sobre a receita líquida: o preço menos impostos, comissão e frete. "
-                 "Na DRE contábil, receita líquida é só a receita bruta menos as deduções.")
+    texto.append("A margem é medida sobre a receita líquida gerencial: o preço menos impostos, comissão e frete. "
+                 "Na DRE contábil, a receita líquida é só a receita bruta menos as deduções (a receita líquida contábil).")
     texto.append("Margem de contribuição não é lucro: dela ainda saem as despesas fixas, o IRPJ e a CSLL.")
     texto.append("Impostos informados são hipótese até o contador confirmar.")
 

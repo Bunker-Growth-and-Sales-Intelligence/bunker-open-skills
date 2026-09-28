@@ -30,7 +30,7 @@ Regimes diferenciados (saúde, educação, alimentos da cesta básica e outros) 
 5. **O custo passa a ser líquido do crédito de CBS e IBS** que o fornecedor transferir. Dois fornecedores com o mesmo preço de tabela podem custar diferente, conforme o regime de cada um.
 6. **Contratos longos e propostas com validade** que atravessam 1/1/2027 serão executados sob outra regra. Recomende revisar a cláusula de tributos.
 
-Como mostrar para a pessoa: monte dois DREs lado a lado, "regra de 2026" e "hipótese para 2027", com as mesmas premissas de custo e margem. Em 2027 tire PIS e Cofins dos impostos por dentro, mantenha ICMS ou ISS, e mostre CBS e IBS por fora com o total da nota. Marque a coluna de 2027 inteira como hipótese.
+Como mostrar para a pessoa: monte duas DREs lado a lado, "regra de 2026" e "hipótese para 2027", com as mesmas premissas de custo e margem. Em 2027 tire PIS e Cofins dos impostos por dentro, mantenha ICMS ou ISS, e mostre CBS e IBS por fora com o total da nota. Marque a coluna de 2027 inteira como hipótese.
 
 Exemplo de ordem de grandeza, de uma proposta de serviço de R$ 100 mil com ISS de 5%: hoje PIS e Cofins de 3,65% mais ISS de 5% somam R$ 8.650. Em 2027, CBS de cerca de 9,11%, IBS de 0,1% e o mesmo ISS somariam R$ 14.210 antes do crédito. Se 20% da receita são insumos tributados, o crédito de CBS devolve perto de R$ 1.820, e o custo tributário efetivo fica perto de R$ 12.390. Cada linha dá um número diferente, porque cada uma gera um crédito diferente.
 

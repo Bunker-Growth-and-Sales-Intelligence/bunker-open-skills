@@ -36,7 +36,11 @@ button,input,select{font:inherit;color:inherit}
 .topo .sub{color:#a6a6a6;font-size:13px;margin:0}
 .topo .bout{position:absolute;right:-30px;top:-60px;width:340px;height:442px;z-index:0}
 @media(max-width:620px){.topo .bout{width:220px;height:286px;right:-70px;top:-30px}}
-.cens{display:flex;gap:0;margin-top:18px;flex-wrap:wrap}
+.cens{margin-top:18px}
+.cens-b{display:flex;gap:0;flex-wrap:wrap}
+.cens-s{display:none;align-items:center;gap:10px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#9a9a9a}
+.cens-s select{flex:1;min-width:0;background:#0a0a0a;color:#fff;border:1px solid #fff;padding:8px 10px;font-size:13px;letter-spacing:0;text-transform:none}
+@media(max-width:620px){.cens-b{display:none}.cens-s{display:flex}}
 .cens button{background:none;border:1px solid #444;color:#bbb;padding:7px 12px;cursor:pointer;font-size:12.5px;margin:0 -1px -1px 0}
 .cens button.on{background:#fff;color:#0a0a0a;border-color:#fff;font-weight:700}
 .w{max-width:1440px;margin:0 auto}
@@ -47,6 +51,11 @@ aside{background:var(--fundo);border-right:1px solid var(--linha);padding:18px 1
 aside summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;font-weight:900;text-transform:uppercase;letter-spacing:.02em;font-size:15px}
 aside summary::-webkit-details-marker{display:none}
 aside summary .seta{margin-left:auto;font-size:12px;color:var(--txt);font-weight:500;text-transform:none;letter-spacing:0}
+@media(max-width:1099px){aside summary{border:2px solid var(--ink);padding:11px 12px;background:var(--papel)}
+ aside summary .seta .d{display:none}
+ aside summary .seta .m::after{content:"Toque para abrir \25BE";color:var(--ink);font-weight:800}
+ aside details[open] summary .seta .m::after{content:"Fechar \25B4"}}
+@media(min-width:1100px){aside summary .seta .m{display:none}}
 .grp{margin-top:16px}
 .grp h4{margin:0 0 6px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt);font-weight:600}
 .cp{display:grid;grid-template-columns:minmax(0,1fr) 108px;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--linha)}
@@ -70,19 +79,27 @@ section.b{padding:26px 0 22px;border-bottom:1px solid var(--linha);min-width:0}
 .cab{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
 .num{font-weight:900;font-size:13px;background:var(--ink);color:var(--papel);padding:4px 6px;line-height:1;letter-spacing:.02em;flex:none;margin-top:2px}
 .perg{color:var(--txt);font-size:11px;margin:0 0 4px;text-transform:uppercase;letter-spacing:.1em;font-weight:600}
-.perg .aj{display:inline-block;width:14px;height:14px;border:1px solid var(--txt);border-radius:50%;text-align:center;line-height:12px;font-size:9px;margin-left:4px;cursor:help;letter-spacing:0;text-transform:none}
+.perg .aj{display:inline-block;width:14px;height:14px;border:1px solid var(--txt);border-radius:50%;text-align:center;line-height:12px;font-size:9px;margin-left:4px;cursor:help;letter-spacing:0;text-transform:none;vertical-align:-2px}
+.perg .aj::before{content:"?"}
 h2{font-size:clamp(17px,2.1vw,22px);font-weight:800;line-height:1.2;margin:0;letter-spacing:-.015em}
 .fonte{font-size:10.5px;color:var(--txt);margin:12px 0 0;opacity:.9}
+.nota{font-size:12px;color:var(--txt);margin:10px 0 0}
+.sub9{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt);font-weight:600;margin:18px 0 6px}
+.leg li.meta{border-top:1px dashed var(--txt)}
+.leg .ch.mt{background:transparent;border:2px dashed var(--bom)}
+table.rx.lado td:first-child{white-space:normal;min-width:150px}
+table.rx.lado th{white-space:nowrap;padding-left:10px}
 .g{width:100%;min-width:0}
 .g svg{display:block;width:100%;height:auto;overflow:visible}
 .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:18px;border:1px solid var(--linha)}
 
 .card{padding:14px 16px;border-right:1px solid var(--linha);min-width:0}
 .card:last-child{border-right:0}
-@media(max-width:620px){.card{padding:10px 8px}.card .v{font-size:21px}.card .r{font-size:9px;letter-spacing:.06em}.card .s{font-size:10.5px}}
+@media(max-width:620px){.card{padding:10px 8px}.card .s{overflow-wrap:anywhere}.card .r{font-size:9px;letter-spacing:.06em}.card .s{font-size:10.5px}}
 .card .r{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt);font-weight:600}
 .card .v{font-size:clamp(30px,4vw,40px);font-weight:900;letter-spacing:-.03em;line-height:1.05;margin:6px 0 4px}
 .card .s{font-size:12px;color:var(--txt)}
+@media(max-width:620px){.card .v{font-size:23px}.card .v.longo{font-size:15px}}
 .bom{color:var(--bom)}.atencao{color:var(--aten)}.critico{color:var(--alr)}
 .leg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 22px;margin:14px 0 0;padding:0;list-style:none}
 .leg li{display:grid;grid-template-columns:12px minmax(0,1fr) auto auto;gap:8px;align-items:center;font-size:12.5px;padding:3px 0;border-bottom:1px solid var(--grade)}
@@ -121,6 +138,7 @@ table.dre tr.sec th{font-size:12px;color:var(--txt);padding-top:14px}
 .chip{font-size:11px;border:1px solid #444;color:#bbb;padding:2px 7px}
 .chip.h{color:#e3aa4f;border-color:#7a5a1f}
 .aviso{border-left:4px solid var(--alr);padding:8px 12px;margin:16px 0 0;background:var(--fundo);font-size:13px}
+.aviso.at{border-left-color:var(--aten)}
 footer{border-top:2px solid var(--ink);margin-top:26px;padding:14px 0 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;color:var(--txt);font-size:11.5px}
 footer b{color:var(--ink);font-weight:900;font-size:15px;letter-spacing:-.01em}
 svg text{font-family:"Schibsted Grotesk",system-ui,sans-serif}
@@ -152,7 +170,7 @@ svg .sb{stroke:var(--bom)} svg .sa{stroke:var(--aten)} svg .sk{stroke:var(--alr)
 </div>
 <div class="w app">
  <aside><div class="fixo"><details id="sim" open>
-  <summary>Mexa nos números <span class="seta">recalcula na hora</span></summary>
+  <summary>Mexa nos números <span class="seta"><span class="d">recalcula na hora</span><span class="m"></span></span></summary>
   <div id="campos"></div>
   <div class="acoes"><button class="btn claro" id="voltar">Voltar aos números da conversa</button></div>
  </details></div></aside>
@@ -162,8 +180,9 @@ svg .sb{stroke:var(--bom)} svg .sa{stroke:var(--aten)} svg .sk{stroke:var(--alr)
   <div class="grade" id="blocos"></div>
   <details class="apx"><summary>DRE contábil da linha, para o contador</summary>
    <p class="fonte">Nos números da conversa, sem as edições do simulador. Reais em 4 casas; ao lado, o % da receita bruta.</p>
-<h3>Aeroporto</h3><div class='wrap'><table class='dre'><thead><tr><th></th><th colspan='2'>Planejado<br><small>R$ 92,77 por corrida</small></th><th colspan='2'>Preço de hoje<br><small>R$ 90,00 por corrida</small></th><th colspan='2'>Realizado<br><small>negociado, R$ 90,00</small></th><th>Realizado − planejado</th></tr></thead><tbody><tr class='tot'><th>Receita bruta<small>o valor da venda, sem os tributos por fora</small></th><td class='n'>R$ 14.843,2000</td><td class='n p'>100,00%</td><td class='n'>R$ 14.400,0000</td><td class='n p'>100,00%</td><td class='n'>R$ 14.400,0000</td><td class='n p'>100,00%</td><td class='n'>−R$ 443,2000</td></tr><tr class=''><th>(−) Deduções da receita bruta <span class='hip'>hipótese</span><small>impostos sobre a venda, que vêm dentro do preço</small></th><td class='n'>R$ 890,5920</td><td class='n p'>6,00%</td><td class='n'>R$ 864,0000</td><td class='n p'>6,00%</td><td class='n'>R$ 864,0000</td><td class='n p'>6,00%</td><td class='n'>−R$ 26,5920</td></tr><tr class='tot'><th>(=) Receita líquida contábil<small>receita bruta menos as deduções</small></th><td class='n'>R$ 13.952,6080</td><td class='n p'>94,00%</td><td class='n'>R$ 13.536,0000</td><td class='n p'>94,00%</td><td class='n'>R$ 13.536,0000</td><td class='n p'>94,00%</td><td class='n'>−R$ 416,6080</td></tr><tr class=''><th>(−) Comissão<small>despesa variável de venda</small></th><td class='n'>R$ 4.452,9600</td><td class='n p'>30,00%</td><td class='n'>R$ 4.320,0000</td><td class='n p'>30,00%</td><td class='n'>R$ 4.320,0000</td><td class='n p'>30,00%</td><td class='n'>−R$ 132,9600</td></tr><tr class=''><th>(−) Outras despesas variáveis de venda<small>taxa de cartão, marketplace, embalagem de entrega</small></th><td class='n'>R$ 311,7072</td><td class='n p'>2,10%</td><td class='n'>R$ 302,4000</td><td class='n p'>2,10%</td><td class='n'>R$ 302,4000</td><td class='n p'>2,10%</td><td class='n'>−R$ 9,3072</td></tr><tr class='tot'><th>(=) Receita líquida, base da margem<small>o que sobra do preço depois de impostos, comissão e frete</small></th><td class='n'>R$ 9.187,9408</td><td class='n p'>61,90%</td><td class='n'>R$ 8.913,6000</td><td class='n p'>61,90%</td><td class='n'>R$ 8.913,6000</td><td class='n p'>61,90%</td><td class='n'>−R$ 274,3408</td></tr><tr class=''><th>(−) Custo do serviço prestado (CSP)<small>o que custou prestar o serviço</small></th><td class='n'>R$ 6.431,7440</td><td class='n p'>43,33%</td><td class='n'>R$ 6.431,7440</td><td class='n p'>44,66%</td><td class='n'>R$ 6.431,7440</td><td class='n p'>44,66%</td><td class='n'>R$ 0,0000</td></tr><tr class='tot mc'><th>(=) Margem de contribuição<small>o que a venda deixa para as despesas fixas e o lucro; não é lucro</small></th><td class='n'>R$ 2.756,1968</td><td class='n p'>18,57%</td><td class='n'>R$ 2.481,8560</td><td class='n p'>17,24%</td><td class='n'>R$ 2.481,8560</td><td class='n p'>17,24%</td><td class='n'>−R$ 274,3408</td></tr><tr class='mcp'><th>Margem em % da receita líquida<small>a base em que a margem é planejada</small></th><td class='n'>30,00%</td><td></td><td class='n'>27,84%</td><td></td><td class='n'>27,84%</td><td></td><td class='n'>−2,15 p.p.</td></tr><tr class='mcp'><th>Margem em % da receita bruta<small>a mesma margem, medida sobre o preço</small></th><td class='n'>18,57%</td><td></td><td class='n'>17,24%</td><td></td><td class='n'>17,24%</td><td></td><td class='n'>−1,33 p.p.</td></tr></tbody></table></div>
+<div class="apx-cen" data-cen="0"><h3>Aeroporto</h3><div class='wrap'><table class='dre'><thead><tr><th></th><th colspan='2'>Planejado<br><small>R$ 92,77 por corrida</small></th><th colspan='2'>Preço de hoje<br><small>R$ 90,00 por corrida</small></th><th colspan='2'>Realizado<br><small>negociado, R$ 90,00</small></th><th>Realizado − planejado</th></tr></thead><tbody><tr class='tot'><th>Receita bruta<small>o valor da venda, sem os tributos por fora</small></th><td class='n'>R$ 14.843,2000</td><td class='n p'>100,00%</td><td class='n'>R$ 14.400,0000</td><td class='n p'>100,00%</td><td class='n'>R$ 14.400,0000</td><td class='n p'>100,00%</td><td class='n'>−R$ 443,2000</td></tr><tr class=''><th>(−) Deduções da receita bruta <span class='hip'>hipótese</span><small>impostos sobre a venda, que vêm dentro do preço</small></th><td class='n'>R$ 890,5920</td><td class='n p'>6,00%</td><td class='n'>R$ 864,0000</td><td class='n p'>6,00%</td><td class='n'>R$ 864,0000</td><td class='n p'>6,00%</td><td class='n'>−R$ 26,5920</td></tr><tr class='tot'><th>(=) Receita líquida contábil<small>receita bruta menos as deduções</small></th><td class='n'>R$ 13.952,6080</td><td class='n p'>94,00%</td><td class='n'>R$ 13.536,0000</td><td class='n p'>94,00%</td><td class='n'>R$ 13.536,0000</td><td class='n p'>94,00%</td><td class='n'>−R$ 416,6080</td></tr><tr class=''><th>(−) Comissão<small>despesa variável de venda</small></th><td class='n'>R$ 4.452,9600</td><td class='n p'>30,00%</td><td class='n'>R$ 4.320,0000</td><td class='n p'>30,00%</td><td class='n'>R$ 4.320,0000</td><td class='n p'>30,00%</td><td class='n'>−R$ 132,9600</td></tr><tr class=''><th>(−) Outras despesas variáveis de venda<small>taxa de cartão, marketplace, embalagem de entrega</small></th><td class='n'>R$ 311,7072</td><td class='n p'>2,10%</td><td class='n'>R$ 302,4000</td><td class='n p'>2,10%</td><td class='n'>R$ 302,4000</td><td class='n p'>2,10%</td><td class='n'>−R$ 9,3072</td></tr><tr class='tot'><th>(=) Receita líquida gerencial<small>o que sobra do preço depois de impostos, comissão e frete</small></th><td class='n'>R$ 9.187,9408</td><td class='n p'>61,90%</td><td class='n'>R$ 8.913,6000</td><td class='n p'>61,90%</td><td class='n'>R$ 8.913,6000</td><td class='n p'>61,90%</td><td class='n'>−R$ 274,3408</td></tr><tr class=''><th>(−) Custo do serviço prestado (CSP)<small>o que custou prestar o serviço</small></th><td class='n'>R$ 6.431,7440</td><td class='n p'>43,33%</td><td class='n'>R$ 6.431,7440</td><td class='n p'>44,66%</td><td class='n'>R$ 6.431,7440</td><td class='n p'>44,66%</td><td class='n'>R$ 0,0000</td></tr><tr class='tot mc'><th>(=) Margem de contribuição<small>o que a venda deixa para as despesas fixas e o lucro; não é lucro</small></th><td class='n'>R$ 2.756,1968</td><td class='n p'>18,57%</td><td class='n'>R$ 2.481,8560</td><td class='n p'>17,24%</td><td class='n'>R$ 2.481,8560</td><td class='n p'>17,24%</td><td class='n'>−R$ 274,3408</td></tr><tr class='mcp'><th>Margem em % da receita líquida gerencial<small>a base em que a margem é planejada</small></th><td class='n'>30,00%</td><td></td><td class='n'>27,84%</td><td></td><td class='n'>27,84%</td><td></td><td class='n'>−2,15 p.p.</td></tr><tr class='mcp'><th>Margem em % da receita bruta<small>a mesma margem, medida sobre o preço</small></th><td class='n'>18,57%</td><td></td><td class='n'>17,24%</td><td></td><td class='n'>17,24%</td><td></td><td class='n'>−1,33 p.p.</td></tr></tbody></table></div></div><div class="apx-cen" data-cen="1" hidden><h3>Aeroporto</h3><div class='wrap'><table class='dre'><thead><tr><th></th><th colspan='2'>Planejado<br><small>R$ 46,39 por corrida</small></th><th colspan='2'>Preço de hoje<br><small>R$ 90,00 por corrida</small></th><th colspan='2'>Realizado<br><small>negociado, R$ 90,00</small></th><th>Realizado − planejado</th></tr></thead><tbody><tr class='tot'><th>Receita bruta<small>o valor da venda, sem os tributos por fora</small></th><td class='n'>R$ 7.422,4000</td><td class='n p'>100,00%</td><td class='n'>R$ 14.400,0000</td><td class='n p'>100,00%</td><td class='n'>R$ 14.400,0000</td><td class='n p'>100,00%</td><td class='n'>+R$ 6.977,6000</td></tr><tr class=''><th>(−) Deduções da receita bruta <span class='hip'>hipótese</span><small>impostos sobre a venda, que vêm dentro do preço</small></th><td class='n'>R$ 445,3440</td><td class='n p'>6,00%</td><td class='n'>R$ 864,0000</td><td class='n p'>6,00%</td><td class='n'>R$ 864,0000</td><td class='n p'>6,00%</td><td class='n'>+R$ 418,6560</td></tr><tr class='tot'><th>(=) Receita líquida contábil<small>receita bruta menos as deduções</small></th><td class='n'>R$ 6.977,0560</td><td class='n p'>94,00%</td><td class='n'>R$ 13.536,0000</td><td class='n p'>94,00%</td><td class='n'>R$ 13.536,0000</td><td class='n p'>94,00%</td><td class='n'>+R$ 6.558,9440</td></tr><tr class=''><th>(−) Comissão<small>despesa variável de venda</small></th><td class='n'>R$ 2.226,7200</td><td class='n p'>30,00%</td><td class='n'>R$ 4.320,0000</td><td class='n p'>30,00%</td><td class='n'>R$ 4.320,0000</td><td class='n p'>30,00%</td><td class='n'>+R$ 2.093,2800</td></tr><tr class=''><th>(−) Outras despesas variáveis de venda<small>taxa de cartão, marketplace, embalagem de entrega</small></th><td class='n'>R$ 155,8704</td><td class='n p'>2,10%</td><td class='n'>R$ 302,4000</td><td class='n p'>2,10%</td><td class='n'>R$ 302,4000</td><td class='n p'>2,10%</td><td class='n'>+R$ 146,5296</td></tr><tr class='tot'><th>(=) Receita líquida gerencial<small>o que sobra do preço depois de impostos, comissão e frete</small></th><td class='n'>R$ 4.594,4656</td><td class='n p'>61,90%</td><td class='n'>R$ 8.913,6000</td><td class='n p'>61,90%</td><td class='n'>R$ 8.913,6000</td><td class='n p'>61,90%</td><td class='n'>+R$ 4.319,1344</td></tr><tr class=''><th>(−) Custo do serviço prestado (CSP)<small>o que custou prestar o serviço</small></th><td class='n'>R$ 3.215,8720</td><td class='n p'>43,33%</td><td class='n'>R$ 3.215,8720</td><td class='n p'>22,33%</td><td class='n'>R$ 3.215,8720</td><td class='n p'>22,33%</td><td class='n'>R$ 0,0000</td></tr><tr class='tot mc'><th>(=) Margem de contribuição<small>o que a venda deixa para as despesas fixas e o lucro; não é lucro</small></th><td class='n'>R$ 1.378,5936</td><td class='n p'>18,57%</td><td class='n'>R$ 5.697,7280</td><td class='n p'>39,57%</td><td class='n'>R$ 5.697,7280</td><td class='n p'>39,57%</td><td class='n'>+R$ 4.319,1344</td></tr><tr class='mcp'><th>Margem em % da receita líquida gerencial<small>a base em que a margem é planejada</small></th><td class='n'>30,01%</td><td></td><td class='n'>63,92%</td><td></td><td class='n'>63,92%</td><td></td><td class='n'>+33,92 p.p.</td></tr><tr class='mcp'><th>Margem em % da receita bruta<small>a mesma margem, medida sobre o preço</small></th><td class='n'>18,57%</td><td></td><td class='n'>39,57%</td><td></td><td class='n'>39,57%</td><td></td><td class='n'>+20,99 p.p.</td></tr></tbody></table></div></div>
   </details>
+  <p class="fonte" id="fonte"></p>
   <footer><b>Bunker</b><span>Growth &amp; Sales Intelligence</span><span>Margem de contribuição não é lucro. Número fiscal é hipótese até o contador confirmar.</span></footer>
  </main>
 </div>
@@ -225,7 +244,7 @@ svg .sb{stroke:var(--bom)} svg .sa{stroke:var(--aten)} svg .sk{stroke:var(--alr)
    ]
   }
  ],
- "data": "28/09/2026 12:48"
+ "data": "28/09/2026 16:40"
 }
 </script>
 
@@ -244,7 +263,16 @@ var Motor = (function () {
   function r4(x) { return rnd(x, 4); }
   function soma(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return limpa(s); }
   function n(x, pad) { return (x === null || x === undefined || x === '') ? pad : +x; }
-  var ROT = { teto: 'Teto', canal: 'Canal', especifico: 'Específico' };
+  var ROT = { teto: 'Teto', canal: 'Canal', especifico: 'Específico', desconto: 'Desconto do vendedor' };
+  function vazio(x) { return x === null || x === undefined || x === ''; }
+
+  // Os cenários de um arquivo: cada um herda os campos de fora de `cenarios`, e os dele mandam.
+  // É a mesma regra de simulador.mesclar no Python; o teste de paridade confere as duas.
+  function cenarios(bruto) {
+    if (!bruto.cenarios) return [bruto];
+    var herda = {}; Object.keys(bruto).forEach(function (k) { if (k !== 'cenarios') herda[k] = bruto[k]; });
+    return bruto.cenarios.map(function (c) { return Object.assign({}, herda, c); });
+  }
 
   function premissas(l, cen) {
     var imp = l.impostos || {}, ks = Object.keys(imp);
@@ -257,6 +285,8 @@ var Motor = (function () {
       outras: n(l.outras_pct, 0), outras_valor: n(l.outras_rs, 0), por_fora: l.por_fora || [],
       hip: (cen.hipoteses || []).concat(l.hipoteses || [])
     };
+    var perda = n(l.perda_pct, 0);
+    if (perda) p.custo = r4(p.custo / (1 - perda / 100)); // perda entra no custo, sobre o custo
     p.imposto_total = soma(impostos.map(function (x) { return x[1]; }));
     p.comissao_efetiva = p.liquida ? p.comissao * (100 - p.imposto_total) / 100 : p.comissao;
     p.v = p.imposto_total + p.comissao_efetiva + p.frete + p.outras;
@@ -269,12 +299,12 @@ var Motor = (function () {
     var q = p.q, rb = r4(preco * q);
     var imps = p.impostos.map(function (x) { return [x[0], r4(rb * x[1] / 100)]; });
     var ded = soma(imps.map(function (x) { return x[1]; }));
-    var rlc = limpa(rb - ded), base = p.liquida ? rlc : rb;
+    var rlc = r4(rb - ded), base = p.liquida ? rlc : rb;
     var com = r4(base * p.comissao / 100), fre = r4(rb * p.frete / 100 + p.frete_valor * q), out = r4(rb * p.outras / 100 + p.outras_valor * q);
-    var desp = limpa(com + fre + out), rl = limpa(rlc - desp), cpv = r4(custo * q), mc = limpa(rl - cpv);
+    var desp = r4(com + fre + out), rl = r4(rlc - desp), cpv = r4(custo * q), mc = r4(rl - cpv); // parcelas em 4 casas: a subtração é exata
     var mc_rl = null, mc_rb = null, avisos = [];
     if (rb <= 0) avisos.push('A receita bruta é zero ou negativa: não há base para a margem em %.');
-    else if (rl <= 0) avisos.push('Impostos, comissão e frete levam o preço inteiro: a receita líquida é zero ou negativa.');
+    else if (rl <= 0) avisos.push('Impostos, comissão e frete levam o preço inteiro: a receita líquida gerencial é zero ou negativa.');
     else { mc_rl = mc / rl * 100; mc_rb = mc / rb * 100; }
     var icms = soma(imps.filter(function (x) { var k = x[0].trim().toUpperCase(); return k === 'ICMS' || k === 'ISS'; }).map(function (x) { return x[1]; }));
     var fora = p.por_fora.map(function (f) {
@@ -335,21 +365,29 @@ var Motor = (function () {
     var refs = { usado: usado.mc_plan };
     if (por.canal) refs.canal = por.canal.mc_plan; else if (por.teto) refs.canal = por.teto.mc_plan;
     if (por.teto) refs.teto = por.teto.mc_plan;
+    // a meta: a margem que o dono quer; um preço fechado não é meta
+    var metaChave = null;
+    if (!vazio(l.mc_especifica) && por.especifico) { refs.meta = por.especifico.mc_plan; metaChave = 'especifico'; }
+    else if (refs.canal !== undefined) { refs.meta = refs.canal; metaChave = por.canal ? 'canal' : 'teto'; }
     var leituras = {}; Object.keys(refs).forEach(function (k) { leituras[k] = desvio(refs[k], real); });
     var passos = niveis.map(function (v) { return [v.chave, v.rotulo, v.dre.rb, v.dre.mc]; });
-    passos.push(['tatico', 'Desconto do vendedor', mesmo.rb, mesmo.mc]);
+    passos.push(['tatico', rot.desconto, mesmo.rb, mesmo.mc]);
     if (custoReal !== null) passos.push(['custo', 'Custo real', real.rb, real.mc]);
     var cascata = [], ant = null;
     passos.forEach(function (s) {
       cascata.push({ chave: s[0], rotulo: s[1], rb: s[2], mc: s[3], delta_rb: ant ? limpa(s[2] - ant[0]) : null, delta_mc: ant ? limpa(s[3] - ant[1]) : null });
       ant = [s[2], s[3]];
     });
-    var mantido = (usado.mc_plan !== null && usado.mc_plan > 0 && real.mc_rl !== null) ? real.mc_rl / usado.mc_plan * 100 : null;
+    var meta = refs.meta === undefined ? null : refs.meta;
+    var mantido = (meta !== null && meta > 0 && real.mc_rl !== null) ? real.mc_rl / meta * 100 : null;
+    var semDesc = null;
+    if (!vazio(l.quantidade_sem_desconto)) semDesc = dre(usado.preco, Object.assign({}, p, { q: +l.quantidade_sem_desconto }));
     var mercado = null;
     if (l.preco_mercado !== null && l.preco_mercado !== undefined && l.preco_mercado !== '') { x = r2(+l.preco_mercado); mercado = { preco: x, mc_max: margemMaxima(p, x) }; }
     return { nome: l.nome || 'Linha', grupo: l.grupo || null, p: p, niveis: niveis, usado: usado, negociado: negociado,
       desconto_rs: limpa(usado.preco - negociado), real: real, mesmo: mesmo, leituras: leituras, refs: refs, cascata: cascata,
-      faixa: faixa(mantido, real.mc), mantido: mantido, mercado: mercado, minimo: formar(p, 0), avisos: avisos.concat(real.avisos) };
+      faixa: faixa(mantido, real.mc), mantido: mantido, meta: meta, meta_nivel: metaChave ? por[metaChave] : null, sem_desconto: semDesc,
+      tabela: !vazio(l.preco_especifico), mercado: mercado, minimo: formar(p, 0), avisos: avisos.concat(real.avisos) };
   }
 
   var ORDEM = ['teto', 'canal', 'especifico', 'tatico'];
@@ -360,9 +398,9 @@ var Motor = (function () {
     return cascata[0];
   }
   function consolidar(ls) {
-    var rb = soma(ls.map(function (l) { return l.real.rb; })), rl = soma(ls.map(function (l) { return l.real.rl; })), mc = soma(ls.map(function (l) { return l.real.mc; }));
+    var rb = r4(soma(ls.map(function (l) { return l.real.rb; }))), rl = r4(soma(ls.map(function (l) { return l.real.rl; }))), mc = r4(soma(ls.map(function (l) { return l.real.mc; })));
     var mc_rl = (rl > 0 && rb > 0) ? mc / rl * 100 : null, leituras = {};
-    ['usado', 'canal', 'teto'].forEach(function (k) {
+    ['usado', 'canal', 'teto', 'meta'].forEach(function (k) {
       if (mc_rl === null || !ls.every(function (l) { return l.refs[k] !== undefined && l.refs[k] !== null; })) return;
       var plan = 0; ls.forEach(function (l) { plan += l.real.rl * l.refs[k]; }); plan = plan / rl;
       var pts = r4(mc_rl - plan);
@@ -382,16 +420,40 @@ var Motor = (function () {
     var fixo = +cen.custo_fixo_mes, o = { fixo: fixo, lucro: limpa(t.mc - fixo) };
     o.lucro_pct_rb = t.rb > 0 ? o.lucro / t.rb * 100 : null;
     o.receita_pe = (t.mc > 0 && t.rb > 0) ? r2(fixo / (t.mc / t.rb)) : null;
-    if (ls.length === 1) {
-      var l = ls[0], q = l.p.q, mcu = q ? l.real.mc / q : 0;
-      o.unidades_pe = mcu > 0 ? fixo / mcu : null;
-      if (cen.meta_lucro_pct !== null && cen.meta_lucro_pct !== undefined && cen.meta_lucro_pct !== '') {
-        var meta = +cen.meta_lucro_pct, div = 100 - l.p.v - meta;
-        o.meta_lucro_pct = meta;
-        o.preco_meta = (div > 0 && q) ? r2((l.p.custo + l.p.vrs + fixo / q) / (div / 100)) : null;
-      }
+    // no consolidado, o volume de todas as linhas na mesma unidade: a margem média por unidade
+    var q = soma(ls.map(function (l) { return l.p.q; })), mcu = q ? t.mc / q : 0;
+    o.unidades_pe = mcu > 0 ? fixo / mcu : null;
+    if (!vazio(cen.meta_lucro_pct)) {
+      // o custo fixo repartido por unidade vendida: cada linha deixa L% da própria receita, e a soma deixa L% do mês
+      var meta = +cen.meta_lucro_pct;
+      o.meta_lucro_pct = meta;
+      o.precos_meta = ls.map(function (l) { var div = 100 - l.p.v - meta; return (div > 0 && q) ? r2((l.p.custo + l.p.vrs + fixo / q) / (div / 100)) : null; });
+      if (ls.length === 1) o.preco_meta = o.precos_meta[0];
     }
     return o;
+  }
+  // Conflitos entre os níveis das linhas: margem acima do teto, e canal mais caro que a tabela de outro grupo.
+  function avisosNiveis(ls, fmt) {
+    var out = [];
+    ls.forEach(function (l) {
+      var por = {}; l.niveis.forEach(function (x) { por[x.chave] = x; });
+      ['canal', 'especifico'].forEach(function (k) {
+        var x = por[k];
+        if (por.teto && x && x.mc_plan !== null && x.mc_plan > por.teto.mc_plan + 0.005)
+          out.push(l.nome + ': a margem de ' + x.rotulo.toLowerCase() + ', ' + fmt.pc(x.mc_plan) + ', passa do teto de ' + fmt.pc(por.teto.mc_plan) + '. O teto é a maior margem; confira qual é o preço cheio.');
+      });
+    });
+    var tabs = ls.filter(function (l) { return l.tabela && l.niveis.some(function (x) { return x.chave === 'especifico'; }); });
+    ls.forEach(function (l) {
+      var c = l.niveis.filter(function (x) { return x.chave === 'canal'; })[0]; if (!c) return;
+      var mesmaRota = function (o) { return JSON.stringify(o.p.impostos) === JSON.stringify(l.p.impostos) ? 0 : 1; };
+      var esp = function (o) { return o.niveis.filter(function (x) { return x.chave === 'especifico'; })[0]; };
+      var acima = tabs.filter(function (o) { return o !== l && (o.grupo || o.nome) !== (l.grupo || l.nome) && esp(o).preco < c.preco && o.meta !== null && o.meta > c.mc_plan; }); // só com meta maior e tabela mais barata
+      if (!acima.length) return;
+      acima.sort(function (a, b) { return mesmaRota(a) - mesmaRota(b) || esp(a).preco - esp(b).preco; });
+      out.push(l.nome + ': o preço do canal, ' + fmt.rs(c.preco) + ', fica acima da tabela de ' + acima[0].nome + ', ' + fmt.rs(esp(acima[0]).preco) + ', que tem meta maior (' + fmt.pc(acima[0].meta) + '). Quem tem margem menor pagaria mais.');
+    });
+    return out;
   }
   function calcular(cen) {
     var ls = cen.linhas.map(function (l) { return linha(l, cen); });
@@ -408,24 +470,27 @@ var Motor = (function () {
       o.linhas.push({ niveis: l.niveis.map(function (v) { return [v.chave, s(v.preco, 2), s(v.mc_plan)]; }), negociado: s(l.negociado, 2),
         rb: s(d.rb), deducoes: s(d.deducoes), impostos: d.impostos.map(function (x) { return s(x[1]); }), comissao: s(d.comissao), frete: s(d.frete),
         outras: s(d.outras), rl: s(d.rl), cpv: s(d.cpv), mc: s(d.mc), mc_rl: s(d.mc_rl), mc_rb: s(d.mc_rb), nota: s(d.nota), leituras: lt,
-        cascata: l.cascata.map(function (c) { return [c.chave, s(c.rb), s(c.mc)]; }), faixa: l.faixa, minimo: s(l.minimo, 2),
+        cascata: l.cascata.map(function (c) { return [c.chave, s(c.rb), s(c.mc)]; }), faixa: l.faixa,
+        sem_desconto: l.sem_desconto ? [s(l.sem_desconto.rb), s(l.sem_desconto.mc)] : null, minimo: s(l.minimo, 2),
         mercado: l.mercado ? [s(l.mercado.preco, 2), s(l.mercado.mc_max)] : null });
     });
     var t = res.total, tl = {};
     Object.keys(t.leituras).forEach(function (k) { var v = t.leituras[k]; tl[k] = [s(v.plan), s(v.pts), s(v.rel), s(v.rs)]; });
     o.total = { rb: s(t.rb), rl: s(t.rl), mc: s(t.mc), mc_rl: s(t.mc_rl), leituras: tl, cascata: t.cascata.map(function (c) { return [c.chave, s(c.rb), s(c.mc)]; }) };
     var e = res.equilibrio;
-    o.equilibrio = e ? { lucro: s(e.lucro), receita_pe: s(e.receita_pe, 2), unidades_pe: s(e.unidades_pe, 2), preco_meta: s(e.preco_meta, 2) } : null;
+    o.equilibrio = e ? { lucro: s(e.lucro), receita_pe: s(e.receita_pe, 2), unidades_pe: s(e.unidades_pe, 2), preco_meta: s(e.preco_meta, 2),
+      precos_meta: e.precos_meta ? e.precos_meta.map(function (x) { return s(x, 2); }) : null } : null;
     return o;
   }
-  return { calcular: calcular, numeros: numeros, dre: dre, formar: formar, rnd: rnd, r2: r2, r4: r4, limpa: limpa };
+  return { calcular: calcular, cenarios: cenarios, avisosNiveis: avisosNiveis, numeros: numeros, dre: dre, formar: formar, rnd: rnd, r2: r2, r4: r4, limpa: limpa };
 })();
 /*FIM-MOTOR*/
 
 (function () {
   'use strict';
   var BRUTO = JSON.parse(document.getElementById('cenario').textContent);
-  var CENS = BRUTO.cenarios || [BRUTO];
+  // Cada cenário herda os campos de fora de `cenarios` (margens, hipóteses, linhas, custo fixo), como no Python.
+  var CENS = Motor.cenarios(BRUTO);
   var st = { ic: 0, foco: 0, cen: null, orig: null, modo: 'mc', editado: false };
   var uid = 0;
 
@@ -434,19 +499,23 @@ var Motor = (function () {
     if (x === null || x === undefined || isNaN(x)) return '';
     c = c === undefined ? 2 : c;
     var v = Motor.rnd(x, c), t = Math.abs(v).toFixed(c).split('.'), i = t[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return (v < 0 ? '\u2212' : '') + i + (c ? ',' + t[1] : '');
+    return (v < 0 ? '−' : '') + i + (c ? ',' + t[1] : '');
   }
-  function rs(x, c) { if (x === null || x === undefined) return ''; var t = br(Math.abs(x), c === undefined ? 2 : c); return (x < 0 && t.replace(/[0,.]/g, '') !== '' ? '−R$ ' : 'R$ ') + t; }
+  function rs(x, c) { if (x === null || x === undefined) return ''; var t = br(Math.abs(x), c === undefined ? 2 : c); return (x < 0 && t.replace(/[0,.]/g, '') !== '' ? '−R$\u00a0' : 'R$\u00a0') + t; }
   function pc(x, c) { return x === null || x === undefined ? 'n/d' : br(x, c === undefined ? 2 : c) + '%'; }
   function sn(x, t) { return (x > 0 && t.replace(/[0,.%p\s]/g, '') !== '' ? '+' : '') + t; }
-  function pp(x) { return sn(x, br(x) + ' p.p.'); }
-  function fim(t) { return /[.!?]$/.test(t) ? t : t + '.'; }
+  function pp(x) { return sn(x, br(x) + '\u00a0p.p.'); }
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // número e unidade não se separam na quebra de linha: "1,5 kg", "500 ml", "20 L"
+  function nb(t) { return String(t).replace(/(\d)\s+(kg|g|mg|ml|l|L|m|km|cm|mm|un|t|h|min)\b/g, '$1 $2'); }
   function ler(v) { v = String(v).trim().replace(/\s|R\$|%/g, ''); if (v === '') return null; if (v.indexOf(',') >= 0) v = v.replace(/\./g, '').replace(',', '.'); var x = parseFloat(v); return isNaN(x) ? null : x; }
   function paraCampo(x) { return x === null || x === undefined || x === '' ? '' : String(Motor.limpa(x)).replace('.', ','); }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function cls(f) { return { bom: 'fb', atencao: 'fa', critico: 'fc', neutro: 'fn' }[f] || 'fn'; }
   function faixaDe(m, mc) { if (mc !== null && mc <= 0) return 'critico'; if (m === null) return 'neutro'; return m > 70 ? 'bom' : m >= 50 ? 'atencao' : 'critico'; }
+  function lg(t) { return String(t).length > 7 ? ' longo' : ''; }
+  function plural(u) { return /s$/.test(u) ? u : u + 's'; }
+  var FMT = { rs: function (x) { return rs(x); }, pc: function (x) { return pc(x); } };
 
   // ---------------------------------------------------------------- tema
   var raiz = document.documentElement, temaSalvo = 'auto';
@@ -467,63 +536,60 @@ var Motor = (function () {
   }
   function tw(t, fs) { return String(t).length * fs * 0.56; }
 
-  // Barra de desempenho: a margem planejada é 100%; sólido é o que ficou, hachurado é o que foi cedido.
+  // Barra de desempenho: a meta é 100%; sólido é o que ficou, hachurado é o que falta para a meta.
   function desempenho(el, mantido, f) {
-    var W = larg(el), H = 78, x0 = 0, w = W, id = 'h' + (++uid);
+    var W = larg(el), H = 78, id = 'h' + (++uid);
     var m = mantido === null ? 0 : mantido, topo = Math.max(100, Math.min(m, 160));
-    var X = function (v) { return x0 + Math.max(0, Math.min(v, topo)) / topo * w; };
+    var X = function (v) { return Math.max(0, Math.min(v, topo)) / topo * W; };
     var c = cls(f), sc = { fb: 'sb', fa: 'sa', fc: 'sk', fn: 'sn' }[c];
-    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Margem mantida: ' + esc(pc(mantido, 1)) + ' da planejada">' + hach(id, c);
+    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Margem mantida: ' + esc(pc(mantido, 1)) + ' da meta">' + hach(id, c);
     o += '<rect x="0" y="30" width="' + W + '" height="20" class="trilha"/>';
     var xs = X(m);
     if (m > 0) o += '<rect x="0" y="30" width="' + xs.toFixed(1) + '" height="20" class="' + c + '"><title>Margem que ficou</title></rect>';
-    if (m < 100) o += '<rect x="' + Math.max(xs, 0).toFixed(1) + '" y="30" width="' + (X(100) - Math.max(xs, 0)).toFixed(1) + '" height="20" fill="url(#' + id + ')"><title>Margem cedida até a meta</title></rect>';
+    if (m < 100) o += '<rect x="' + Math.max(xs, 0).toFixed(1) + '" y="30" width="' + (X(100) - Math.max(xs, 0)).toFixed(1) + '" height="20" fill="url(#' + id + ')"><title>O que falta para a meta</title></rect>';
     [50, 70].forEach(function (v) { o += '<line x1="' + X(v) + '" y1="50" x2="' + X(v) + '" y2="56" class="st" stroke-width="1"/><text x="' + X(v) + '" y="68" text-anchor="middle" font-size="10.5" class="t">' + v + '%</text>'; });
     o += '<text x="0" y="68" font-size="10.5" class="t">0</text>';
     var xm = X(100);
     o += '<line x1="' + xm + '" y1="24" x2="' + xm + '" y2="56" class="si" stroke-width="2" stroke-dasharray="4 3"/>';
-    o += '<text x="' + Math.min(xm, W - 2) + '" y="68" text-anchor="end" font-size="10.5" font-weight="700" class="i">meta 100%</text>';
-    var lab = pc(mantido, 1) + ' mantido', lx = Math.min(Math.max(xs, tw(lab, 15) / 2), W - tw(lab, 15) / 2 - 2);
+    o += '<text x="' + Math.min(xm, W - 2) + '" y="68" text-anchor="end" font-size="10.5" font-weight="700" class="i">meta</text>';
+    var lab = pc(mantido, 0) + ' da meta', lx = Math.min(Math.max(xs, tw(lab, 15) / 2), W - tw(lab, 15) / 2 - 2);
     o += '<text x="' + lx + '" y="20" text-anchor="middle" font-size="15" font-weight="900" class="' + c + '">' + esc(lab) + '</text>';
     o += '<line x1="' + xs + '" y1="24" x2="' + xs + '" y2="30" class="' + sc + '" stroke-width="2"/>';
     el.innerHTML = o + '</svg>';
   }
 
-  // Composição: uma barra só, 100% = preço do nível; a margem cedida fica hachurada dentro da margem.
-  function composicao(el, partes, cedida, legEl) {
+  // Composição: uma barra só, 100% = preço do nível usado; a margem cedida no desconto fica hachurada.
+  function composicao(el, partes, cedida, legEl, fimRot, metaLi) {
     var W = larg(el), H = 96, tot = 0, id = 'h' + (++uid);
     partes.forEach(function (p) { tot += Math.max(0, p.v); });
-    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Composição do preço">' + hach(id, 'fb'), x = 0;
-    var metaX = null, realX = null;
+    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Composição do preço">' + hach(id, 'fb'), x = 0, realX = null;
     partes.forEach(function (p) {
       var wv = tot ? Math.max(0, p.v) / tot * W : 0;
       if (p.margem) {
         var sol = Math.max(0, p.v - cedida), ws = tot ? sol / tot * W : 0, wc = wv - ws;
         if (wc > 0 && wc < 6) { wc = 6; ws = Math.max(0, wv - 6); }
-        o += '<rect x="' + x.toFixed(1) + '" y="26" width="' + ws.toFixed(1) + '" height="36" class="' + p.c + '"><title>' + esc(p.n + ' realizada: ' + rs(sol, 4)) + '</title></rect>';
-        if (cedida > 0) o += '<rect x="' + (x + ws).toFixed(1) + '" y="26" width="' + wc.toFixed(1) + '" height="36" fill="url(#' + id + ')"><title>' + esc('Margem cedida no desconto: ' + rs(cedida, 4)) + '</title></rect>';
-        realX = x + ws; metaX = x + wv;
+        o += '<rect x="' + x.toFixed(1) + '" y="26" width="' + ws.toFixed(1) + '" height="36" class="' + p.c + '"><title>' + esc('Margem que ficou: ' + rs(sol, 4)) + '</title></rect>';
+        if (cedida > 0) o += '<rect x="' + (x + ws).toFixed(1) + '" y="26" width="' + wc.toFixed(1) + '" height="36" fill="url(#' + id + ')"><title>' + esc('Cedida no desconto: ' + rs(cedida, 4)) + '</title></rect>';
+        realX = x + ws;
       } else if (wv > 0) {
         o += '<rect x="' + x.toFixed(1) + '" y="26" width="' + wv.toFixed(1) + '" height="36" class="' + p.c + '"><title>' + esc(p.n + ': ' + rs(p.v, 4)) + '</title></rect>';
       }
       x += wv;
     });
-    if (metaX !== null) {
-      o += '<line x1="' + metaX + '" y1="18" x2="' + metaX + '" y2="70" class="si" stroke-width="2" stroke-dasharray="4 3"/>';
-      o += '<text x="' + Math.min(metaX, W) + '" y="13" text-anchor="end" font-size="11" font-weight="800" class="i">meta</text>';
-      if (cedida > 0 && realX !== null) {
-        var t = 'realizado', tx = Math.max(realX - 4, tw(t, 11));
-        if (metaX - realX < tw('meta', 11) + tw(t, 11) + 8) { o += '<text x="' + tx + '" y="84" text-anchor="end" font-size="11" font-weight="700" class="fb">' + t + '</text>'; }
-        else o += '<text x="' + tx + '" y="13" text-anchor="end" font-size="11" font-weight="700" class="fb">' + t + '</text>';
-        o += '<line x1="' + realX + '" y1="62" x2="' + realX + '" y2="74" class="sb" stroke-width="2"/>';
-      }
+    o += '<line x1="' + W + '" y1="18" x2="' + W + '" y2="70" class="si" stroke-width="2"/>';
+    o += '<text x="' + W + '" y="13" text-anchor="end" font-size="11" font-weight="800" class="i">' + esc(fimRot) + '</text>';
+    if (cedida > 0 && realX !== null) {
+      o += '<line x1="' + realX + '" y1="62" x2="' + realX + '" y2="74" class="sb" stroke-width="2"/>';
+      o += '<text x="' + Math.max(realX - 4, tw('negociado', 11)) + '" y="84" text-anchor="end" font-size="11" font-weight="700" class="fb">negociado</text>';
     }
-    o += '<text x="0" y="84" font-size="10.5" class="t">0</text><text x="' + W + '" y="96" text-anchor="end" font-size="10.5" class="t">100% = ' + esc(rs(tot)) + '</text>';
+    o += '<text x="' + W + '" y="96" text-anchor="end" font-size="10.5" class="t">100% = ' + esc(rs(tot)) + '</text>';
     el.innerHTML = o + '</svg>';
+    var fill = { f1: 'var(--c1)', f2: 'var(--c2)', f3: 'var(--c3)', f4: 'var(--c4)', f5: 'var(--c5)', fb: 'var(--bom)' };
     legEl.innerHTML = partes.filter(function (p) { return p.v > 0 || p.margem; }).map(function (p) {
-      var fill = { f1: 'var(--c1)', f2: 'var(--c2)', f3: 'var(--c3)', f4: 'var(--c4)', f5: 'var(--c5)', fb: 'var(--bom)', fa: 'var(--aten)', fc: 'var(--alr)', fn: 'var(--c3)' }[p.c];
-      return '<li><span class="ch" style="background:' + fill + '"></span><span>' + esc(p.n) + (p.hip ? '<span class="hip">hipótese</span>' : '') + '</span><span class="rv">' + esc(rs(p.v, 2)) + '</span><span class="pc">' + esc(pc(tot ? p.v / tot * 100 : 0, 1)) + '</span></li>';
-    }).join('') + (cedida > 0 ? '<li><span class="ch" style="background:repeating-linear-gradient(45deg,var(--bom) 0 3px,var(--hachbg) 3px 6px)"></span><span>dela, cedida no desconto</span><span class="rv">' + esc(rs(cedida, 2)) + '</span><span class="pc">' + esc(pc(tot ? cedida / tot * 100 : 0, 1)) + '</span></li>' : '');
+      var v = p.margem ? Math.max(0, p.v - cedida) : p.v;
+      return '<li><span class="ch" style="background:' + fill[p.c] + '"></span><span>' + esc(p.margem && cedida > 0 ? 'Margem que ficou' : p.n) + (p.hip ? '<span class="hip">hipótese</span>' : '') + '</span><span class="rv">' + esc(rs(v, 2)) + '</span><span class="pc">' + esc(pc(tot ? v / tot * 100 : 0, 1)) + '</span></li>';
+    }).join('') + (cedida > 0 ? '<li><span class="ch" style="background:repeating-linear-gradient(45deg,var(--bom) 0 3px,var(--hachbg) 3px 6px)"></span><span>Cedida no desconto</span><span class="rv">' + esc(rs(cedida, 2)) + '</span><span class="pc">' + esc(pc(tot ? cedida / tot * 100 : 0, 1)) + '</span></li>' : '') +
+      (metaLi ? '<li class="meta"><span class="ch mt"></span><span>' + esc(metaLi.n) + '</span><span class="rv">' + esc(rs(metaLi.v, 2)) + '</span><span class="pc">' + esc(pc(metaLi.pc, 1)) + '</span></li>' : '');
   }
 
   // Cascata horizontal: cada linha é um degrau; total em preto, redução na cor que julga.
@@ -560,7 +626,7 @@ var Motor = (function () {
     el.innerHTML = o + '</svg>';
   }
 
-  // Desvio: uma régua por linha, barra a partir do zero; o valor grande é em pontos.
+  // Desvio: uma régua por leitura, barra a partir do zero; o valor grande é em pontos.
   function desvios(el, rows) {
     var W = larg(el), estreito = W < 560, rh = estreito ? 76 : 64, H = rows.length * rh + 6, mx = 0.5;
     rows.forEach(function (r) { mx = Math.max(mx, Math.abs(r.pts)); });
@@ -572,7 +638,7 @@ var Motor = (function () {
       o += '<text x="0" y="' + (y + 14) + '" font-size="12.5" font-weight="800" class="i">' + esc(r.n) + '</text>';
       o += '<text x="0" y="' + (y + 29) + '" font-size="11" class="t">' + esc(r.sub) + '</text>';
       o += '<text x="' + W + '" y="' + (y + 16) + '" text-anchor="end" font-size="17" font-weight="900" class="' + c + '">' + esc(pp(r.pts)) + '</text>';
-      o += '<text x="' + W + '" y="' + (y + (estreito ? 66 : 30)) + '" text-anchor="end" font-size="11" class="t">' + esc((r.rel === null ? '' : sn(r.rel, br(r.rel)) + '% relativo · ') + sn(r.rs, rs(r.rs, 2))) + '</text>';
+      o += '<text x="' + W + '" y="' + (y + (estreito ? 66 : 30)) + '" text-anchor="end" font-size="11" class="t">' + esc((r.rel === null ? '' : sn(r.rel, br(r.rel)) + '% relativo · ') + sn(r.rs, rs(r.rs, 2)) + ' na receita realizada') + '</text>';
       o += '<rect x="0" y="' + (y + 38) + '" width="' + W + '" height="12" class="trilha"/>';
       var a = Math.min(X(0), X(r.pts)), b = Math.max(X(0), X(r.pts));
       o += '<rect x="' + a.toFixed(1) + '" y="' + (y + 38) + '" width="' + Math.max(b - a, 1.5).toFixed(1) + '" height="12" class="' + c + '"/>';
@@ -581,29 +647,32 @@ var Motor = (function () {
     el.innerHTML = o + '</svg>';
   }
 
-  // Planejada × realizada por grupo: a barra fina cinza é a meta, a grossa colorida é o que ficou.
+  // Meta × realizada por grupo: o traço preto é a meta; a barra é o que ficou, na cor da faixa.
   function grupos(el, ls, foco) {
     var W = larg(el), estreito = W < 560, lw = estreito ? 0 : 150, rh = estreito ? 50 : 40, H = ls.length * rh + 22, vals = [0];
-    ls.forEach(function (l) { vals.push(l.usado.mc_plan || 0, l.real.mc_rl || 0); });
+    ls.forEach(function (l) { vals.push(l.meta || 0, l.real.mc_rl || 0); });
     var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals) * 1.05, vw = 60, w = W - lw - vw;
     var X = function (v) { return lw + (v - mn) / ((mx - mn) || 1) * w; };
-    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Margem planejada e realizada por grupo">';
+    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Meta e margem realizada por grupo">';
     [mn < 0 ? mn : 0, (mn + mx) / 2, mx].forEach(function (v) { o += '<line x1="' + X(v) + '" y1="0" x2="' + X(v) + '" y2="' + (H - 18) + '" class="gr" stroke-width="1"/><text x="' + X(v) + '" y="' + (H - 4) + '" text-anchor="middle" font-size="10.5" class="t">' + esc(br(v, 0)) + '%</text>'; });
     if (mn < 0) o += '<line x1="' + X(0) + '" y1="0" x2="' + X(0) + '" y2="' + (H - 18) + '" class="si" stroke-width="1"/>';
     ls.forEach(function (l, i) {
-      var y = i * rh + (estreito ? 16 : 6), pl = l.usado.mc_plan || 0, re = l.real.mc_rl === null ? 0 : l.real.mc_rl, c = cls(l.faixa), on = foco === i;
-      var nome = l.nome;
-      if (estreito) o += '<text x="0" y="' + (y - 3) + '" font-size="11.5" font-weight="' + (on ? 900 : 600) + '" class="i">' + esc(nome) + '</text>';
-      else o += '<text x="' + (lw - 10) + '" y="' + (y + 15) + '" text-anchor="end" font-size="12.5" font-weight="' + (on ? 900 : 600) + '" class="i">' + esc(nome) + '</text>';
-      o += '<rect x="' + Math.min(X(0), X(pl)) + '" y="' + y + '" width="' + Math.abs(X(pl) - X(0)) + '" height="6" class="f4"><title>' + esc('Planejada: ' + pc(pl)) + '</title></rect>';
-      o += '<rect x="' + Math.min(X(0), X(re)) + '" y="' + (y + 8) + '" width="' + Math.max(Math.abs(X(re) - X(0)), 1.5) + '" height="14" class="' + c + '"><title>' + esc('Realizada: ' + pc(l.real.mc_rl)) + '</title></rect>';
-      o += '<line x1="' + X(pl) + '" y1="' + (y - 2) + '" x2="' + X(pl) + '" y2="' + (y + 24) + '" class="si" stroke-width="2"/>';
-      o += '<text x="' + (Math.max(X(pl), X(re)) + 6) + '" y="' + (y + 19) + '" font-size="12" font-weight="800" class="' + c + '">' + esc(pc(l.real.mc_rl, 1)) + '</text>';
+      var y = i * rh + (estreito ? 16 : 6), re = l.real.mc_rl === null ? 0 : l.real.mc_rl, c = cls(l.faixa), on = foco === i;
+      if (estreito) o += '<text x="0" y="' + (y - 3) + '" font-size="11.5" font-weight="' + (on ? 900 : 600) + '" class="i">' + esc(l.nome) + '</text>';
+      else o += '<text x="' + (lw - 10) + '" y="' + (y + 15) + '" text-anchor="end" font-size="12.5" font-weight="' + (on ? 900 : 600) + '" class="i">' + esc(l.nome) + '</text>';
+      o += '<rect x="' + Math.min(X(0), X(re)) + '" y="' + (y + 4) + '" width="' + Math.max(Math.abs(X(re) - X(0)), 1.5) + '" height="16" class="' + c + '"><title>' + esc('Realizada: ' + pc(l.real.mc_rl)) + '</title></rect>';
+      var fimX = X(re);
+      if (l.meta !== null) {
+        o += '<line x1="' + X(l.meta) + '" y1="' + y + '" x2="' + X(l.meta) + '" y2="' + (y + 24) + '" class="si" stroke-width="2.5"><title>' + esc('Meta: ' + pc(l.meta)) + '</title></line>';
+        // o valor fica junto da barra; só pula o traço da meta se encostar nele
+        if (X(l.meta) > fimX - 2 && X(l.meta) < fimX + 48) fimX = X(l.meta);
+      }
+      o += '<text x="' + (fimX + 6) + '" y="' + (y + 17) + '" font-size="12" font-weight="800" class="' + (c === 'fn' ? 'i' : c) + '">' + esc(pc(l.real.mc_rl, 1)) + '</text>';
     });
     el.innerHTML = o + '</svg>';
   }
 
-  // Dispersão: cada ponto é uma linha de venda; na diagonal a margem realizada é a planejada.
+  // Dispersão: cada ponto é uma linha de venda; na diagonal, a venda saiu no preço do nível, sem desconto.
   function dispersao(el, ls, foco) {
     var W = larg(el), H = Math.round(Math.min(Math.max(W * 0.62, 260), 380)), e = 46, d = 16, t = 14, b = 38;
     var xs = ls.map(function (l) { return l.usado.mc_plan || 0; }), ys = ls.map(function (l) { return l.real.mc_rl || 0; });
@@ -612,7 +681,7 @@ var Motor = (function () {
     if (lo >= 0 && mn < 0) mn = 0;
     var X = function (v) { return e + (v - mn) / (mx - mn) * (W - e - d); }, Y = function (v) { return H - b - (v - mn) / (mx - mn) * (H - b - t); };
     var rbMax = Math.max.apply(null, ls.map(function (l) { return l.real.rb; })) || 1;
-    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Margem planejada contra realizada por linha">';
+    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Margem no nível contra a realizada, por linha">';
     [mn, (mn + mx) / 2, mx].forEach(function (v) {
       o += '<line x1="' + e + '" y1="' + Y(v) + '" x2="' + (W - d) + '" y2="' + Y(v) + '" class="gr"/><text x="' + (e - 6) + '" y="' + (Y(v) + 4) + '" text-anchor="end" font-size="10.5" class="t">' + esc(br(v, 0)) + '%</text>';
       o += '<text x="' + X(v) + '" y="' + (H - b + 16) + '" text-anchor="middle" font-size="10.5" class="t">' + esc(br(v, 0)) + '%</text>';
@@ -620,16 +689,52 @@ var Motor = (function () {
     if (mn < 0) o += '<line x1="' + e + '" y1="' + Y(0) + '" x2="' + (W - d) + '" y2="' + Y(0) + '" class="sc" stroke-dasharray="5 3" stroke-width="1.2"/>';
     o += '<line x1="' + X(mn) + '" y1="' + Y(mn) + '" x2="' + X(mx) + '" y2="' + Y(mx) + '" class="si" stroke-width="1.2" stroke-dasharray="6 4" opacity=".7"/>';
     o += '<text x="' + (X(mx) - 4) + '" y="' + (Y(mx) + 14) + '" text-anchor="end" font-size="10.5" class="t">sem desconto</text>';
-    o += '<text x="' + (W - d) + '" y="' + (H - 4) + '" text-anchor="end" font-size="10.5" class="t">planejada (% da receita líquida)</text>';
+    o += '<text x="' + (W - d) + '" y="' + (H - 4) + '" text-anchor="end" font-size="10.5" class="t">no preço do nível (% da receita líquida gerencial)</text>';
     o += '<text x="' + e + '" y="' + (t - 2) + '" font-size="10.5" class="t">realizada</text>';
-    var usados = [];
-    ls.map(function (l, i) { return { l: l, i: i }; }).sort(function (a, c) { return c.l.real.rb - a.l.real.rb; }).forEach(function (q) {
-      var l = q.l, cx = X(l.usado.mc_plan || 0), cy = Y(l.real.mc_rl || 0), r = 5 + Math.sqrt(l.real.rb / rbMax) * 10;
-      o += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r.toFixed(1) + '" class="' + cls(l.faixa) + '" fill-opacity=".9" stroke="var(--papel)" stroke-width="' + (q.i === foco ? 3 : 1.5) + '"><title>' + esc(l.nome + ': planejada ' + pc(l.usado.mc_plan) + ', realizada ' + pc(l.real.mc_rl) + ', receita ' + rs(l.real.rb)) + '</title></circle>';
-      var tx = cx + r + 5, anchor = 'start', ty = cy + 4;
-      if (tx + tw(l.nome, 11.5) > W) { tx = cx - r - 5; anchor = 'end'; }
-      usados.forEach(function (u) { if (Math.abs(u - ty) < 13) ty += 14; }); usados.push(ty);
-      o += '<text x="' + tx.toFixed(1) + '" y="' + ty.toFixed(1) + '" text-anchor="' + anchor + '" font-size="11.5" font-weight="' + (q.i === foco ? 800 : 600) + '" class="i">' + esc(l.nome) + '</text>';
+    // pontos que caem no mesmo lugar viram um só, com os nomes juntos
+    var pts = [];
+    ls.forEach(function (l, i) {
+      var cx = X(l.usado.mc_plan || 0), cy = Y(l.real.mc_rl || 0), r = 5 + Math.sqrt(l.real.rb / rbMax) * 10;
+      var g = pts.filter(function (q) { return Math.abs(q.cx - cx) < 8 && Math.abs(q.cy - cy) < 8; })[0];
+      if (g) { g.nomes.push(l.nome); g.r = Math.max(g.r, r); g.on = g.on || i === foco; g.tt += '\n' + l.nome + ': realizada ' + pc(l.real.mc_rl); }
+      else pts.push({ cx: cx, cy: cy, r: r, l: l, nomes: [l.nome], on: i === foco, tt: l.nome + ': no nível ' + pc(l.usado.mc_plan) + ', realizada ' + pc(l.real.mc_rl) + ', receita ' + rs(l.real.rb) });
+    });
+    // os pontos também são obstáculos para os nomes
+    var usados = pts.map(function (q) { return { y: q.cy + 4, x1: q.cx - q.r, x2: q.cx + q.r, h: q.r + 6 }; });
+    pts.sort(function (a, c) { return c.r - a.r; }).forEach(function (q) {
+      o += '<circle cx="' + q.cx.toFixed(1) + '" cy="' + q.cy.toFixed(1) + '" r="' + q.r.toFixed(1) + '" class="' + cls(q.l.faixa) + '" fill-opacity=".9" stroke="var(--papel)" stroke-width="' + (q.on ? 3 : 1.5) + '"><title>' + esc(q.tt) + '</title></circle>';
+      var nome = q.nomes.join(' · '), lw = tw(nome, 11.5), tx = q.cx + q.r + 5, anchor = 'start', ty = q.cy + 4;
+      if (tx + lw > W) {
+        if (q.cx - q.r - 5 - lw >= 0) { tx = q.cx - q.r - 5; anchor = 'end'; }
+        else { tx = Math.max(0, Math.min(q.cx - lw / 2, W - lw)); ty = q.cy + q.r + 14; } // não cabe ao lado: vai embaixo do ponto
+      }
+      var x1 = anchor === 'start' ? tx : tx - tw(nome, 11.5), x2 = x1 + tw(nome, 11.5);
+      for (var k = 0; k < 8 && usados.some(function (u) { return Math.abs(u.y - ty) < (u.h || 13) && x1 < u.x2 && x2 > u.x1; }); k++) ty += 14;
+      usados.push({ y: ty, x1: x1, x2: x2 });
+      o += '<text x="' + tx.toFixed(1) + '" y="' + ty.toFixed(1) + '" text-anchor="' + anchor + '" font-size="11.5" font-weight="' + (q.on ? 800 : 600) + '" class="i">' + esc(nome) + '</text>';
+    });
+    el.innerHTML = o + '</svg>';
+  }
+
+  // Barras em pares: duas medidas lado a lado para cada item (hoje × necessário, com × sem desconto).
+  function pares(el, itens, rotA, rotB, fmt) {
+    var W = larg(el), longo = itens.some(function (x) { return tw(x.n, 12.5) > 160; }), estreito = W < 560 || longo, lw = estreito ? 0 : 170, rh = estreito ? 56 : 48, H = itens.length * rh + 22, mx = 0;
+    itens.forEach(function (x) { mx = Math.max(mx, Math.abs(x.a || 0), Math.abs(x.b || 0)); });
+    mx = mx * 1.15 || 1;
+    var w = W - lw - 80, X = function (v) { return lw + Math.max(0, v) / mx * w; };
+    var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(rotA + ' e ' + rotB) + '">';
+    o += '<rect x="' + lw + '" y="' + (H - 12) + '" width="10" height="8" class="f4"/><text x="' + (lw + 14) + '" y="' + (H - 4) + '" font-size="10.5" class="t">' + esc(rotA) + '</text>';
+    var xb = lw + 24 + tw(rotA, 10.5);
+    o += '<rect x="' + xb + '" y="' + (H - 12) + '" width="10" height="8" class="f1"/><text x="' + (xb + 14) + '" y="' + (H - 4) + '" font-size="10.5" class="t">' + esc(rotB) + '</text>';
+    itens.forEach(function (x, i) {
+      var y = i * rh + (estreito ? 16 : 4);
+      if (estreito) o += '<text x="0" y="' + (y - 3) + '" font-size="11.5" font-weight="700" class="i">' + esc(x.n) + '</text>';
+      else o += '<text x="' + (lw - 10) + '" y="' + (y + 18) + '" text-anchor="end" font-size="12.5" font-weight="700" class="i">' + esc(x.n) + '</text>';
+      [[x.a, 'f4', 0, 't'], [x.b, 'f1', 16, x.cb || 'i']].forEach(function (q) {
+        if (q[0] === null || q[0] === undefined) return;
+        o += '<rect x="' + lw + '" y="' + (y + q[2]) + '" width="' + Math.max(X(q[0]) - lw, 1.5).toFixed(1) + '" height="13" class="' + q[1] + '"/>';
+        o += '<text x="' + (X(q[0]) + 6).toFixed(1) + '" y="' + (y + q[2] + 11) + '" font-size="11.5" font-weight="800" class="' + q[3] + '">' + esc(fmt(q[0])) + '</text>';
+      });
     });
     el.innerHTML = o + '</svg>';
   }
@@ -653,69 +758,82 @@ var Motor = (function () {
 
   // ---------------------------------------------------------------- blocos
   var N = 0;
-  function bloco(pergunta, manchete, corpo, ajuda, escopo, larga) {
+  function bloco(pergunta, manchete, corpo, ajuda, larga) {
     N++;
     return '<section class="b' + (larga ? ' larga' : '') + '"><div class="cab"><span class="num">' + (N < 10 ? '0' : '') + N + '</span><div><p class="perg">' + esc(pergunta) +
-      (ajuda ? '<span class="aj" title="' + esc(ajuda) + '">?</span>' : '') + '</p><h2>' + esc(manchete) + '</h2></div></div>' + corpo +
-      '<p class="fonte">' + esc(fonte(escopo)) + '</p></section>';
+      (ajuda ? '<span class="aj" role="img" aria-label="Ajuda" title="' + esc(ajuda) + '"></span>' : '') + '</p><h2>' + esc(manchete) + '</h2></div></div>' + corpo + '</section>';
   }
-  function fonte(escopo) {
+  // A fonte vai uma vez só, no rodapé da página.
+  function fonte() {
     var c = st.cen, hip = [];
     (c.hipoteses || []).forEach(function (h) { hip.push(h); });
     c.linhas.forEach(function (l) { (l.hipoteses || []).forEach(function (h) { if (hip.indexOf(h) < 0) hip.push(h); }); });
-    return 'Fonte: números da conversa' + (st.editado ? ', com as suas edições' : '') + ' · ' + escopo + ' · preço em 2 casas, leitura em 4' +
-      (hip.length ? ' · hipótese: ' + hip.join(', ') : '') + (c.data ? ' · ' + c.data : '');
+    return 'Fonte: números da conversa' + (st.editado ? ', com as suas edições' : '') + (CENS.length > 1 ? ' · cenário: ' + (c.nome_cenario || st.ic + 1) : '') +
+      ' · preço em 2 casas, leitura em 4' + (hip.length ? ' · hipótese: ' + hip.join(', ') : '') + (c.data ? ' · ' + c.data : '');
   }
-
-  function nomeLeitura(k, l) {
-    if (k === 'usado') return 'Contra o nível usado';
-    if (k === 'canal') return 'Contra o canal';
-    return 'Contra o ' + (l ? l.niveis[0].rotulo.toLowerCase() : 'teto');
-  }
+  function temDesconto(ls) { return ls.some(function (l) { return Math.abs(l.desconto_rs) > 0.0001 || l.cascata.some(function (c) { return c.chave === 'custo'; }); }); }
 
   function render() {
     var c = st.cen, res = Motor.calcular(c), multi = c.linhas.length > 1, un = c.unidade || 'unidade';
+    var rotD = (c.rotulos && c.rotulos.desconto) || 'Desconto do vendedor';
     N = 0;
-    document.getElementById('avisos').innerHTML = res.linhas.filter(function (l) { return l.erro || (l.avisos && l.avisos.length); }).map(function (l) {
-      return '<div class="aviso"><b>' + esc(l.nome) + ':</b> ' + esc(l.erro || l.avisos.join(' ')) + '</div>';
-    }).join('');
     var ok = res.ok, B = [], depois = [];
+    var avisos = res.linhas.filter(function (l) { return l.erro || (l.avisos && l.avisos.length); }).map(function (l) {
+      return '<div class="aviso"><b>' + esc(l.nome) + ':</b> ' + esc(l.erro || l.avisos.join(' ')) + '</div>';
+    });
+    if (ok.length > 1) Motor.avisosNiveis(ok, FMT).forEach(function (a) { avisos.push('<div class="aviso at">' + esc(a) + '</div>'); });
+    document.getElementById('avisos').innerHTML = avisos.join('');
+    document.getElementById('fonte').textContent = fonte();
+    document.querySelectorAll('.apx-cen').forEach(function (d) { d.hidden = +d.dataset.cen !== st.ic; });
     if (!ok.length) { document.getElementById('blocos').innerHTML = ''; return; }
     var focoTotal = multi && st.foco === 'total';
     var L = focoTotal ? null : (res.linhas[st.foco] && !res.linhas[st.foco].erro ? res.linhas[st.foco] : ok[0]);
-    var t = res.total;
+    var t = res.total, esc0 = focoTotal ? ok : [L];
 
-    // 01 desempenho e cartões
-    var plan, real, mcPlanRs, mcRealRs, dv, f, mantido, rbReal, escopo;
+    // 01 desempenho contra a meta
+    var meta, real, mcMetaRs, mcRealRs, dv, f, mantido, precoMeta = null;
     if (focoTotal) {
-      var lu = t.leituras.usado; plan = lu ? lu.plan : null; real = t.mc_rl; mcRealRs = t.mc; rbReal = t.rb;
-      mcPlanRs = 0; ok.forEach(function (l) { mcPlanRs += l.usado.dre.mc; });
-      dv = lu ? [lu.pts, lu.rel, lu.rs] : null; mantido = plan > 0 && real !== null ? real / plan * 100 : null; f = faixaDe(mantido, t.mc);
-      escopo = 'consolidado das ' + ok.length + ' linhas';
+      var lm = t.leituras.meta; meta = lm ? lm.plan : null; real = t.mc_rl; mcRealRs = t.mc;
+      mcMetaRs = null; if (lm) { mcMetaRs = 0; ok.forEach(function (l) { mcMetaRs += l.meta_nivel ? l.meta_nivel.dre.mc : 0; }); }
+      dv = lm ? [lm.pts, lm.rel, lm.rs] : null; mantido = meta > 0 && real !== null ? real / meta * 100 : null; f = faixaDe(mantido, t.mc);
     } else {
-      plan = L.usado.mc_plan; real = L.real.mc_rl; mcRealRs = L.real.mc; mcPlanRs = L.usado.dre.mc; rbReal = L.real.rb;
-      dv = L.leituras.usado; mantido = L.mantido; f = L.faixa; escopo = L.nome + (L.p.q !== 1 ? ', ' + br(L.p.q, 0) + ' ' + (/s$/.test(un) ? un : un + 's') : ', por ' + un);
+      meta = L.meta; real = L.real.mc_rl; mcRealRs = L.real.mc; mcMetaRs = L.meta_nivel ? L.meta_nivel.dre.mc : null;
+      precoMeta = L.meta_nivel ? L.meta_nivel.preco : null;
+      dv = L.leituras.meta || null; mantido = L.mantido; f = L.faixa;
     }
-    var m1;
-    if (real === null) m1 = 'Sem receita líquida: a margem em % não existe.';
+    var m1, semMeta = meta === null;
+    if (real === null) m1 = 'Sem receita líquida gerencial: a margem em % não existe.';
     else if (mcRealRs < 0) m1 = 'Cada venda tira ' + rs(-mcRealRs) + ' do caixa: margem de ' + pc(real, 1) + '.';
-    else if (mantido === null) m1 = 'Margem de ' + pc(real, 1) + ' da receita líquida.';
-    else if (mantido >= 99.95) m1 = 'Ficou a margem inteira: ' + pc(real, 1) + ' contra ' + pc(plan, 1) + ' planejados.';
-    else m1 = 'Ficaram ' + br(mantido, 0) + '% da margem: ' + pc(real, 1) + ' contra ' + pc(plan, 1) + ' planejados.';
-    var cards = '<div class="cards"><div class="card"><div class="r">Margem planejada</div><div class="v">' + esc(pc(plan, 1)) + '</div><div class="s">' + esc(rs(mcPlanRs)) + ' · no nível usado</div></div>' +
-      '<div class="card"><div class="r">Margem realizada</div><div class="v ' + f + '">' + esc(pc(real, 1)) + '</div><div class="s">' + esc(rs(mcRealRs)) + ' · ' + esc(pc(focoTotal ? t.mc_rb : L.real.mc_rb, 1)) + ' da receita bruta</div></div>' +
-      '<div class="card"><div class="r">Desvio</div><div class="v ' + (dv && dv[0] < -0.005 ? 'critico' : 'bom') + '">' + esc(dv ? pp(dv[0]) : 'n/d') + '</div><div class="s">' + esc(dv ? (dv[1] === null ? '' : sn(dv[1], br(dv[1])) + '% relativo · ') + sn(dv[2], rs(dv[2])) : '') + '</div></div></div>';
-    B.push(bloco(focoTotal ? 'Quanto da margem planejada as vendas mantiveram?' : 'Quanto da margem planejada esta venda manteve?', m1,
-      '<div class="g" id="g-des"></div>' + cards, 'Margem de contribuição sobre a receita líquida: o preço menos impostos, comissão e frete. 100% é a margem do nível usado; acima de 70% vai bem, de 50 a 70 pede atenção.', escopo, true));
-    depois.push(function () { desempenho(document.getElementById('g-des'), mantido, f); });
+    else if (semMeta && res.equilibrio) m1 = 'Margem de ' + pc(real, 1) + ', sem margem desejada. Depois do custo fixo, ' + (res.equilibrio.lucro >= 0 ? 'sobram ' + rs(res.equilibrio.lucro, 0) + (res.equilibrio.lucro_pct_rb !== null ? ', ' + pc(res.equilibrio.lucro_pct_rb, 1) + ' da receita.' : '.') : 'faltam ' + rs(-res.equilibrio.lucro, 0) + '.');
+    else if (semMeta) m1 = 'Margem de ' + pc(real, 1) + '. Sem margem desejada, não há meta para comparar.';
+    else if (mantido >= 100.05) m1 = 'Acima da meta: ' + pc(real, 1) + ' contra ' + pc(meta, 1) + ' desejados.';
+    else if (mantido >= 99.95) m1 = 'Na meta: ' + pc(real, 1) + ' contra ' + pc(meta, 1) + ' desejados.';
+    else m1 = 'Ficaram ' + br(mantido, 0) + '% da meta: ' + pc(real, 1) + ' contra ' + pc(meta, 1) + ' desejados.';
+    var fc = semMeta && f === 'neutro' ? '' : f;
+    var cards = '<div class="cards"><div class="card"><div class="r">Margem desejada</div><div class="v">' + esc(semMeta ? 'sem meta' : pc(meta, 1)) + '</div><div class="s">' +
+        esc(semMeta ? 'diga a margem que você quer' : (precoMeta !== null ? rs(precoMeta) + ' por ' + un + ' · ' : '') + rs(mcMetaRs) + ' de margem') + '</div></div>' +
+      '<div class="card"><div class="r">Margem realizada</div><div class="v ' + fc + lg(pc(real, 1)) + '">' + esc(pc(real, 1)) + '</div><div class="s">' + esc(rs(mcRealRs)) + ' · ' + esc(pc(focoTotal ? t.mc_rb : L.real.mc_rb, 1)) + ' da receita bruta</div></div>' +
+      (semMeta ? '<div class="card"><div class="r">' + (focoTotal ? 'Margem em reais' : 'Preço mínimo') + '</div><div class="v' + lg(focoTotal ? rs(t.mc) : rs(L.minimo)) + '">' + esc(focoTotal ? rs(t.mc) : rs(L.minimo)) + '</div><div class="s">' + esc(focoTotal ? 'margem do período, em reais' : 'margem zero, por ' + un) + '</div></div>'
+        : '<div class="card"><div class="r">Contra a meta</div><div class="v ' + (dv && dv[0] < -0.005 ? 'critico' : 'bom') + lg(dv ? pp(dv[0]) : '') + '">' + esc(dv ? pp(dv[0]) : 'n/d') + '</div><div class="s">' + esc(dv ? sn(dv[2], rs(dv[2])) + ' na receita realizada' : '') + '</div></div>') + '</div>';
+    B.push(bloco(focoTotal ? 'Quanto da margem desejada as vendas entregam?' : 'Quanto da margem desejada esta venda entrega?', m1,
+      (semMeta ? '' : '<div class="g" id="g-des"></div>') + cards,
+      'Margem de contribuição sobre a receita líquida gerencial: o preço menos impostos, comissão e frete. 100% é a margem que você quer (a do canal, ou o teto); acima de 70% vai bem, de 50 a 70 pede atenção. Preço de hoje e preço fechado não viram meta.', true));
+    if (!semMeta) depois.push(function () { desempenho(document.getElementById('g-des'), mantido, f); });
 
-    // 02 composição do preço
-    var comp = compor(focoTotal ? ok : [L]);
+    // 02 composição do preço do nível usado
+    var comp = compor(esc0);
     var m2 = 'O custo leva ' + br(comp.pc.custo, 0) + '% do preço; impostos e despesas, ' + br(comp.pc.desp, 0) + '%; a margem, ' + br(comp.pc.mc, 0) + '%.';
     if (comp.cedida > 0.00005) m2 = 'O desconto cedeu ' + rs(comp.cedida) + ' dos ' + rs(comp.mcPlan) + ' de margem do preço.';
-    B.push(bloco('Para onde vai o preço do nível?', m2, '<div class="g" id="g-comp"></div><ul class="leg" id="leg-comp"></ul>',
-      'A barra inteira é o preço do nível usado. O hachurado é a margem que o desconto tirou; o resto do desconto deixou de ir para imposto e comissão.', escopo, true));
-    depois.push(function () { composicao(document.getElementById('g-comp'), comp.partes, comp.cedida, document.getElementById('leg-comp')); });
+    var metaLi = null;
+    if (!focoTotal && L.meta_nivel && L.meta_nivel !== L.usado) {
+      metaLi = { n: 'Margem desejada, no preço de ' + rs(L.meta_nivel.preco), v: L.meta_nivel.dre.mc, pc: L.meta_nivel.dre.mc / L.meta_nivel.dre.rb * 100 };
+      m2 += ' Na meta de ' + pc(L.meta, 0) + ', o preço seria ' + rs(L.meta_nivel.preco) + '.';
+    } else if (focoTotal && comp.metaMc !== null && comp.metaRb) {
+      metaLi = { n: 'Margem desejada, nos preços da meta', v: comp.metaMc, pc: comp.metaMc / comp.metaRb * 100 };
+    }
+    B.push(bloco('Para onde vai o preço?', m2, '<div class="g" id="g-comp"></div><ul class="leg" id="leg-comp"></ul>',
+      'A barra inteira é o preço do nível usado. O hachurado é a margem que o desconto tirou; o resto do desconto deixou de ir para imposto e comissão. A última linha da legenda é a margem que a meta pede, no preço da meta.', true));
+    depois.push(function () { composicao(document.getElementById('g-comp'), comp.partes, comp.cedida, document.getElementById('leg-comp'), focoTotal ? 'preço do nível' : L.usado.rotulo, metaLi); });
 
     // 03 cascata do preço (por unidade)
     if (L) {
@@ -727,116 +845,165 @@ var Motor = (function () {
       passos.push({ n: 'Impostos e comissão', v: gross, t: 'delta', c: 'f3' });
       passos.push({ n: L.usado.rotulo, v: P, t: 'total' });
       if (Math.abs(L.desconto_rs) > 0.0001) { passos.push({ n: L.desconto_rs > 0 ? 'Desconto' : 'Acréscimo', v: -L.desconto_rs, t: 'delta', c: L.desconto_rs > 0 ? 'fc' : 'fb' }); passos.push({ n: 'Negociado', v: L.negociado, t: 'total', c: cls(L.faixa) }); }
-      var m3 = 'Custo de ' + rs(p.custo) + ' vira ' + rs(P) + ' no nível usado' + (Math.abs(L.desconto_rs) > 0.0001 ? '; negociado a ' + rs(L.negociado) + '.' : '.');
+      var m3 = 'Custo de ' + rs(p.custo) + ' vira ' + rs(P) + ' em ' + L.usado.rotulo + (Math.abs(L.desconto_rs) > 0.0001 ? '; negociado a ' + rs(L.negociado) + '.' : '.');
       var ref = null;
       if (L.mercado) { ref = { n: 'mercado', v: L.mercado.preco }; if (L.mercado.preco < L.negociado) m3 = 'O concorrente cobra ' + rs(L.mercado.preco) + ', abaixo dos ' + rs(L.negociado) + ' negociados.'; }
-      B.push(bloco('Como o preço se forma, por ' + un + '?', m3, '<div class="g" id="g-preco"></div>' + (L.mercado ? '<p class="fonte">' + esc(L.mercado.mc_max === null ? 'No preço de mercado a venda não cobre custo e despesas.' : 'No preço de mercado cabe no máximo ' + pc(L.mercado.mc_max) + ' de margem.') + '</p>' : ''),
-        'Preço base = custo ÷ (1 − margem do nível). Preço = (preço base + frete em R$) ÷ (1 − impostos, comissão e frete em %).', L.nome + ', por ' + un, false));
+      B.push(bloco('Como o preço se forma, por ' + un + '?', m3, '<div class="g" id="g-preco"></div>' + (L.mercado ? '<p class="nota">' + esc(L.mercado.mc_max === null ? 'No preço de mercado a venda não cobre custo e despesas.' : 'No preço de mercado cabe no máximo ' + pc(L.mercado.mc_max) + ' de margem.') + '</p>' : ''),
+        'Preço base = custo ÷ (1 − margem do nível). Preço = (preço base + frete em R$) ÷ (1 − impostos, comissão e frete em %).', false));
       depois.push(function () { cascata(document.getElementById('g-preco'), passos, ref); });
     }
 
-    // 04 cascata dos níveis
-    var casc = focoTotal ? t.cascata : L.cascata, rotN = rotulosNivel(focoTotal ? ok : [L]);
+    // 04 cascata dos níveis: "ficou na mesa" é a margem da mesma venda no preço de cada nível
+    var casc = focoTotal ? t.cascata : L.cascata, rotN = rotulosNivel(esc0, rotD);
     if (casc.length > 1) {
       var chaveV = st.modo === 'mc' ? 'mc' : 'rb', pn = [], ant = null, maior = null;
       casc.forEach(function (x, i) {
-        var nome = x.chave === 'tatico' ? 'Desconto do vendedor' : x.chave === 'custo' ? 'Custo real' : rotN[x.chave];
+        var nome = x.chave === 'tatico' ? rotD : x.chave === 'custo' ? 'Custo real' : rotN[x.chave];
         if (i === 0) pn.push({ n: nome, v: x[chaveV], t: 'total' });
         else {
           var dlt = Motor.limpa(x[chaveV] - ant);
           if (Math.abs(dlt) < 0.00005) { ant = x[chaveV]; return; }
           pn.push({ n: nome, v: dlt, t: 'delta', c: dlt < 0 ? (x.chave === 'tatico' ? 'fc' : 'f3') : 'fb' });
-          var frase = x.chave === 'tatico' ? 'no desconto do vendedor' : x.chave === 'custo' ? 'no custo real' : x.chave === 'canal' ? 'na margem do canal' : 'no preço ' + (nome.toLowerCase() === 'específico' || nome.toLowerCase() === 'preço específico' ? 'específico' : 'de ' + nome.toLowerCase().replace(/^preço de /, ''));
-          if (!maior || dlt < maior.v) maior = { n: frase, v: dlt };
+          if (!maior || dlt < maior.v) maior = { n: nome, v: dlt };
         }
         ant = x[chaveV];
       });
-      pn.push({ n: 'Realizado', v: ant, t: 'total', c: focoTotal ? cls(f) : cls(L.faixa) });
-      var saiu = Motor.limpa(casc[0][chaveV] - ant), o4 = st.modo === 'mc' ? 'de margem' : 'de receita';
-      var m4 = saiu > 0.00005 ? rs(saiu) + ' ' + o4 + ' ficaram na mesa' + (maior && maior.v < 0 ? '; ' + rs(-maior.v) + ' ' + maior.n + '.' : '.') : saiu < -0.00005 ? 'O realizado deixa ' + rs(-saiu) + ' ' + o4 + ' acima do ' + pn[0].n.toLowerCase() + '.' : 'Nada ' + o4 + ' ficou na mesa do ' + pn[0].n.toLowerCase() + ' ao realizado.';
-      B.push(bloco('Em qual nível a margem ficou na mesa?', m4,
-        '<div class="tog" id="tog"><button data-m="mc" class="' + (st.modo === 'mc' ? 'on' : '') + '">Margem</button><button data-m="rb" class="' + (st.modo === 'rb' ? 'on' : '') + '">Receita</button></div><div class="g" id="g-niv" style="margin-top:10px"></div>',
-        'Cada degrau é a mesma venda no preço de um nível: teto, canal, específico e, por fim, com o desconto do vendedor. Canal menor que o teto é política combinada antes, e não desconto.', escopo, false));
-      depois.push(function () {
-        cascata(document.getElementById('g-niv'), pn, null);
-        document.querySelectorAll('#tog button').forEach(function (b) { b.onclick = function () { st.modo = b.dataset.m; render(); }; });
-      });
+      if (pn.length > 1) {
+        pn.push({ n: 'Realizado', v: ant, t: 'total', c: cls(focoTotal ? f : L.faixa) });
+        var saiu = Motor.limpa(casc[0][chaveV] - ant), o4 = st.modo === 'mc' ? 'de margem' : 'de receita';
+        var m4 = saiu > 0.00005 ? rs(saiu) + ' ' + o4 + ' ficaram na mesa entre “' + pn[0].n + '” e o realizado' + (maior && maior.v < 0 ? '; o maior degrau, ' + rs(-maior.v) + ', é “' + maior.n + '”.' : '.')
+          : 'O realizado deixa ' + rs(-saiu) + ' ' + o4 + ' acima de “' + pn[0].n + '”.';
+        B.push(bloco('Em qual nível a margem ficou na mesa?', m4,
+          '<div class="tog" id="tog"><button data-m="mc" class="' + (st.modo === 'mc' ? 'on' : '') + '">Margem</button><button data-m="rb" class="' + (st.modo === 'rb' ? 'on' : '') + '">Receita</button></div><div class="g" id="g-niv" style="margin-top:10px"></div>',
+          'Cada degrau é a mesma venda no preço de um nível: teto, canal, específico e, por fim, com o desconto. "Ficou na mesa" é a margem em reais no preço do primeiro nível menos a realizada. Canal menor que o teto é política combinada antes, e não desconto.', false));
+        depois.push(function () {
+          cascata(document.getElementById('g-niv'), pn, null);
+          document.querySelectorAll('#tog button').forEach(function (b) { b.onclick = function () { st.modo = b.dataset.m; render(); }; });
+        });
+      }
     }
 
-    // 05 três leituras de desvio
-    var rows = [], lts = focoTotal ? t.leituras : L.leituras;
-    ['usado', 'canal', 'teto'].forEach(function (k) {
-      var v = lts[k]; if (!v) return;
-      if (!focoTotal) {
-        if (k === 'canal' && !L.niveis.some(function (x) { return x.chave === 'canal'; })) return;
-        if (k !== 'usado' && L.usado.chave === k) return;
-        rows.push({ n: nomeLeitura(k, L), sub: (k === 'usado' ? L.usado.rotulo + ' · ' : '') + pc(L.refs[k]) + ' planejados', pts: v[0], rel: v[1], rs: v[2] });
-      } else {
-        if (k === 'canal' && !ok.some(function (l) { return l.niveis.some(function (x) { return x.chave === 'canal'; }); })) return;
-        if (k === 'teto' && !ok.some(function (l) { return l.usado.chave !== 'teto'; })) return;
-        rows.push({ n: nomeLeitura(k, ok[0]), sub: pc(v.plan) + ' planejados, na média', pts: v.pts, rel: v.rel, rs: v.rs });
-      }
+    // 05 leituras de desvio: meta, nível usado (só com desconto), canal e teto, sem repetir a mesma régua
+    var rows = [], lts = focoTotal ? t.leituras : L.leituras, vistos = [], desc = temDesconto(esc0);
+    var temCanal = esc0.some(function (l) { return l.niveis.some(function (x) { return x.chave === 'canal'; }); });
+    [['meta', 'Contra a meta'], ['usado', 'Contra o nível usado'], ['canal', 'Contra o canal'], ['teto', 'Contra o ' + ((focoTotal ? rotN.teto : (L.niveis[0].chave === 'teto' ? L.niveis[0].rotulo : 'teto')) || 'teto').toLowerCase()]].forEach(function (q) {
+      var k = q[0], v = lts[k]; if (!v) return;
+      var plan = focoTotal ? v.plan : (focoTotal ? null : L.refs[k]), pts = focoTotal ? v.pts : v[0];
+      if (k === 'usado' && !desc) return;
+      if (k === 'canal' && !temCanal) return;
+      if (vistos.some(function (x) { return Math.abs(x - plan) < 1e-9; })) return;
+      vistos.push(plan);
+      var sub = (k === 'usado' && !focoTotal ? L.usado.rotulo + ' · ' : '') + pc(plan) + (k === 'meta' ? ' desejados' : ' no nível') + (focoTotal ? ', na média' : '');
+      rows.push({ n: q[1], sub: sub, pts: pts, rel: focoTotal ? v.rel : v[1], rs: focoTotal ? v.rs : v[2] });
     });
     if (rows.length) {
-      var m5 = rows.map(function (r, i) { return (i ? r.n.replace('Contra o ', 'contra o ') : r.n) + ', ' + pp(r.pts); }).join('; ');
+      var m5 = rows.map(function (r, i) { return (i ? r.n.replace('Contra ', 'contra ') : r.n) + ', ' + pp(r.pts); }).join('; ');
       B.push(bloco('Quanto a margem se afastou de cada régua?', m5, '<div class="g" id="g-dv"></div>',
-        'Contra o nível usado: o custo do desconto do vendedor. Contra o canal: o efeito do preço específico. Contra o teto: o que ficou na mesa no total. Em reais = receita líquida realizada × pontos.', escopo, false));
+        'Contra a meta: a margem que você quer. Contra o nível usado: o custo do desconto. Contra o canal: o efeito do preço específico. Contra o teto: a distância da margem global. O valor em reais é pontos × receita líquida gerencial realizada; por isso ele difere do "ficou na mesa" do bloco anterior, que compara a venda no preço de cada nível.', false));
       depois.push(function () { desvios(document.getElementById('g-dv'), rows); });
     }
 
     // 06 e 07, quando há várias linhas
     if (ok.length > 1) {
-      var ord = ok.slice().sort(function (a, b) { return (b.mantido || -1e9) - (a.mantido || -1e9); }), mel = ord[0], pio = ord[ord.length - 1];
-      var m6 = mel.nome + ' mantém ' + br(mel.mantido || 0, 0) + '% da margem; ' + pio.nome + ', ' + br(pio.mantido || 0, 0) + '%.';
-      B.push(bloco('Qual grupo entrega a margem planejada?', m6, '<div class="g" id="g-grp"></div>', 'Traço preto: margem planejada no nível usado. Barra: realizada, na cor da faixa.', ok.length + ' linhas', false));
+      var comMeta = ok.every(function (l) { return l.meta !== null; }), m6;
+      if (comMeta) {
+        var ord = ok.slice().sort(function (a, b) { return (b.mantido === null ? -1e9 : b.mantido) - (a.mantido === null ? -1e9 : a.mantido); }), mel = ord[0], pio = ord[ord.length - 1];
+        m6 = mel.nome + ' entrega ' + br(mel.mantido || 0, 0) + '% da meta; ' + pio.nome + ', ' + br(pio.mantido || 0, 0) + '%.';
+      } else {
+        var ord2 = ok.slice().sort(function (a, b) { return (b.real.mc_rl || -1e9) - (a.real.mc_rl || -1e9); });
+        m6 = ord2[0].nome + ' deixa ' + pc(ord2[0].real.mc_rl, 1) + '; ' + ord2[ord2.length - 1].nome + ', ' + pc(ord2[ord2.length - 1].real.mc_rl, 1) + '.';
+      }
+      B.push(bloco(comMeta ? 'Qual grupo entrega a meta?' : 'Qual grupo deixa mais margem?', m6, '<div class="g" id="g-grp"></div>', 'Traço preto: a meta da linha. Barra: a margem realizada, na cor da faixa.', false));
       depois.push(function () { grupos(document.getElementById('g-grp'), ok, focoTotal ? -1 : res.linhas.indexOf(L)); });
-      var pior = ok.slice().sort(function (a, b) { return (a.leituras.usado ? a.leituras.usado[0] : 0) - (b.leituras.usado ? b.leituras.usado[0] : 0); })[0];
-      var m7 = pior.leituras.usado && pior.leituras.usado[0] < -0.005 ? pior.nome + ' é quem mais se afasta da diagonal: ' + pp(pior.leituras.usado[0]) : 'Todas as linhas estão sobre a diagonal ou acima dela.';
-      B.push(bloco('Onde o desconto pesa mais na margem?', m7, '<div class="g" id="g-disp"></div>', 'Cada ponto é uma linha; o tamanho é a receita. Abaixo da diagonal, o desconto tirou margem.', ok.length + ' linhas', false));
-      depois.push(function () { dispersao(document.getElementById('g-disp'), ok, focoTotal ? -1 : res.linhas.indexOf(L)); });
+      if (temDesconto(ok)) {
+        var pior = ok.slice().sort(function (a, b) { return (a.leituras.usado ? a.leituras.usado[0] : 0) - (b.leituras.usado ? b.leituras.usado[0] : 0); })[0];
+        var m7 = pior.leituras.usado && pior.leituras.usado[0] < -0.005 ? pior.nome + ' é quem mais se afasta da diagonal: ' + pp(pior.leituras.usado[0]) : 'Todas as linhas estão sobre a diagonal ou acima dela.';
+        B.push(bloco('Onde o desconto pesa mais na margem?', m7, '<div class="g" id="g-disp"></div>', 'Cada ponto é uma linha; o tamanho é a receita. Abaixo da diagonal, o desconto tirou margem.', false));
+        depois.push(function () { dispersao(document.getElementById('g-disp'), ok, focoTotal ? -1 : res.linhas.indexOf(L)); });
+      }
     }
 
-    // 08 custo fixo, outra conta
+    // 08 o desconto que vende mais compensa? (com a quantidade que venderia sem ele)
+    var comp8 = esc0.filter(function (l) { return l.sem_desconto && Math.abs(l.desconto_rs) > 0.0001; });
+    if (comp8.length) {
+      var it8 = comp8.map(function (l) { return { n: l.nome, a: l.sem_desconto.mc, b: l.real.mc, cb: l.real.mc >= l.sem_desconto.mc ? 'fb' : 'fc' }; });
+      var x8 = comp8[0], ganha = x8.real.mc - x8.sem_desconto.mc;
+      var m8 = (ganha >= 0 ? 'Compensa: ' : 'Não compensa: ') + x8.nome.toLowerCase() + ' deixa ' + rs(x8.real.mc, 0) + ' de margem no mês, contra ' + rs(x8.sem_desconto.mc, 0) + ' sem o desconto.';
+      B.push(bloco('O desconto que vende mais compensa?', m8, '<div class="g" id="g-promo"></div><p class="nota">' + esc(comp8.map(function (l) { return l.nome + ': ' + br(l.p.q, 0) + ' ' + plural(un) + ' com o desconto, ' + br(l.sem_desconto.rb / l.usado.preco, 0) + ' sem ele.'; }).join(' ')) + '</p>',
+        'A margem em reais do mês: com o desconto, no volume que ele traz; sem o desconto, no preço do nível e no volume de antes.', false));
+      depois.push(function () { pares(document.getElementById('g-promo'), it8, 'sem o desconto', 'com o desconto', function (v) { return rs(v, 0); }); });
+    }
+
+    // 09 lucro depois do custo fixo, outra conta
     var e = res.equilibrio;
     if (e) {
-      var m8 = e.lucro >= 0 ? 'Sobram ' + rs(e.lucro, 0) + ' depois dos ' + rs(e.fixo, 0) + ' de custo fixo' + (e.lucro_pct_rb !== null ? ', ' + pc(e.lucro_pct_rb, 1) + ' da receita.' : '.') : 'Faltam ' + rs(-e.lucro, 0) + ' para pagar os ' + rs(e.fixo, 0) + ' de custo fixo.';
-      var extra = [];
-      if (e.unidades_pe) extra.push('Ponto de equilíbrio: ' + br(Math.ceil(e.unidades_pe - 1e-9), 0) + ' ' + (/s$/.test(un) ? un : un + 's') + ' no mês.');
-      if (e.preco_meta) extra.push('Para ' + pc(e.meta_lucro_pct, 0) + ' de lucro depois do custo fixo, o preço é ' + rs(e.preco_meta) + '.');
+      var m9 = e.lucro >= 0 ? 'Sobram ' + rs(e.lucro, 0) + ' depois dos ' + rs(e.fixo, 0) + ' de custo fixo' + (e.lucro_pct_rb !== null ? ', ' + pc(e.lucro_pct_rb, 1) + ' da receita.' : '.') : 'Faltam ' + rs(-e.lucro, 0) + ' para pagar os ' + rs(e.fixo, 0) + ' de custo fixo.';
+      var extra = [], corpo9 = '<div class="g" id="g-eq"></div>';
+      if (e.unidades_pe) extra.push('Ponto de equilíbrio: ' + br(Math.ceil(e.unidades_pe - 1e-9), 0) + ' ' + plural(un) + ' no mês, no mix de hoje.');
       if (e.receita_pe === null) extra.push('Com margem negativa não existe ponto de equilíbrio: primeiro o preço precisa passar do mínimo.');
-      B.push(bloco('A margem do mês paga o custo fixo?', m8, '<div class="g" id="g-eq"></div>' + (extra.length ? '<p class="fonte">' + esc(extra.join(' ')) + '</p>' : ''),
-        'Outra conta, abaixo da margem de contribuição: lucro = margem do mês − custo fixo. IRPJ e CSLL ainda saem dele.', 'mês, na quantidade informada', false));
-      depois.push(function () { equilibrioSvg(document.getElementById('g-eq'), e, t); });
+      var it9 = [];
+      if (e.precos_meta) ok.forEach(function (l, i) { if (e.precos_meta[i] !== null) it9.push({ n: l.nome, a: l.negociado, b: e.precos_meta[i], cb: e.precos_meta[i] > l.negociado ? 'fc' : 'fb' }); });
+      if (it9.length) {
+        corpo9 += '<p class="sub9">Preço para ' + esc(pc(e.meta_lucro_pct, 0)) + ' de lucro depois do custo fixo, por ' + esc(un) + '</p><div class="g" id="g-meta"></div>';
+        if (it9.length === 1) m9 += ' Para ' + pc(e.meta_lucro_pct, 0) + ' de lucro, o preço é ' + rs(it9[0].b) + '.';
+      }
+      if (extra.length) corpo9 += '<p class="nota">' + esc(extra.join(' ')) + '</p>';
+      B.push(bloco('Lucro depois do custo fixo, outra conta: a margem do mês paga o fixo?', m9, corpo9,
+        'Outra conta, abaixo da margem de contribuição: lucro = margem do mês − custo fixo. IRPJ e CSLL ainda saem dele. O preço para a meta de lucro reparte o custo fixo por unidade vendida; cada linha nesse preço deixa a mesma % de lucro da própria receita.', false));
+      depois.push(function () {
+        equilibrioSvg(document.getElementById('g-eq'), e, t);
+        if (it9.length) pares(document.getElementById('g-meta'), it9, 'hoje', 'para a meta de lucro', function (v) { return rs(v); });
+      });
     }
 
-    // 09 raio-x
-    var rx = raiox(focoTotal ? ok : [L]);
+    // 10 cenários lado a lado (2026 e 2027, com e sem benefício)
+    if (CENS.length > 1) {
+      var lado = CENS.map(function (x, i) {
+        var r = Motor.calcular(i === st.ic ? st.cen : x), o = r.ok, tt = r.total;
+        if (!o.length) return null;
+        var fora = 0, imp = 0; o.forEach(function (l) { imp += l.real.deducoes; l.real.fora.forEach(function (y) { fora += y[3]; }); });
+        return { n: x.nome_cenario || 'Cenário ' + (i + 1), i: i, mc_rl: tt.mc_rl, mc: tt.mc, rb: tt.rb, imp: imp, fora: fora, meta: tt.leituras.meta ? tt.leituras.meta.plan : null };
+      }).filter(Boolean);
+      var hi = lado.slice().sort(function (a, b) { return b.mc_rl - a.mc_rl; });
+      var m10 = 'Maior margem: ' + hi[0].n + ', ' + pc(hi[0].mc_rl, 1) + '; menor: ' + hi[hi.length - 1].n + ', ' + pc(hi[hi.length - 1].mc_rl, 1) + '.';
+      var tab = '<div class="wrap"><table class="rx lado"><thead><tr><th>Cenário</th><th>Receita bruta</th><th>Impostos por dentro</th><th>Por fora</th><th>Total da nota</th><th>Margem</th><th>%</th></tr></thead><tbody>' +
+        lado.map(function (x) { return '<tr class="' + (x.i === st.ic ? 't' : '') + '"><td>' + esc(x.n) + '</td><td>' + esc(rs(x.rb)) + '</td><td>' + esc(rs(x.imp)) + '</td><td>' + esc(x.fora ? rs(x.fora) : '') + '</td><td>' + esc(rs(x.rb + x.fora)) + '</td><td>' + esc(rs(x.mc)) + '</td><td>' + esc(pc(x.mc_rl, 1)) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      B.push(bloco('Os cenários lado a lado', m10, '<div class="g" id="g-lado"></div>' + tab,
+        'Cada cenário com os mesmos custos e margens, no preço negociado. O cenário aberto leva as suas edições; os outros estão nos números da conversa.', true));
+      depois.push(function () {
+        pares(document.getElementById('g-lado'), lado.map(function (x) { return { n: x.n, a: x.meta, b: x.mc_rl, cb: x.meta !== null && x.mc_rl < x.meta ? 'fa' : 'fb' }; }), 'meta', 'margem realizada', function (v) { return pc(v, 1); });
+      });
+    }
+
+    // 11 raio-x
+    var rx = raiox(esc0);
     B.push(bloco('Como a conta fecha, centavo a centavo?', 'Do preço negociado sobram ' + rs(rx.mc, 4) + ' de margem.', rx.html,
-      'Cada parcela arredonda em 4 casas; os saldos são a subtração exata das parcelas.', escopo, true));
+      'Cada parcela arredonda em 4 casas; os saldos são a subtração exata das parcelas.', true));
 
     document.getElementById('blocos').innerHTML = B.join('');
     depois.forEach(function (fn) { fn(); });
   }
 
-  function rotulosNivel(ls) {
-    var r = { teto: 'Teto', canal: 'Canal', especifico: 'Específico' };
+  function rotulosNivel(ls, rotD) {
+    var r = { teto: 'Teto', canal: 'Canal', especifico: 'Específico', tatico: rotD };
     ls.forEach(function (l) { l.niveis.forEach(function (x) { if (ls.length === 1 || x.chave === 'teto') r[x.chave] = x.rotulo; }); });
     if (ls.length > 1) { var rot = st.cen.rotulos || {}; if (rot.canal) r.canal = rot.canal; r.especifico = rot.especifico || 'Preço específico'; }
     return r;
   }
 
   function compor(ls) {
-    var s = { custo: 0, imp: 0, com: 0, fre: 0, out: 0, mc: 0, rb: 0 }, ced = 0, hipF = false, hipC = false;
+    var s = { custo: 0, imp: 0, com: 0, fre: 0, out: 0, mc: 0, rb: 0 }, ced = 0, hipF = false, hipC = false, metaMc = 0, metaRb = 0, todos = true;
     ls.forEach(function (l) {
       var d = l.usado.dre;
       s.custo += d.cpv; s.imp += d.deducoes; s.com += d.comissao; s.fre += d.frete; s.out += d.outras; s.mc += d.mc; s.rb += d.rb;
       ced += Motor.limpa(d.mc - l.mesmo.mc);
+      if (l.meta_nivel) { metaMc += l.meta_nivel.dre.mc; metaRb += l.meta_nivel.dre.rb; } else todos = false;
       if (l.p.hip.indexOf('frete') >= 0) hipF = true; if (l.p.hip.indexOf('comissao') >= 0) hipC = true;
     });
     var partes = [{ n: 'Custo', v: s.custo, c: 'f1' }, { n: 'Impostos', v: s.imp, c: 'f2' }, { n: 'Comissão', v: s.com, c: 'f3', hip: hipC },
-      { n: 'Frete', v: s.fre, c: 'f4', hip: hipF }, { n: 'Outras despesas', v: s.out, c: 'f5' }, { n: 'Margem planejada', v: Math.max(0, s.mc), c: 'fb', margem: true }];
+      { n: 'Frete', v: s.fre, c: 'f4', hip: hipF }, { n: 'Outras despesas', v: s.out, c: 'f5' }, { n: 'Margem no preço', v: Math.max(0, s.mc), c: 'fb', margem: true }];
     var rb = s.rb || 1;
-    return { partes: partes, cedida: Math.max(0, Math.min(ced, Math.max(0, s.mc))), mcPlan: s.mc,
+    return { partes: partes, cedida: Math.max(0, Math.min(ced, Math.max(0, s.mc))), mcPlan: s.mc, metaMc: todos ? metaMc : null, metaRb: metaRb,
       pc: { custo: s.custo / rb * 100, desp: (s.imp + s.com + s.fre + s.out) / rb * 100, mc: s.mc / rb * 100 } };
   }
 
@@ -845,19 +1012,19 @@ var Motor = (function () {
     var d0 = ls[0].real, rb = soma(function (d) { return d.rb; }), linhas = [], saldo = rb;
     var hip = function (k) { return ls.some(function (l) { return l.p.hip.indexOf(k) >= 0; }) ? '<span class="hip">hipótese</span>' : ''; };
     linhas.push(['Receita bruta, preço negociado', '', rb, rb, 't']);
-    if (ls.length === 1 && d0.impostos.length > 1) d0.impostos.forEach(function (x) { saldo = Motor.limpa(saldo - x[1]); linhas.push([x[0] + hip(x[0]) + hip('impostos'), '−', x[1], saldo, '']); });
+    if (ls.length === 1) d0.impostos.forEach(function (x) { saldo = Motor.limpa(saldo - x[1]); linhas.push([esc(x[0]) + hip(x[0]) + hip('impostos'), '−', x[1], saldo, '']); });
     else { var ded = soma(function (d) { return d.deducoes; }); saldo = Motor.limpa(saldo - ded); linhas.push(['Impostos sobre a venda' + hip('impostos'), '−', ded, saldo, '']); }
     [['Comissão', 'comissao', 'comissao'], ['Frete', 'frete', 'frete'], ['Outras despesas variáveis', 'outras', 'outras']].forEach(function (k) {
       var v = soma(function (d) { return d[k[1]]; }); if (!v) return; saldo = Motor.limpa(saldo - v); linhas.push([k[0] + hip(k[2]), '−', v, saldo, '']);
     });
     var rl = soma(function (d) { return d.rl; });
-    linhas.push(['Receita líquida, base da margem', '=', rl, rl, 't']);
+    linhas.push(['Receita líquida gerencial', '=', rl, rl, 't']);
     var cpv = soma(function (d) { return d.cpv; }); saldo = Motor.limpa(rl - cpv);
     linhas.push(['Custo' + hip('custo'), '−', cpv, saldo, '']);
     var mc = soma(function (d) { return d.mc; });
-    linhas.push(['Margem de contribuição' + (rl > 0 ? ' · ' + pc(mc / rl * 100) + ' da receita líquida' : ''), '=', mc, mc, 'm']);
+    linhas.push(['Margem de contribuição' + (rl > 0 ? ' · ' + pc(mc / rl * 100) + ' da receita líquida gerencial' : ''), '=', mc, mc, 'm']);
     var fora = [];
-    if (ls.length === 1 && d0.fora.length) { d0.fora.forEach(function (x) { fora.push([x[0] + ' ' + pc(x[1]) + ', por fora', '+', x[3], '', 'fo']); }); fora.push(['Total da nota', '=', d0.nota, '', 'fo']); }
+    if (ls.length === 1 && d0.fora.length) { d0.fora.forEach(function (x) { fora.push([esc(x[0]) + ' ' + pc(x[1]) + ', por fora', '+', x[3], '', 'fo']); }); fora.push(['Total da nota', '=', d0.nota, '', 'fo']); }
     var h = '<table class="rx"><thead><tr><th>Componente</th><th></th><th>Valor</th><th>Saldo</th></tr></thead><tbody>' + linhas.concat(fora).map(function (r) {
       return '<tr class="' + r[4] + '"><td>' + r[0] + '</td><td class="op">' + r[1] + '</td><td>' + esc(rs(r[2], 4)) + '</td><td class="sd">' + (r[3] === '' ? '' : esc(rs(r[3], 4))) + '</td></tr>';
     }).join('') + '</tbody></table>';
@@ -872,48 +1039,61 @@ var Motor = (function () {
       (suf === 'R$' ? '<span>R$</span>' : '') + '<input id="' + id + '" inputmode="decimal" value="' + esc(paraCampo(valor)) + '">' + (suf === '%' ? '<span>%</span>' : '') + '</div></div>';
   }
   var CAMPOS = {};
+  function fixos(c, o, hp) {
+    var h = '';
+    if (c.custo_fixo_mes !== undefined) h += campo('Custo fixo do mês', c.custo_fixo_mes, function (v) { c.custo_fixo_mes = v; }, 'R$', hp('custo-fixo'), o.custo_fixo_mes);
+    if (c.meta_lucro_pct !== undefined) h += campo('Lucro desejado, % da receita', c.meta_lucro_pct, function (v) { c.meta_lucro_pct = v; }, '%', false, o.meta_lucro_pct);
+    return h ? '<div class="grp"><h4>Lucro depois do custo fixo, outra conta</h4>' + h + '</div>' : '';
+  }
   function campos() {
     CAMPOS = {};
-    var c = st.cen, o = st.orig, h = '', multi = c.linhas.length > 1;
-    var tetoRot = (c.rotulos && c.rotulos.teto) || 'Teto';
+    var c = st.cen, o = st.orig, h = '', multi = c.linhas.length > 1, un = c.unidade || 'unidade';
+    var tetoRot = (c.rotulos && c.rotulos.teto) || 'Teto', rotD = (c.rotulos && c.rotulos.desconto) || 'Desconto do vendedor';
+    var hpc = function (k) { return (c.hipoteses || []).indexOf(k) >= 0; };
     if (multi && st.foco === 'total') {
-      h += '<div class="grp"><h4>Todas as linhas</h4>' + campo('Margem do ' + tetoRot.toLowerCase(), c.mc_teto, function (v) { c.mc_teto = v; }, '%', false, o.mc_teto) + '</div>';
-      h += '<div class="grp"><h4>Desconto do vendedor, por linha</h4>';
+      if (c.mc_teto !== undefined) h += '<div class="grp"><h4>Todas as linhas</h4>' + campo('Margem do ' + tetoRot.toLowerCase(), c.mc_teto, function (v) { c.mc_teto = v; }, '%', hpc('margem'), o.mc_teto) + '</div>';
+      h += '<div class="grp"><h4>' + esc(rotD) + ', por linha</h4>';
       c.linhas.forEach(function (l, i) { h += campo(l.nome, l.desconto || 0, function (v) { l.desconto = v || 0; }, '%', false, o.linhas[i].desconto || 0); });
-      h += '</div>';
+      h += '</div><div class="grp"><h4>Volume por mês, por linha</h4>';
+      c.linhas.forEach(function (l, i) { h += campo(l.nome, l.quantidade === undefined ? 1 : l.quantidade, function (v) { l.quantidade = v || 0; }, '', hpc('volume'), o.linhas[i].quantidade === undefined ? 1 : o.linhas[i].quantidade); });
+      h += '</div>' + fixos(c, o, hpc);
     } else {
       var i = multi ? st.foco : 0, l = c.linhas[i], lo = o.linhas[i], hp = function (k) { return (c.hipoteses || []).concat(l.hipoteses || []).indexOf(k) >= 0; };
-      h += '<div class="grp"><h4>Custo e volume</h4>' + campo('Custo por ' + (c.unidade || 'unidade'), l.custo, function (v) { l.custo = v || 0; }, 'R$', hp('custo'), lo.custo) +
-        campo('Quantidade', l.quantidade === undefined ? 1 : l.quantidade, function (v) { l.quantidade = v || 0; }, '', false, lo.quantidade === undefined ? 1 : lo.quantidade) +
+      h += '<div class="grp"><h4>Custo e volume</h4>' + campo('Custo por ' + un, l.custo, function (v) { l.custo = v || 0; }, 'R$', hp('custo'), lo.custo) +
+        (l.perda_pct !== undefined ? campo('Perda, % do custo', l.perda_pct, function (v) { l.perda_pct = v || 0; }, '%', hp('perda'), lo.perda_pct) : '') +
+        campo('Quantidade no mês', l.quantidade === undefined ? 1 : l.quantidade, function (v) { l.quantidade = v || 0; }, '', hp('volume'), lo.quantidade === undefined ? 1 : lo.quantidade) +
+        (l.quantidade_sem_desconto !== undefined ? campo('Quantidade sem o desconto', l.quantidade_sem_desconto, function (v) { l.quantidade_sem_desconto = v; }, '', hp('volume'), lo.quantidade_sem_desconto) : '') +
         (l.custo_real !== undefined ? campo('Custo real', l.custo_real, function (v) { l.custo_real = v; }, 'R$', false, lo.custo_real) : '') + '</div>';
-      h += '<div class="grp"><h4>Margem por nível, % da receita líquida</h4>';
-      if (c.mc_teto !== undefined || !multi) h += campo(tetoRot, ('mc_teto' in l) ? l.mc_teto : c.mc_teto, function (v) { if ('mc_teto' in l) l.mc_teto = v; else c.mc_teto = v; }, '%', hp('margem'), ('mc_teto' in lo) ? lo.mc_teto : o.mc_teto);
-      if (l.mc_canal !== undefined || multi) h += campo(l.rotulo_canal || (c.rotulos && c.rotulos.canal) || 'Canal', l.mc_canal, function (v) { l.mc_canal = v; }, '%', false, lo.mc_canal);
-      var rotE = l.rotulo_especifico || (c.rotulos && c.rotulos.especifico) || 'Específico';
+      h += '<div class="grp"><h4>Margem por nível, % da receita líquida gerencial</h4>';
+      if (c.mc_teto !== undefined || l.mc_teto !== undefined || !multi) h += campo(tetoRot, ('mc_teto' in l) ? l.mc_teto : c.mc_teto, function (v) { if ('mc_teto' in l) l.mc_teto = v; else c.mc_teto = v; }, '%', hp('margem'), ('mc_teto' in lo) ? lo.mc_teto : o.mc_teto);
+      if (l.mc_canal !== undefined) h += campo(l.rotulo_canal || (c.rotulos && c.rotulos.canal) || 'Canal', l.mc_canal, function (v) { l.mc_canal = v; }, '%', false, lo.mc_canal);
+      var rotE = l.rotulo_especifico || (c.rotulos && c.rotulos.especifico) || 'Preço específico';
       if (l.mc_especifica !== undefined && l.mc_especifica !== null) h += campo(rotE, l.mc_especifica, function (v) { l.mc_especifica = v; }, '%', false, lo.mc_especifica);
-      else h += campo(rotE + ', preço', l.preco_especifico, function (v) { l.preco_especifico = v; }, 'R$', hp('preco-atual'), lo.preco_especifico);
+      else h += campo(rotE, l.preco_especifico, function (v) { l.preco_especifico = v; }, 'R$', hp('preco-atual'), lo.preco_especifico);
       h += '</div><div class="grp"><h4>Impostos sobre a venda, % do preço</h4>';
       var imp = l.impostos || {};
       if (!Object.keys(imp).length) { l.impostos = imp = { 'Impostos sobre a venda': 0 }; }
       Object.keys(imp).forEach(function (k) { h += campo(k, imp[k], function (v) { imp[k] = v || 0; }, '%', hp('impostos') || hp(k), (lo.impostos || {})[k] || 0); });
       h += '</div><div class="grp"><h4>Comissão, frete e outras</h4>' + campo('Comissão' + (l.comissao_sobre === 'liquida' ? ' (sobre o preço sem impostos)' : ''), l.comissao || 0, function (v) { l.comissao = v || 0; }, '%', hp('comissao'), lo.comissao || 0);
-      if (l.frete_rs_kg !== undefined) h += campo('Frete, R$ por kg', l.frete_rs_kg, function (v) { l.frete_rs_kg = v || 0; }, 'R$', hp('frete'), lo.frete_rs_kg) + campo('Peso, kg', l.peso_kg, function (v) { l.peso_kg = v || 0; }, '', false, lo.peso_kg);
-      else h += campo('Frete, R$ por ' + (c.unidade || 'unidade'), l.frete_rs || 0, function (v) { l.frete_rs = v || 0; }, 'R$', hp('frete'), lo.frete_rs || 0);
-      h += campo('Frete, % do preço', l.frete_pct || 0, function (v) { l.frete_pct = v || 0; }, '%', hp('frete'), lo.frete_pct || 0) +
-        campo('Outras (cartão, marketplace)', l.outras_pct || 0, function (v) { l.outras_pct = v || 0; }, '%', hp('outras'), lo.outras_pct || 0);
+      var semFrete = c.atividade === 'servico' && !l.frete_rs && !l.frete_pct && l.frete_rs_kg === undefined;
+      if (!semFrete) {
+        if (l.frete_rs_kg !== undefined) h += campo('Frete, R$ por kg', l.frete_rs_kg, function (v) { l.frete_rs_kg = v || 0; }, 'R$', hp('frete'), lo.frete_rs_kg) + campo('Peso, kg', l.peso_kg, function (v) { l.peso_kg = v || 0; }, '', false, lo.peso_kg);
+        else h += campo('Frete, R$ por ' + un, l.frete_rs || 0, function (v) { l.frete_rs = v || 0; }, 'R$', hp('frete'), lo.frete_rs || 0);
+        h += campo('Frete, % do preço', l.frete_pct || 0, function (v) { l.frete_pct = v || 0; }, '%', hp('frete'), lo.frete_pct || 0);
+      }
+      h += campo('Outras (cartão, boleto, marketplace)', l.outras_pct || 0, function (v) { l.outras_pct = v || 0; }, '%', hp('outras'), lo.outras_pct || 0);
       if (l.outras_rs) h += campo('Outras, R$', l.outras_rs, function (v) { l.outras_rs = v || 0; }, 'R$', hp('outras'), lo.outras_rs || 0);
-      h += '</div><div class="grp"><h4>Venda</h4>' + campo('Desconto do vendedor', l.desconto || 0, function (v) { l.desconto = v || 0; }, '%', hp('desconto'), lo.desconto || 0) +
+      h += '</div><div class="grp"><h4>Venda</h4>' + campo(rotD, l.desconto || 0, function (v) { l.desconto = v || 0; }, '%', hp('desconto'), lo.desconto || 0) +
         campo('Preço cobrado, se diferente', l.preco_praticado, function (v) { l.preco_praticado = v; }, 'R$', false, lo.preco_praticado) +
-        campo('Preço do concorrente', l.preco_mercado, function (v) { l.preco_mercado = v; }, 'R$', false, lo.preco_mercado);
-      if (!multi && c.custo_fixo_mes !== undefined) h += campo('Custo fixo do mês', c.custo_fixo_mes, function (v) { c.custo_fixo_mes = v; }, 'R$', hp('custo-fixo'), o.custo_fixo_mes);
-      h += '</div>';
+        campo('Preço do concorrente', l.preco_mercado, function (v) { l.preco_mercado = v; }, 'R$', false, lo.preco_mercado) + '</div>';
+      h += fixos(c, o, hp);
     }
     var el = document.getElementById('campos');
     el.innerHTML = h;
     el.querySelectorAll('input').forEach(function (inp) {
       inp.addEventListener('input', function () {
         CAMPOS[inp.id](ler(inp.value)); st.editado = true;
-        var orig = inp.closest('.cp'); orig.classList.add('mudou');
+        inp.closest('.cp').classList.add('mudou');
         render();
       });
     });
@@ -931,22 +1111,24 @@ var Motor = (function () {
 
   function cabecalho() {
     var c = st.cen;
-    document.getElementById('titulo').textContent = c.titulo || 'Simulador de preço';
-    document.getElementById('subtitulo').textContent = c.subtitulo || '';
+    document.getElementById('titulo').textContent = nb(c.titulo || 'Simulador de preço');
+    document.getElementById('subtitulo').textContent = nb(c.subtitulo || '');
     var hip = (c.hipoteses || []).slice();
     c.linhas.forEach(function (l) { (l.hipoteses || []).forEach(function (x) { if (hip.indexOf(x) < 0) hip.push(x); }); });
     document.getElementById('chips').innerHTML = (c.linhas.length > 1 ? '<span class="chip">' + c.linhas.length + ' linhas</span>' : '') +
       hip.map(function (x) { return '<span class="chip h">hipótese: ' + esc(x) + '</span>'; }).join('');
     var ce = document.getElementById('cens');
     if (CENS.length > 1) {
-      ce.innerHTML = CENS.map(function (x, i) { return '<button data-i="' + i + '" class="' + (i === st.ic ? 'on' : '') + '">' + esc(x.nome_cenario || ('Cenário ' + (i + 1))) + '</button>'; }).join('');
+      // botões no computador; no celular, uma lista que não toma meia tela
+      ce.innerHTML = '<div class="cens-b">' + CENS.map(function (x, i) { return '<button data-i="' + i + '" class="' + (i === st.ic ? 'on' : '') + '">' + esc(x.nome_cenario || ('Cenário ' + (i + 1))) + '</button>'; }).join('') + '</div>' +
+        '<label class="cens-s"><span>Cenário ' + (st.ic + 1) + ' de ' + CENS.length + '</span><select aria-label="Cenário">' + CENS.map(function (x, i) { return '<option value="' + i + '"' + (i === st.ic ? ' selected' : '') + '>' + esc(x.nome_cenario || ('Cenário ' + (i + 1))) + '</option>'; }).join('') + '</select></label>';
       ce.querySelectorAll('button').forEach(function (b) { b.onclick = function () { carregar(+b.dataset.i); }; });
+      ce.querySelector('select').onchange = function (ev) { carregar(+ev.target.value); };
     }
   }
 
   function carregar(i) {
-    st.ic = i; st.orig = clone(CENS[i]); if (BRUTO.data && !st.orig.data) st.orig.data = BRUTO.data;
-    ['titulo', 'subtitulo', 'unidade', 'atividade', 'rotulos'].forEach(function (k) { if (st.orig[k] === undefined && BRUTO[k] !== undefined) st.orig[k] = BRUTO[k]; });
+    st.ic = i; st.orig = clone(CENS[i]);
     st.cen = clone(st.orig); st.editado = false;
     st.foco = st.cen.linhas.length > 1 ? 'total' : 0;
     cabecalho(); focos(); campos(); render();
