@@ -1,0 +1,20 @@
+{
+ "titulo": "Queijo prato 500 g",
+ "subtitulo": "Laticínio · Lucro Real · teto, canal, contrato e desconto do vendedor",
+ "unidade": "peça",
+ "atividade": "industria",
+ "rotulos": {"teto": "Teto", "canal": "Canal", "especifico": "Contrato"},
+ "mc_teto": 50,
+ "linhas": [
+  {"nome": "Varejo SP", "grupo": "Varejo", "quantidade": 12000, "custo": 11.60,
+   "impostos": {"ICMS": 18, "PIS": 1.65, "COFINS": 7.6}, "comissao": 3,
+   "frete_rs_kg": 0.42, "peso_kg": 0.5, "mc_canal": 45, "desconto": 2},
+  {"nome": "Atacado PR", "grupo": "Atacado", "quantidade": 30000, "custo": 11.60,
+   "impostos": {"ICMS": 12, "PIS": 1.65, "COFINS": 7.6}, "comissao": 2,
+   "frete_rs_kg": 1.7776, "peso_kg": 0.5, "mc_canal": 38, "desconto": 5},
+  {"nome": "Rede X BA", "grupo": "Redes", "quantidade": 18000, "custo": 11.60,
+   "impostos": {"ICMS": 7, "PIS": 1.65, "COFINS": 7.6}, "comissao": 1.5,
+   "frete_rs_kg": 4.0491, "peso_kg": 0.5, "mc_canal": 42, "preco_especifico": 25.90,
+   "rotulo_especifico": "Contrato Rede X", "desconto": 3}
+ ]
+}

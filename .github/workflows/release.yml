@@ -1,0 +1,23 @@
+# Cada tag v* publica uma versão com o .zip de cada skill.
+# O link .../releases/latest/download/bunker-pricing.zip sempre entrega a mais recente.
+name: release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Testes
+        run: python3 -m unittest discover -s skills/bunker-pricing/scripts
+      - name: Compactar cada skill
+        run: |
+          cd skills
+          for s in */; do s=${s%/}; zip -rq "../$s.zip" "$s" -x "*/__pycache__/*"; done
+      - name: Publicar a versão
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" *.zip --title "$GITHUB_REF_NAME" --notes "Baixe o .zip da skill e siga o README."

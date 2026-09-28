@@ -1,0 +1,19 @@
+{
+ "titulo": "Corrida ao aeroporto",
+ "subtitulo": "Transporte executivo · Simples Nacional, ISS no DAS · 22 km cobrados",
+ "unidade": "corrida",
+ "atividade": "servico",
+ "rotulos": {"teto": "Planejado"},
+ "cenarios": [
+  {"nome_cenario": "Volta vazia, 44 km rodados", "mc_teto": 30, "custo_fixo_mes": 4800, "meta_lucro_pct": 20,
+   "hipoteses": ["impostos"],
+   "linhas": [{"nome": "Aeroporto", "quantidade": 160, "custo": 40.1984,
+     "impostos": {"DAS do Simples": 6}, "comissao": 30, "outras_pct": 2.1,
+     "preco_especifico": 90, "rotulo_especifico": "Preço de hoje"}]},
+  {"nome_cenario": "Volta com passageiro, 22 km", "mc_teto": 30, "custo_fixo_mes": 4800, "meta_lucro_pct": 20,
+   "hipoteses": ["impostos"],
+   "linhas": [{"nome": "Aeroporto", "quantidade": 160, "custo": 20.0992,
+     "impostos": {"DAS do Simples": 6}, "comissao": 30, "outras_pct": 2.1,
+     "preco_especifico": 90, "rotulo_especifico": "Preço de hoje"}]}
+ ]
+}

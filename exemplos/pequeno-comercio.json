@@ -1,0 +1,15 @@
+{
+ "titulo": "Arroz tipo 1, 5 kg",
+ "subtitulo": "Mercado de bairro · Simples Nacional · preço por pacote",
+ "unidade": "pacote",
+ "atividade": "comercio",
+ "rotulos": {"teto": "Planejado"},
+ "mc_teto": 20,
+ "hipoteses": ["frete"],
+ "linhas": [
+  {"nome": "Arroz 5 kg", "quantidade": 1, "custo": 22.5126,
+   "impostos": {"DAS do Simples": 7.3}, "outras_pct": 1.32,
+   "preco_especifico": 29.12, "rotulo_especifico": "Preço de hoje",
+   "preco_praticado": 26.90, "preco_mercado": 27.99}
+ ]
+}
