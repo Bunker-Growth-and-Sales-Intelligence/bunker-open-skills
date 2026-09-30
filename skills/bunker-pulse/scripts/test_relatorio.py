@@ -141,7 +141,8 @@ class Deck(unittest.TestCase):
         b, fora, avisos, base, hoje, faltam, atrasados = rodar(Manchetes().lista(),
                                                                 cores={'primaria': '#2f6f4f'})
         html = R.deck_html(base, hoje, list(b.values()), faltam, atrasados)
-        self.assertEqual(html.count('<deck-stage'), 2 + len(b) + 1)  # capa, fecho, tabela
+        tabela = -(-len(faltam) // 4)                                 # 4 linhas por slide
+        self.assertEqual(html.count('<deck-stage'), 2 + len(b) + tabela)  # capa e fecho
         self.assertIn('#2f6f4f', html)
         self.assertIn('skill pública da Bunker', html)
         self.assertNotIn('Alumni', html)
@@ -162,6 +163,53 @@ class Deck(unittest.TestCase):
         R.definir_cores({'cores': {'primaria': 'azul'}})
         from pulso import paleta
         self.assertEqual(paleta.PRIMARIA, R.PADRAO[0])
+
+
+class Priorizacao(unittest.TestCase):
+    def lista(self):
+        a = []
+        notas = [(13, 8, 8, 2), (8, 5, 3, 5), (3, 2, 1, 8), (5, 8, 2, 3), (2, 1, 1, 13), (13, 3, 5, 5)]
+        for k, (v, u, r, e) in enumerate(notas):
+            a.append({'id': f'X{k}', 'titulo': f'item {k}', 'frente': 'A' if k % 2 else 'B',
+                      'status': 'aberta', 'prioridade': 'P0' if k == 0 else 'P2',
+                      'valor': v, 'urgencia': u, 'risco': r, 'esforco': e})
+        a.append({'id': 'X9', 'titulo': 'feito', 'frente': 'A', 'status': 'concluida'})
+        a[2]['depende_de'] = ['X0']
+        a[4]['depende_de'] = ['X0']
+        return a
+
+    def test_wsjf_da_frente_e_soma_sobre_soma(self):
+        b, *_ = rodar(self.lista())
+        # B: itens 0, 2, 4 -> custo 29+6+4=39, esforço 2+8+13=23 -> 1,7
+        # A: itens 1, 3, 5 -> custo 16+15+21=52, esforço 5+3+5=13 -> 4,0
+        self.assertIn('A deve vir primeiro', b['wsjf']['manchete'])
+        self.assertIn('WSJF de 4,0', b['wsjf']['manchete'])
+
+    def test_quadrantes_e_urgentes_entram(self):
+        b, *_ = rodar(self.lista())
+        for k in ('agora', 'rapido', 'estrategica', 'urgentes', 'dependencias'):
+            self.assertIn(k, b)
+        self.assertTrue(b['urgentes']['manchete'].startswith('1 das 6'))
+        self.assertTrue(b['dependencias']['manchete'].startswith('item 0 segura 2'))
+
+    def test_sem_plano_tira_a_priorizacao(self):
+        base, hoje, itens, _ = R.ler(registro(self.lista()))
+        base['_plano'] = False
+        blocos, *_ = R.montar(base, hoje, itens)
+        chaves = {x['chave'] for x in blocos}
+        self.assertFalse(chaves & {'wsjf', 'agora', 'rapido', 'estrategica', 'urgentes'})
+
+    def test_nota_de_contexto_vira_adesivo(self):
+        b, fora, avisos, base, hoje, faltam, atrasados = rodar(
+            self.lista(), notas={'wsjf': 'Decidido no comitê de 10/09.'})
+        html = R.deck_html(base, hoje, list(b.values()), faltam, atrasados)
+        self.assertIn('Decidido no comitê de 10/09.', html)
+        self.assertIn('O que é WSJF', html)
+
+    def test_tabela_na_ordem_do_wsjf(self):
+        _b, _f, _a, base, hoje, faltam, _t = rodar(self.lista())
+        ordem = [a['id'] for a in R.ordem_de_ataque(faltam, hoje)]
+        self.assertEqual(ordem[0], 'X0')   # WSJF 14,5
 
 
 if __name__ == '__main__':

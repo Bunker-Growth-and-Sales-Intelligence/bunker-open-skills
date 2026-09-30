@@ -407,7 +407,8 @@ def barras_deitadas(itens, larg=MEIA, unidade='itens', destaque=None, cor_destaq
         p.append(f'<rect x="{esq}" y="{y+4:.0f}" width="{bw:.1f}" height="14" fill="{cor}" rx="2"/>')
         pct = f'{v/total*100:.0f}%'
         col_pct = larg - 4 - len(pct) * 10.5 * 0.55
-        rotulo, fim = str(v), esq + bw + 7 + len(str(v)) * 11.5 * 0.62
+        rotulo = str(v).replace('.', ',')  # número no formato brasileiro
+        fim = esq + bw + 7 + len(rotulo) * 11.5 * 0.62
         if fim >= col_pct - 6:
             p.append(f'<text x="{esq+bw-7:.1f}" y="{y+15:.0f}" text-anchor="end" font-size="11.5" '
                      f'font-weight="600" fill="#ffffff">{rotulo}</text>')

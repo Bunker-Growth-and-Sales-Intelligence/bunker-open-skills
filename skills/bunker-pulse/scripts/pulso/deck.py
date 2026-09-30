@@ -218,7 +218,8 @@ JA_EXPLICADO = set()
 SEM_NOTA = ('quanto mais escuro',)
 
 
-def slide(bloco, perg, manchete, desenho, fonte, pag, ler='', traduzir=None, glossario=None):
+def slide(bloco, perg, manchete, desenho, fonte, pag, ler='', traduzir=None, glossario=None,
+          contexto=None):
     """Um gráfico por slide: bloco e pergunta no cabeçalho, resposta como título.
 
     A pergunta é de NEGÓCIO e vai no cabeçalho; a manchete é a RESPOSTA, conclusiva
@@ -244,6 +245,12 @@ def slide(bloco, perg, manchete, desenho, fonte, pag, ler='', traduzir=None, glo
             nota_texto = nota_adesiva(frases(ler))
         else:
             nota_palco = nota_adesiva(sigla, f'O que é {chave_sigla}', 'palco')
+    # o contexto é o porquê que o número não conta sozinho ("isso espera aquilo, decidido
+    # em tal reunião"). Ele vai sob a manchete, e a nota de leitura, se havia, desce para o palco
+    if contexto:
+        if nota_texto and not nota_palco:
+            nota_palco = nota_texto.replace('class="adesivo"', 'class="adesivo no-palco"', 1)
+        nota_texto = nota_adesiva(contexto, 'Contexto')
     nota = nota_texto or nota_palco
     rotulo = f'{bloco} · {perg}' if bloco else perg
     return f'''<deck-stage>
@@ -390,6 +397,7 @@ table.abertas td.num{white-space:nowrap;text-align:right;font-variant-numeric:ta
 table.abertas td.nd{color:#969696}
 table.abertas a{color:inherit;text-decoration:none;font-weight:600}
 table.abertas .tags{margin-top:8px;display:flex;flex-wrap:wrap;gap:7px}
+table.abertas .porque{font-size:19px;color:#555555;margin-top:8px;line-height:1.35}
 table.abertas code{font-family:ui-monospace,Menlo,monospace;font-size:19px;
  background:rgba(128,128,128,.13);padding:4px 9px;border-radius:4px;color:#969696}
 @page{size:1920px 1080px;margin:0}

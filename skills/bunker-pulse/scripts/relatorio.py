@@ -114,8 +114,32 @@ def ler(caminho):
             'prazo': data(a.get('prazo')),
             'concluida_em': data(a.get('concluida_em')),
             'link': a.get('link'),
+            'valor': _num(a.get('valor')),
+            'urgencia': _num(a.get('urgencia')),
+            'risco': _num(a.get('risco')),
+            'esforco': _num(a.get('esforco')),
+            'depende_de': [str(x) for x in (a.get('depende_de') or [])],
+            'motivo': (str(a.get('motivo')).strip() if a.get('motivo') else None),
         })
+    for a in itens:
+        # WSJF: o custo do atraso (valor, urgência e redução de risco) sobre o esforço
+        notas = (a['valor'], a['urgencia'], a['risco'])
+        a['custo'] = sum(notas) if all(x is not None for x in notas) else None
+        a['wsjf'] = (round(a['custo'] / a['esforco'], 2)
+                     if a['custo'] is not None and a['esforco'] else None)
     return base, hoje, itens, avisos
+
+
+def _num(v):
+    try:
+        return float(str(v).replace(',', '.')) if v not in (None, '') else None
+    except ValueError:
+        return None
+
+
+def urgente(p):
+    t = _sem_acento(p or '').lower().strip()
+    return t in ('p0', 'p1') or t.startswith(('alt', 'urg', 'crit', 'bloqueante'))
 
 
 # ------------------------------------------------------------------ português
@@ -131,11 +155,16 @@ def lista_nomes(nomes):
     return ', '.join(nomes[:-1]) + ' e ' + nomes[-1]
 
 
+def br_num(v, casas=1):
+    return f'{v:.{casas}f}'.replace('.', ',')
+
+
 def br_data(d):
     return d.strftime('%d/%m/%Y') if d else ''
 
 
 _CONECTIVOS = {'e', 'de', 'da', 'do', 'das', 'dos', 'com', 'para', 'a', 'o', 'em', 'no', 'na',
+               'um', 'uma', 'os', 'as', 'pelo', 'pela', 'ao', 'à', 'sem', 'por',
                '-', '–', '/', '&', 'and', 'of', 'the', 'y', 'del'}
 
 
@@ -161,6 +190,12 @@ def curto(nome, teto=TETO_NOME):
     while palavras and (palavras[-1].lower().strip(',;:.') in _CONECTIVOS or not palavras[-1].strip(',;:.-–/')):
         palavras.pop()
     return ' '.join(palavras).rstrip(',;:.-–/ ') or nome[:teto]
+
+
+def med_de(vs):
+    """A mediana que o desenho marca (a mesma regra dos quartis e da tira de pontos)."""
+    vs = sorted(vs)
+    return vs[min(int(round((len(vs) - 1) * .5)), len(vs) - 1)] if vs else 0
 
 
 def agrupar(pares, rotulo_resto='Outras'):
@@ -423,13 +458,195 @@ def montar(base, hoje, itens):
     else:
         fora.append('ritmo de entrega: menos de 3 atividades têm data de conclusão')
 
+    # ------------------------------------------------------------ a leitura mais funda
+    idx = {a['id']: a for a in ativos}
+    plano = base.get('_plano', True)
+
+    # onde está o que falta: esforço quando há nota de esforço, contagem quando não há
+    if faltam and len(frentes) >= 2:
+        com_esf = [a for a in faltam if a['esforco']]
+        if len(com_esf) >= len(faltam) * .6:
+            cont = {}
+            for a in com_esf:
+                k = a['frente'] or 'Sem frente'
+                cont[k] = cont.get(k, 0) + a['esforco']
+            pares = agrupar([(k, int(round(v))) for k, v in cont.items()])
+            tot = sum(v for _, v in pares)
+            m = (f'{pares[0][0]} é a frente que vai exigir mais esforço: '
+                 f'{pares[0][1]} dos {tot} pontos em aberto.')
+            bloco('esforco', 'O que falta', 'Qual frente vai exigir mais esforço?', m,
+                  formas.barras_deitadas([(curto(n), v) for n, v in pares], MEIA),
+                  f'{len(com_esf)} atividades em aberto com nota de esforço')
+        else:
+            cont = {}
+            for a in faltam:
+                k = a['frente'] or 'Sem frente'
+                cont[k] = cont.get(k, 0) + 1
+            pares = agrupar(cont.items())
+            m = f'{pares[0][0]} concentra o que falta: {pares[0][1]} das {len(faltam)} atividades.'
+            bloco('onde_falta', 'O que falta', 'Onde está o trabalho que falta?', m,
+                  formas.barras_deitadas([(curto(n), v) for n, v in pares], MEIA),
+                  f'{len(faltam)} atividades não concluídas')
+
+    # onde o que falta se acumula: frente contra situação
+    if faltam and len(frentes) >= 2:
+        cols = ['não começou', 'em andamento', 'bloqueada']
+        linhas = sorted({a['frente'] or 'Sem frente' for a in faltam})[:TETO_CATEGORIAS]
+        mat = [[sum(1 for a in faltam if (a['frente'] or 'Sem frente') == l
+                    and STATUS_NOME[a['status']] == c) for c in cols] for l in linhas]
+        topo = max((v, i, j) for i, l in enumerate(mat) for j, v in enumerate(l))
+        if topo[0] >= 2:
+            onde = {'não começou': 'no que ainda não começou', 'em andamento': 'no que está em andamento',
+                    'bloqueada': 'no que está bloqueado'}[cols[topo[2]]]
+            m = (f'O acúmulo está em {linhas[topo[1]]}, {onde}: '
+                 f'{topo[0]} das {len(faltam)} atividades que faltam.')
+            bloco('acumulo', 'O que falta', 'Em que frente e em que situação o que falta se acumula?', m,
+                  formas.mapa_calor([curto(l) for l in linhas], cols, mat, MEIA),
+                  f'{len(faltam)} atividades não concluídas, por frente e situação')
+
+    # há quanto tempo o que falta está aberto, por frente
+    grupos = {}
+    for a in faltam:
+        if a['criada_em']:
+            grupos.setdefault(a['frente'] or 'Sem frente', []).append((hoje - a['criada_em']).days)
+    grupos = {k: v for k, v in grupos.items() if len(v) >= 2}
+    if len(grupos) >= 2:
+        med = {k: sorted(v)[min(int(round((len(v) - 1) * .5)), len(v) - 1)] for k, v in grupos.items()}
+        lider = max(med, key=med.get)
+        m = f'{lider} é a frente com atividades abertas há mais tempo: mediana de {med[lider]} dias.'
+        linhas = sorted(((curto(k), v) for k, v in grupos.items()), key=lambda kv: -med_de(kv[1]))
+        bloco('idade', 'O que falta', 'Tem atividade envelhecendo em alguma frente?', m,
+              formas.quartis(linhas[:TETO_CATEGORIAS], MEIA, 'dias em aberto'),
+              'atividades não concluídas com data de criação')
+
+    # quanto tempo cada frente leva para concluir
+    grupos = {}
+    for a in feitos:
+        ini = a['criada_em'] or a['inicio']
+        if ini and a['concluida_em']:
+            grupos.setdefault(a['frente'] or 'Sem frente', []).append(max((a['concluida_em'] - ini).days, 0))
+    grupos = {k: v for k, v in grupos.items() if len(v) >= 2}
+    if len(grupos) >= 2:
+        med = {k: med_de(v) for k, v in grupos.items()}
+        lider = max(med, key=med.get)
+        resto = med_de([x for k, v in grupos.items() if k != lider for x in v])
+        m = (f'{lider} é a frente que mais demora para concluir: mediana de {med[lider]} dias, '
+             f'contra {resto} das outras.')
+        linhas = sorted(((curto(k), v) for k, v in grupos.items()), key=lambda kv: -med_de(kv[1]))
+        bloco('tempo', 'O que foi entregue', 'Alguma frente está demorando demais para concluir?', m,
+              formas.quartis(linhas[:TETO_CATEGORIAS], MEIA, 'dias até concluir'),
+              f'{sum(len(v) for v in grupos.values())} atividades concluídas com as duas datas')
+
+    # quem está segurando quem
+    presas = {}
+    for a in faltam:
+        for d in a['depende_de']:
+            b = idx.get(d)
+            if b and b['status'] != CONCLUIDA:
+                presas.setdefault(b['id'], []).append(a)
+    if presas:
+        pares = sorted(((idx[k]['titulo'], len(v)) for k, v in presas.items()), key=lambda kv: -kv[1])
+        n_presas = len({a['id'] for v in presas.values() for a in v})
+        lider, v = pares[0]
+        m = (f'{lider} segura {n_de(v, "outra atividade", "outras atividades")}, e '
+             f'{n_de(n_presas, "atividade espera", "atividades esperam")} alguma outra terminar.')
+        bloco('dependencias', 'O que falta', 'Alguma atividade está segurando as outras?', m,
+              formas.barras_deitadas([(curto(n), x) for n, x in agrupar(pares)], MEIA,
+                                     destaque=0, cor_destaque=paleta.SECUNDARIA),
+              f'{n_presas} atividades que dependem de outra ainda não concluída')
+
+    # ------------------------------------------------------------ prioridade
+    if plano:
+        com_p = [a for a in faltam if a['prioridade']]
+        if len(com_p) >= len(faltam) * .5 and com_p:
+            cont = {}
+            for a in com_p:
+                cont[a['prioridade']] = cont.get(a['prioridade'], 0) + 1
+            pares = sorted(cont.items(), key=lambda kv: kv[0])
+            urg = [n for n, _ in pares if urgente(n)]
+            n_urg = sum(v for n, v in pares if urgente(n))
+            if n_urg:
+                m = (f'{n_urg} das {len(com_p)} atividades em aberto são urgentes '
+                     f'({lista_nomes(urg)}).')
+            else:
+                m = f'Nenhuma das {len(com_p)} atividades em aberto está marcada como urgente.'
+            bloco('urgentes', 'Prioridade', 'Há atividades urgentes em aberto?', m,
+                  formas.barras_deitadas(pares, MEIA, destaque=urg or None,
+                                         cor_destaque=paleta.SECUNDARIA),
+                  f'{len(com_p)} atividades em aberto com prioridade')
+
+        com_w = [a for a in faltam if a['wsjf']]
+        if len(com_w) >= 3:
+            g = {}
+            for a in com_w:
+                x = g.setdefault(a['frente'] or 'Sem frente', [0, 0, 0])
+                x[0] += 1; x[1] += a['custo']; x[2] += a['esforco']
+            if len(g) >= 2:
+                itens_w = sorted(((k, round(v[1] / v[2], 2)) for k, v in g.items()), key=lambda kv: -kv[1])
+                lider, val = itens_w[0]
+                m = (f'{lider} deve vir primeiro: é a frente que entrega mais valor por unidade de '
+                     f'esforço, com WSJF de {br_num(val)} em {n_de(g[lider][0], "atividade", "atividades")}.')
+                bloco('wsjf', 'Prioridade', 'Por qual frente devemos começar?', m,
+                      formas.barras_deitadas([(curto(k), round(v, 1)) for k, v in itens_w[:TETO_CATEGORIAS]],
+                                             MEIA, destaque=0),
+                      f'{len(com_w)} atividades em aberto com as quatro notas')
+            quadrantes = [
+                ('agora', 'valor', 'urgencia', 'valor para o negócio', 'urgência',
+                 ['FAZER AGORA', 'ARMADILHA', 'AGENDAR', 'ESTACIONAR'], 0,
+                 'Tem alguma coisa que não pode esperar?',
+                 'não podem esperar: muito valor e muita urgência', 'não pode esperar: muito valor e muita urgência'),
+                ('rapido', 'esforco', 'wsjf', 'esforço', 'WSJF',
+                 ['APOSTA GRANDE', 'GANHO RÁPIDO', 'QUESTIONAR', 'ENCAIXE'], 1,
+                 'Tem ganho rápido disponível agora?',
+                 'são ganho rápido: entregam valor sem custar caro', 'é ganho rápido: entrega valor sem custar caro'),
+                ('estrategica', 'valor', 'risco', 'valor para o negócio', 'redução de risco',
+                 ['APOSTA ESTRATÉGICA', 'ARRUMAÇÃO', 'SÓ RECURSO', 'POUCO VALOR'], 0,
+                 'Tem algo que entrega valor e tira risco junto?',
+                 'são apostas estratégicas: entregam valor e tiram risco junto',
+                 'é aposta estratégica: entrega valor e tira risco junto'),
+            ]
+            for chave, cx, cy, rx, ry, nomes, alvo, perg, plur, sing in quadrantes:
+                pts = [(a[cx], a[cy]) for a in com_w]
+                mdn = lambda vs: sorted(vs)[len(vs) // 2]
+                mx, my = mdn([p[0] for p in pts]), mdn([p[1] for p in pts])
+                quad = lambda x, y: (0 if x > mx else 1) if y > my else (2 if x > mx else 3)
+                n_alvo = sum(1 for x, y in pts if quad(x, y) == alvo)
+                if n_alvo > 1:
+                    m = f'{n_alvo} das {len(pts)} atividades pontuadas {plur}.'
+                elif n_alvo == 1:
+                    m = f'1 das {len(pts)} atividades pontuadas {sing}.'
+                else:
+                    m = f'Nenhuma das {len(pts)} atividades pontuadas cai em {nomes[alvo].lower()}.'
+                bloco(chave, 'Prioridade', perg, m,
+                      formas.matriz_quadrantes(pts, rx, ry, nomes, MEIA, alvo),
+                      f'{len(pts)} atividades em aberto com as quatro notas')
+        elif any(a['valor'] or a['esforco'] for a in faltam):
+            fora.append('priorização: poucas atividades têm as quatro notas (valor, urgência, risco e esforço)')
+
+    ordem = {'Onde estamos': 0, 'O que foi entregue': 1, 'O que falta': 2, 'Prioridade': 3}
+    blocos.sort(key=lambda b: ordem.get(b['grupo'], 9))
     return blocos, fora, atrasados, faltam
 
 
-def tabela(faltam, hoje):
-    """O que segue em aberto, com o atrasado primeiro e o prazo mais antigo no topo."""
-    ordem = sorted(faltam, key=lambda a: (a['prazo'] is None, a['prazo'] or dt.date.max))
-    cab = '<thead><tr><th>Atividade</th><th>Frente</th><th>Responsável</th><th>Prazo</th><th>Situação</th></tr></thead>'
+def ordem_de_ataque(faltam, hoje, plano=True):
+    """A ordem em que a fila deveria ser atacada: WSJF primeiro, prioridade depois, e o
+    atrasado antes do que vence depois. Sem plano, só o prazo."""
+    def chave(a):
+        atras = bool(a['prazo'] and a['prazo'] < hoje)
+        prazo = a['prazo'] or dt.date.max
+        if not plano:
+            return (not atras, prazo)
+        return (-(a['wsjf'] or 0), not urgente(a['prioridade']), not atras, prazo)
+    return sorted(faltam, key=chave)
+
+
+def tabela(faltam, hoje, plano=True):
+    """O que segue em aberto, na ordem de ataque, com o porquê embaixo do título."""
+    ordem = ordem_de_ataque(faltam, hoje, plano)
+    idx = {a['id']: a for a in faltam}
+    tem_w = plano and any(a['wsjf'] for a in faltam)
+    cab = ('<thead><tr><th>Atividade</th><th>Responsável</th><th>Prazo</th><th>Situação</th>'
+           + ('<th class="num">WSJF</th>' if tem_w else '') + '</tr></thead>')
     linhas = []
     for a in ordem:
         atras = a['prazo'] and a['prazo'] < hoje
@@ -437,18 +654,32 @@ def tabela(faltam, hoje):
         titulo = html.escape(a['titulo'])
         if a['link']:
             titulo = f'<a href="{html.escape(a["link"])}">{titulo}</a>'
-        linhas.append(f'<tr><td>{titulo}</td><td class="nd">{html.escape(a["frente"] or "")}</td>'
+        tags = [x for x in (a['prioridade'], a['frente']) if x]
+        tags += [f'espera: {curto(idx[d]["titulo"], 30)}' for d in a['depende_de']
+                 if d in idx]
+        tags_html = ''.join(f'<code>{html.escape(t)}</code>' for t in tags)
+        porque = (f'<p class="porque">{html.escape(a["motivo"])}</p>' if a['motivo'] else '')
+        linhas.append(f'<tr><td>{titulo}<div class="tags">{tags_html}</div>{porque}</td>'
                       f'<td class="nd">{html.escape(a["responsavel"] or "sem responsável")}</td>'
-                      f'<td class="num">{br_data(a["prazo"])}</td><td>{sit}</td></tr>')
+                      f'<td class="num">{br_data(a["prazo"])}</td><td>{sit}</td>'
+                      + (f'<td class="num">{br_num(a["wsjf"])}</td>' if tem_w and a['wsjf'] else
+                         '<td class="num nd">sem nota</td>' if tem_w else '') + '</tr>')
     return f'<table class="abertas">{cab}<tbody>{"".join(linhas)}</tbody></table>'
 
 
 # ------------------------------------------------------------------ o deck
 
+GLOSSARIO = {'WSJF': 'WSJF é o custo do atraso (valor para o negócio, urgência e redução de '
+                     'risco) dividido pelo esforço. Quanto maior, mais cedo a atividade deveria '
+                     'ser feita.'}
+
+
 def deck_html(base, hoje, blocos, faltam, atrasados):
     from pulso import deck
     deck.JA_EXPLICADO.clear()
     manchetes = base.get('manchetes') or {}
+    notas = base.get('notas') or {}
+    plano = base.get('_plano', True)
     cliente = base.get('cliente') or ''
     projeto = base.get('projeto') or 'Projeto'
     quando = br_data(hoje)
@@ -464,12 +695,17 @@ def deck_html(base, hoje, blocos, faltam, atrasados):
     for b in blocos:
         pag += 1
         manchete = manchetes.get(b['chave'], b['manchete'])
-        slides.append(deck.slide(b['grupo'], b['pergunta'], manchete, b['desenho'], b['fonte'], pag))
+        slides.append(deck.slide(b['grupo'], b['pergunta'], manchete, b['desenho'], b['fonte'], pag,
+                                 glossario=GLOSSARIO, contexto=notas.get(b['chave'])))
     if faltam:
-        apoio = ('As atrasadas primeiro, e depois o que vence antes.' if atrasados
-                 else 'Em ordem de prazo, do que vence antes para o que vence depois.')
+        if plano and any(a['wsjf'] for a in faltam):
+            apoio = 'Na ordem em que o trabalho deveria ser atacado: WSJF primeiro, prioridade depois.'
+        elif atrasados:
+            apoio = 'As atrasadas primeiro, e depois o que vence antes.'
+        else:
+            apoio = 'Em ordem de prazo, do que vence antes para o que vence depois.'
         mais, pag = deck.slides_tabela(
-            tabela(faltam, hoje), pag, por_slide=6, teto=12, titulo='O que continua em aberto',
+            tabela(faltam, hoje, plano), pag, por_slide=4, teto=12, titulo='O que continua em aberto',
             rotulo='O que segue aberto', apoio=apoio,
             sobra='Outras {n} atividades, com prazo mais distante, ficaram fora desta lista.',
             fonte=f'Fonte: {html.escape(base.get("fonte") or "lista de atividades")} &#183; medido em {quando}')
@@ -484,9 +720,12 @@ def main(argv=None):
     ap.add_argument('--saida', default='relatorio.html')
     ap.add_argument('--pdf', action='store_true', help='gera o PDF pelo Google Chrome')
     ap.add_argument('--resumo', action='store_true', help='só imprime perguntas e manchetes')
+    ap.add_argument('--sem-plano', action='store_true',
+                    help='versão curta: sem os slides de prioridade, e a tabela por prazo')
     a = ap.parse_args(argv)
 
     base, hoje, itens, avisos = ler(a.atividades)
+    base['_plano'] = not a.sem_plano
     definir_cores(base)
     blocos, fora, atrasados, faltam = montar(base, hoje, itens)
     for x in avisos:
