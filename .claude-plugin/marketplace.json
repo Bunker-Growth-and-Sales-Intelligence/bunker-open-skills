@@ -1,0 +1,14 @@
+{
+  "name": "bunker-open-skills",
+  "owner": { "name": "Bunker Growth and Sales Intelligence", "url": "https://bunkerconsultancy.com" },
+  "metadata": { "description": "Skills gratuitas da Bunker Growth and Sales Intelligence." },
+  "plugins": [
+    {
+      "name": "skills",
+      "source": "./",
+      "description": "Formação de preço e status report em slides, gratuitos, da Bunker Growth and Sales Intelligence.",
+      "version": "0.4.0",
+      "author": { "name": "Bunker Growth and Sales Intelligence" }
+    }
+  ]
+}

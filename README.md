@@ -51,7 +51,16 @@ Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a 
 
 ## Instalação
 
-### Claude Code
+### Claude Code, como plugin
+
+O jeito mais fácil: instala as duas skills de uma vez e recebe as atualizações.
+
+```
+/plugin marketplace add Bunker-Growth-and-Sales-Intelligence/bunker-open-skills
+/plugin install skills@bunker-open-skills
+```
+
+### Claude Code, copiando a pasta
 
 Copie a pasta da skill para a pasta de skills do seu usuário:
 
