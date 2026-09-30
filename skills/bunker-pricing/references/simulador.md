@@ -48,12 +48,18 @@ Troque só esse bloco. O resto da página (desenhos, campos editáveis e a conta
 | `outras_pct` | cartão (taxa × parte no cartão), marketplace. |
 | `por_fora` | IPI, ICMS-ST, CBS e IBS; `"base": "sem_icms_iss"` para CBS e IBS. |
 | `preco_mercado` | preço do concorrente; o simulador mostra a maior margem que cabe nele. |
-| `custo_fixo_mes`, `meta_lucro_pct` | outra conta: lucro depois do custo fixo, ponto de equilíbrio no mix de hoje e o preço de cada linha para a meta de lucro, com uma ou várias linhas. |
+| `custo_fixo_mes`, `meta_lucro_pct` | outra conta: lucro depois do custo fixo, ponto de equilíbrio no mix de hoje e o preço de cada linha para a meta de lucro, com uma ou várias linhas. O fixo vai para cada linha pela parte dela na margem de contribuição do mês, e não por unidade; a linha que já cobre a sua parte fica no preço negociado, nunca abaixo. |
+| `unidade` (na linha) | a unidade da linha quando ela difere da do cenário: `"mês de contrato"` numa, `"hora"` na outra. Linhas em unidades diferentes não se somam em unidade: o painel fala de cada uma e soma só em reais. |
 | `hipoteses` | nomes marcados como hipótese: `custo`, `impostos`, `comissao`, `frete`, `outras`, `margem`, `desconto`, `volume`, `perda`. |
 | `quantidade` | volume da linha no mês. O consolidado e os reais dos gráficos pesam por ele. |
 | `quantidade_sem_desconto` | quanto a linha venderia sem o desconto ou a promoção. O simulador compara a margem do mês nos dois volumes. |
 | `perda_pct` | perda (quebra, validade), % do que se compra. Entra no custo: custo ÷ (1 − perda), em 4 casas. |
 | `rotulos.desconto` | nome do degrau do desconto: "Desconto do vendedor" por padrão; "Promoção", "Desconto do representante". |
+| `regra_margem` | `"teto"` (padrão) ou `"piso"`. Piso é a margem MÍNIMA aceita (serviço com margem alta): tabela acima dela é o esperado, o aviso de "passa do teto" some, e o aviso passa a ser o de nível abaixo do piso. Pode vir na linha. |
+| `moeda` (na linha) e `cambio` | preço em outra moeda: `"moeda": "USD"` na linha e `"cambio": {"USD": 5.2132}` no cenário. Vale para `preco_especifico`, `preco_praticado` e `preco_mercado`, convertidos em 2 casas; custo, frete e despesas em R$ ficam em reais. `cambio_fonte` diz de onde veio a taxa, e as premissas mostram o valor original e o convertido. |
+| `despesas_fixas` | as despesas fixas do mês abertas por natureza, `[{"nome": "Despesas com pessoal e encargos", "valor": 38000}]`. Sem `custo_fixo_mes`, a soma delas é o custo fixo. |
+| `receitas_financeiras`, `despesas_financeiras`, `irpj_csll_pct`, `regime` | o resto da DRE do mês: resultado financeiro em R$ no mês, separado em receitas e despesas, e IRPJ e CSLL. No Lucro Real (padrão), `irpj_csll_pct` é % do lucro antes deles e zera com prejuízo; com `"regime": "presumido"`, é % da receita bruta (8,54% num serviço com o adicional) e pesa mesmo com prejuízo. Sem `irpj_csll_pct`, a DRE para no lucro antes do IRPJ e da CSLL. |
+| `cliente`, `fonte`, `porte`, `marca` | da entrega: o nome na capa, de onde vieram os números (rodapé), o degrau da escada (`pequeno`, `muitos_itens`, `grande`; sem ele, a skill estima) e a cor do cliente, `{"primaria": "#...", "secundaria": "#..."}`. |
 
 **A meta.** A leitura principal é sempre contra a margem que o dono quer: `mc_especifica`, senão `mc_canal`, senão `mc_teto`. O preço de hoje e o preço fechado (`preco_especifico`) são nível usado, nunca meta. Sem meta, a página diz "sem meta" e não pinta de verde.
 
@@ -76,6 +82,19 @@ Troque só esse bloco. O resto da página (desenhos, campos editáveis e a conta
 | Raio-x | Como a conta fecha, centavo a centavo? |
 
 Faixa de cor: mais de 70% da meta é verde; de 50 a 70, âmbar; abaixo de 50, ou margem negativa, vermelho; sem meta, neutro. A fonte dos números aparece uma vez, no rodapé. Conflito entre níveis (margem acima do teto, canal mais caro que a tabela de outro grupo) sai como aviso âmbar no topo; erro de conta, como aviso vermelho.
+
+## A entrega: painel e PDF
+
+Do mesmo cenário, `python3 scripts/entrega.py cenario.json --painel painel.html --pdf entrega.pdf` grava o painel (HTML autocontido, claro e escuro) e o PDF A4 do cliente. A conta é a de `simulador.calcular`; `--cenario 2` escolhe outro cenário do arquivo. O foco é o preço pelo qual cada produto deve ser vendido. A entrega, por ora, é a capa e as duas DREs, só as tabelas:
+
+1. **DRE da venda**, por unidade: formação do preço e resultado da venda até a margem de contribuição, com os tributos abertos, os da reforma (CBS e IBS) inclusive, e a margem cedida. No painel, uma aba por produto; no PDF, o principal.
+2. **DRE do mês**, orçado no preço teto contra realizado, até o lucro líquido quando há despesas fixas.
+
+As duas DREs trazem três colunas de nome: como o Alumni chama a linha, como a skill chama e como o Pricing Designer grava. Onde o termo ainda não existe, o nome da skill sai em vermelho (a criar). No painel, cada nome é clicável e a escolha fica no navegador (`localStorage`), trocando o nome da primeira coluna.
+
+No painel, todo número que é premissa se edita dentro da própria célula, sem mudar a altura da linha: custo, margem desejada, alíquotas, comissão, frete, descontos de campanha e tático em R$, volume, despesas fixas, receitas e despesas financeiras e IRPJ e CSLL. Editar recalcula as duas DREs e as conclusões no navegador (`assets/painel.js`, sobre o motor do simulador); o teste de paridade confere cada número contra o Python. Os gráficos seguem o cenário original e ficam esmaecidos enquanto há edição. O desvio sai com seta e cor que julga pelo sentido da linha: menos custo ou menos dedução é bom, menos receita ou menos margem é ruim. Tudo em 2 casas na tela; a conta roda em 4.
+
+Preço teto é o primeiro nível da linha (com `regra_margem: "piso"`, a tabela acima do piso). Campanha é do preço teto ao nível usado; desconto tático, do nível usado ao negociado. O orçado é a mesma venda no preço teto, nas mesmas unidades. As hipóteses ficam no chat e no cenário, e não na entrega.
 
 ## Onde abre
 

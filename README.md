@@ -6,12 +6,12 @@ Skills gratuitas da [Bunker](https://bunkerconsultancy.com) para usar com a IA d
 
 Forma ou confere o preço de um produto ou serviço. Você conversa com a IA, responde umas doze perguntas curtas e recebe um simulador visual, num HTML só, que abre como artefato no Claude ou no seu navegador:
 
-- o preço formado em três blocos: custo, margem sobre a receita líquida, e depois impostos, comissão e frete (a mesma conta do Pricing Designer);
+- o preço formado em três blocos: custo, margem sobre a receita líquida gerencial, e depois impostos, comissão e frete (a mesma conta do Pricing Designer);
 - margem diferente por grupo de cliente, quando existe: teto, canal, preço de contrato ou rede, desconto do vendedor;
 - a margem planejada contra a realizada, e o desvio contra o nível usado, o canal e o teto, em pontos, relativo e reais;
-- a composição do preço numa barra só, com a margem cedida no desconto hachurada;
 - campos editáveis: mexa no custo, nas margens, nos impostos, na comissão, no frete e no desconto, e tudo recalcula;
-- o efeito da reforma tributária (CBS e IBS a partir de 2027), com as fontes oficiais.
+- o efeito da reforma tributária (CBS e IBS a partir de 2027), com as fontes oficiais;
+- para entregar ao cliente, um painel editável e um PDF A4 com a marca da Bunker com as duas DREs: a da venda, do custo ao preço negociado, e a do mês, orçado contra realizado.
 
 Serve para empresa de qualquer tamanho e para o contador dela. Não precisa de sistema nenhum.
 
@@ -28,39 +28,16 @@ skills/bunker-pricing/
   references/formulas.md            fórmulas, DRE e exemplos resolvidos
   references/impostos.md            regimes, benefícios por produto e alíquotas, com fontes
   references/reforma-tributaria.md  CBS e IBS, calendário e efeito no preço
-  references/simulador.md           formato do cenário e os três jeitos de abrir
+  references/simulador.md           formato do cenário, as duas camadas da DRE e os três jeitos de abrir
+  references/graficos.md            os blocos do painel, as regras de desenho, o PDF e as conferências
   scripts/preco.py                  a conta de uma linha, sem dependências
   scripts/simulador.py              a régua em níveis; grava e abre o simulador
+  scripts/camadas.py                a DRE da venda e a DRE do mês
+  scripts/entrega.py                o painel editável e o PDF A4 de entrega
+  scripts/grafico/                  formas em SVG, página, marca, PDF e conferências
+  assets/                           logos, o B em contorno e a fonte da casa, embutidos
   scripts/test_*.py                 exemplos, casos de borda e a conferência JS contra Python
 exemplos/                           três simuladores prontos, com o cenário de cada um
-```
-
-## bunker-pulse
-
-Transforma a lista de atividades de um projeto num status report em slides, pronto para mandar ao cliente ou ao diretor. Você conversa com a IA e manda a lista do jeito que tiver: print do quadro, planilha, CSV, export do GitHub, do Jira, do Trello ou do Planner, ou texto colado. A IA organiza, confirma com você o que ficou em dúvida, pergunta as cores da empresa e entrega:
-
-- um PDF de slides 16:9, um gráfico por página, com a cara da Bunker e a cor de quem vai receber;
-- em cada slide, a pergunta que um diretor faria ("Onde estão os atrasos?") e a resposta como título, com o número;
-- o percentual concluído, o que entrou e o que saiu, as frentes concluídas, onde estão os atrasos e de quantos dias, quem está com mais trabalho e quanto está sem responsável, e o ritmo de entrega;
-- a tabela do que continua em aberto, com as atrasadas primeiro.
-
-Cada slide só entra quando a lista tem o dado para ele: sem prazo, não há slide de atraso. Nenhum número é digitado à mão.
-
-Sem cor definida, o relatório sai no preto e vermelho da Bunker, com o resto em cinza claro para o dado importante saltar.
-
-### O que tem na pasta
-
-```
-skills/bunker-pulse/
-  SKILL.md                     a conversa, em cinco passos
-  references/entrada.md        como ler print, planilha, GitHub, Jira, Trello, Planner e texto
-  references/formato.md        o registro das atividades que o script lê
-  references/graficos.md       os slides, as regras do desenho e como escrever a manchete
-  scripts/relatorio.py         monta os slides a partir do registro, sem dependências
-  scripts/pulso/               as formas em SVG, a marca e a saída em PDF
-  scripts/test_relatorio.py    as contas e as manchetes conferidas
-  assets/                      logo, fonte e foto da capa, embutidos no HTML
-exemplos/pulse-exemplo.*       um relatório pronto, com a lista fictícia que o gerou
 ```
 
 ## Baixar
@@ -81,18 +58,15 @@ Copie a pasta da skill para a pasta de skills do seu usuário:
 ```bash
 mkdir -p ~/.claude/skills
 cp -R skills/bunker-pricing ~/.claude/skills/
-cp -R skills/bunker-pulse ~/.claude/skills/
 ```
 
-Para usar só num projeto, copie para `.claude/skills/` dentro do projeto. Depois é só pedir: "quero formar o preço do meu produto", "meu preço está certo?" ou "monta o status report do projeto com esta lista".
+Para usar só num projeto, copie para `.claude/skills/` dentro do projeto. Depois é só pedir: "quero formar o preço do meu produto" ou "meu preço está certo?".
 
 ### Claude.ai (site e aplicativo)
 
 1. Baixe o [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pricing.zip).
 2. No Claude.ai, abra Configurações, procure a área de Skills (em Capacidades) e envie o `bunker-pricing.zip`. Com os artefatos ligados, o simulador abre como artefato na própria conversa.
 3. Numa conversa nova, peça: "quanto devo cobrar pelo meu produto?".
-
-Para a `bunker-pulse`, envie o `bunker-pulse.zip` do mesmo jeito. Ela roda o script de Python, então a execução de código precisa estar ligada. Numa conversa nova, mande a lista (print, planilha, o que tiver) e peça: "monta o status report deste projeto". O relatório abre como artefato, com o botão "Salvar em PDF".
 
 Os nomes dos menus podem mudar. Se não achar, procure por "Skills" na ajuda do Claude.
 
@@ -103,7 +77,6 @@ Copie a pasta para a pasta de skills do Codex:
 ```bash
 mkdir -p ~/.codex/skills
 cp -R skills/bunker-pricing ~/.codex/skills/
-cp -R skills/bunker-pulse ~/.codex/skills/
 ```
 
 Se a sua versão do Codex não carregar skills, coloque no `AGENTS.md` do projeto uma linha pedindo para seguir `skills/bunker-pricing/SKILL.md` quando o assunto for preço.
@@ -116,9 +89,7 @@ Se a sua versão do Codex não carregar skills, coloque no `AGENTS.md` do projet
 
 Para não colar toda vez, use os recursos de instrução fixa da ferramenta (GPTs personalizados no ChatGPT, Gems no Gemini): cole o `SKILL.md` nas instruções e envie os arquivos de `references/` como conhecimento. Envie também `assets/simulador.html`: a IA devolve a página com os seus números, para salvar como `.html` e abrir no navegador.
 
-A `bunker-pricing` funciona sem o script. Nesse caso a IA faz a conta passo a passo, do jeito que está em `references/formulas.md`.
-
-A `bunker-pulse` precisa rodar o script de Python: use uma IA que execute código (Claude com execução de código, Claude Code, Codex, ChatGPT com análise de dados) e envie a pasta inteira.
+A skill funciona sem o script. Nesse caso a IA faz a conta passo a passo, do jeito que está em `references/formulas.md`.
 
 ## O script
 
@@ -140,7 +111,19 @@ python3 skills/bunker-pricing/scripts/simulador.py exemplos/industria.json
 python3 skills/bunker-pricing/scripts/preco.py --custo 50 --imposto PIS=0.65 --imposto COFINS=3 --imposto ISS=5 --comissao 10 --preco-atual 180 --atividade servico
 ```
 
-Percentuais entram em pontos: `18` quer dizer 18%. A margem é em % da receita líquida.
+```bash
+# o painel editável e o PDF A4 para o cliente (o PDF usa o Chrome da máquina)
+python3 skills/bunker-pricing/scripts/entrega.py exemplos/industria.json --painel painel.html --pdf entrega.pdf
+```
+
+Sem Chrome, o `entrega.py` grava o HTML das folhas A4 para imprimir no navegador.
+
+```bash
+# conferir o painel: geometria, legibilidade, sobreposição, e as fotos em 1440 e 390
+cd skills/bunker-pricing/scripts && python3 -m grafico.conferir ../../../painel.html --fotos fotos
+```
+
+Percentuais entram em pontos: `18` quer dizer 18%. A margem é em % da receita líquida gerencial.
 
 O HTML abre sozinho no navegador (`open` no macOS, `start` no Windows, `xdg-open` no Linux). Para só gravar, use `--nao-abrir`.
 
@@ -153,15 +136,3 @@ python3 -m unittest discover -s skills/bunker-pricing/scripts
 ## Operação grande
 
 Se você tem muitos itens, tabela de preço por canal ou por região, ou vendedores que dão desconto, a mesma conta precisa acontecer em cada linha de cada pedido. O Pricing Designer da Bunker faz isso dentro do Salesforce. Conheça em https://bunkerconsultancy.com.
-
-## O script da bunker-pulse
-
-Precisa de Python 3.9 ou mais novo, sem instalar nada. Para o PDF automático, do Google Chrome.
-
-```bash
-python3 skills/bunker-pulse/scripts/relatorio.py exemplos/pulse-exemplo.json --resumo
-python3 skills/bunker-pulse/scripts/relatorio.py exemplos/pulse-exemplo.json --saida relatorio.html --pdf
-python3 -m unittest discover -s skills/bunker-pulse/scripts
-```
-
-O `--resumo` mostra a pergunta e a manchete de cada slide e o que ficou de fora. O formato da lista está em `skills/bunker-pulse/references/formato.md`.
