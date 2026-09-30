@@ -45,7 +45,8 @@ lê a fonte e escreve aqui.
 | `titulo`, `subtitulo` | não | a capa; o padrão serve para quase tudo |
 | `cores` | não | `primaria` e `secundaria` em hexadecimal; `clara` opcional (a segunda série; sem ela, sai uma versão clara da primária). Sem `cores`, a paleta do portal Bunker Alumni: azul `#3b82f6` e rosa `#f43f5e` |
 | `exibicao` | não | nome curto de frente ou pessoa para caber no gráfico (até 17 caracteres). A manchete continua com o nome inteiro |
-| `manchetes` | não | troca a manchete de um slide pela chave dele (`numeros`, `cascata`, `frentes`, `situacao`, `atrasos`, `dias`, `responsaveis`, `ritmo`). Só a frase muda; confira que o número bate com o desenho |
+| `notas` | não | o contexto que o número não conta sozinho, por chave do slide. Vira a nota adesiva "Contexto" embaixo da manchete: "O desenho da integração ficou para setembro porque a TI do cliente só liberou o acesso em 02/09." |
+| `manchetes` | não | troca a manchete de um slide pela chave dele (veja a lista em `graficos.md`). Só a frase muda; confira que o número bate com o desenho |
 
 ## Os campos de cada atividade
 
@@ -59,7 +60,11 @@ lê a fonte e escreve aqui.
 | `prazo` | a data em que deveria terminar |
 | `criada_em` | quando a atividade entrou na lista |
 | `concluida_em` | quando terminou, para as concluídas |
-| `inicio`, `tipo`, `prioridade`, `id`, `link` | opcionais; o `link` vira clicável na tabela |
+| `prioridade` | P0 a P3, ou alta, média e baixa. P0, P1, alta, urgente e crítica contam como urgentes |
+| `valor`, `urgencia`, `risco`, `esforco` | as quatro notas do WSJF, de preferência em 1, 2, 3, 5, 8 e 13. Com as quatro, entram o WSJF por frente e os três quadrantes |
+| `depende_de` | lista de `id` das atividades que precisam terminar antes desta |
+| `motivo` | o porquê em uma frase ("espera o acesso ao ERP"). Aparece embaixo do título na tabela |
+| `inicio`, `tipo`, `id`, `link` | opcionais; o `link` vira clicável na tabela |
 
 Datas em `AAAA-MM-DD`. O script também aceita `DD/MM/AAAA` e o ISO com hora do GitHub.
 

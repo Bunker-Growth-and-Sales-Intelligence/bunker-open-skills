@@ -32,7 +32,39 @@ O motor já segue todas; elas estão aqui para você não pedir o contrário.
 | `dias` | Os atrasos são de dias ou de semanas? | o atraso típico (mediana) e o pior, pelo nome | um ponto por atividade, com mediana e P90 |
 | `responsaveis` | O trabalho que falta está bem distribuído? | quem carrega mais, ou quanto está sem dono | barras ordenadas |
 | `ritmo` | O ritmo de entrega está aumentando? | as últimas 4 semanas contra as 4 anteriores | colunas por semana |
-| tabela | O que continua em aberto | atrasadas primeiro, depois por prazo, até 12 linhas | tabela |
+| `tempo` | Alguma frente está demorando demais para concluir? | a frente de maior mediana até concluir, contra o resto | quartis por frente |
+| `esforco` ou `onde_falta` | Qual frente vai exigir mais esforço? | a frente com mais pontos (ou atividades) em aberto | barras ordenadas |
+| `acumulo` | Em que frente e em que situação o que falta se acumula? | a célula maior do cruzamento | mapa de calor |
+| `idade` | Tem atividade envelhecendo em alguma frente? | a frente com atividades abertas há mais tempo | quartis por frente |
+| `dependencias` | Alguma atividade está segurando as outras? | a atividade que mais segura as outras | barras ordenadas, na cor de alerta |
+| `urgentes` | Há atividades urgentes em aberto? | quantas são P0 e P1 (ou alta) | barras, urgentes na cor de alerta |
+| `wsjf` | Por qual frente devemos começar? | a frente de maior WSJF, com nota "O que é WSJF" | barras ordenadas |
+| `agora` | Tem alguma coisa que não pode esperar? | quantas têm muito valor e muita urgência | matriz de quadrantes |
+| `rapido` | Tem ganho rápido disponível agora? | quantas têm WSJF alto e esforço baixo | matriz de quadrantes |
+| `estrategica` | Tem algo que entrega valor e tira risco junto? | quantas têm valor alto e risco alto | matriz de quadrantes |
+| tabela | O que continua em aberto | na ordem de ataque: WSJF, prioridade, atraso, prazo; com o porquê e o que cada uma espera | tabela |
+
+## O WSJF
+
+WSJF é o custo do atraso dividido pelo esforço. O custo do atraso é a soma de três notas:
+valor para o negócio, urgência e redução de risco. O WSJF de uma frente é a soma dos custos
+sobre a soma dos esforços, e não a média dos WSJF de cada atividade: a média daria o mesmo
+peso a uma atividade de 1 ponto e a uma de 13. Nos quadrantes, o corte é a mediana de cada
+eixo.
+
+## As notas adesivas
+
+São três, e cada uma aparece onde ajuda:
+
+- **Como ler este gráfico**: na primeira vez que uma forma aparece (quartis, quadrantes).
+- **O que é WSJF**: no slide do WSJF.
+- **Contexto**: o porquê que a pessoa contou, pelo campo `notas` do registro. É onde vai
+  "isso espera aquilo, decidido na reunião de tal dia".
+
+## Versão curta
+
+`--sem-plano` tira os slides de prioridade e ordena a tabela por prazo. Serve para quem
+quer só o panorama.
 
 ## Quando reescrever a manchete
 

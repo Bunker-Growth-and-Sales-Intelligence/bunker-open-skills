@@ -51,6 +51,13 @@ uma entrevista. Use as caixinhas de pergunta da ferramenta quando houver.
 - como cada status original foi traduzido (tabela de duas colunas), com as dúvidas;
 - nome do cliente e do projeto, para a capa;
 - **as cores** (passo 4);
+- se quiser a **priorização**: a prioridade de cada atividade (P0 a P3, ou alta, média,
+  baixa) e, para o WSJF e os quadrantes, quatro notas por atividade em 1, 2, 3, 5, 8 ou 13:
+  valor para o negócio, urgência, redução de risco e esforço. A pessoa pode dar as notas,
+  ou você propõe lendo a lista e ela confirma;
+- **o que depende do quê** e **o porquê** das decisões ("o piloto só entra depois do
+  treinamento, por decisão da diretoria"): vira a coluna de espera da tabela e as notas
+  adesivas de contexto;
 - nomes curtos para as frentes com mais de 17 caracteres, que é o que cabe no gráfico
   ("Construção Sales Cloud" vira "Construção"; o título do slide usa o nome inteiro).
 
@@ -115,7 +122,18 @@ manchete, está em `references/graficos.md`.
 | Os atrasos são de dias ou de semanas? | cinco atrasadas ou mais |
 | O trabalho que falta está bem distribuído? | responsável em parte da lista |
 | O ritmo de entrega está aumentando? | três conclusões com data |
-| O que continua em aberto (tabela) | sempre que falta algo |
+| Alguma frente está demorando demais para concluir? | datas de criação e conclusão |
+| Qual frente vai exigir mais esforço? | frente (e esforço, quando houver) |
+| Em que frente e em que situação o que falta se acumula? | frente e status |
+| Tem atividade envelhecendo em alguma frente? | data de criação |
+| Alguma atividade está segurando as outras? | `depende_de` |
+| Há atividades urgentes em aberto? | prioridade |
+| Por qual frente devemos começar? (WSJF) | as quatro notas |
+| Os três quadrantes: fazer agora, ganho rápido, aposta estratégica | as quatro notas |
+| O que continua em aberto (tabela, na ordem de ataque) | sempre que falta algo |
+
+A versão completa tem as notas adesivas de "como ler", "o que é WSJF" e de contexto. Para
+só o panorama, sem a priorização, use `--sem-plano`.
 
 ## O que o relatório não faz
 
