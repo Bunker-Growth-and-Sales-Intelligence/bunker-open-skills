@@ -1,4 +1,4 @@
-# Skills públicas da Bunker
+# Bunker Open Skills
 
 Skills gratuitas da [Bunker](https://bunkerconsultancy.com) para usar com a IA da sua preferência.
 
@@ -44,8 +44,8 @@ exemplos/                           três simuladores prontos, com o cenário de
 
 A versão mais recente de cada skill, pronta para instalar:
 
-- [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pricing.zip)
-- [bunker-pulse.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pulse.zip)
+- [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pricing.zip)
+- [bunker-pulse.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pulse.zip)
 
 Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para a `bunker-pulse`, troque o nome da pasta.
 
@@ -64,7 +64,7 @@ Para usar só num projeto, copie para `.claude/skills/` dentro do projeto. Depoi
 
 ### Claude.ai (site e aplicativo)
 
-1. Baixe o [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pricing.zip).
+1. Baixe o [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pricing.zip).
 2. No Claude.ai, abra Configurações, procure a área de Skills (em Capacidades) e envie o `bunker-pricing.zip`. Com os artefatos ligados, o simulador abre como artefato na própria conversa.
 3. Numa conversa nova, peça: "quanto devo cobrar pelo meu produto?".
 
