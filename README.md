@@ -35,11 +35,42 @@ skills/bunker-pricing/
 exemplos/                           três simuladores prontos, com o cenário de cada um
 ```
 
+## bunker-pulse
+
+Transforma a lista de atividades de um projeto num status report em slides, pronto para mandar ao cliente ou ao diretor. Você conversa com a IA e manda a lista do jeito que tiver: print do quadro, planilha, CSV, export do GitHub, do Jira, do Trello ou do Planner, ou texto colado. A IA organiza, confirma com você o que ficou em dúvida, pergunta as cores da empresa e entrega:
+
+- um PDF de slides 16:9, um gráfico por página, com a cara da Bunker e a cor de quem vai receber;
+- em cada slide, a pergunta que um diretor faria ("Onde estão os atrasos?") e a resposta como título, com o número;
+- o percentual concluído, o que entrou e o que saiu, as frentes concluídas, onde estão os atrasos e de quantos dias, quem está com mais trabalho e quanto está sem responsável, e o ritmo de entrega;
+- a tabela do que continua em aberto, com as atrasadas primeiro.
+
+Cada slide só entra quando a lista tem o dado para ele: sem prazo, não há slide de atraso. Nenhum número é digitado à mão.
+
+Sem cor definida, o relatório sai no preto e vermelho da Bunker, com o resto em cinza claro para o dado importante saltar.
+
+### O que tem na pasta
+
+```
+skills/bunker-pulse/
+  SKILL.md                     a conversa, em cinco passos
+  references/entrada.md        como ler print, planilha, GitHub, Jira, Trello, Planner e texto
+  references/formato.md        o registro das atividades que o script lê
+  references/graficos.md       os slides, as regras do desenho e como escrever a manchete
+  scripts/relatorio.py         monta os slides a partir do registro, sem dependências
+  scripts/pulso/               as formas em SVG, a marca e a saída em PDF
+  scripts/test_relatorio.py    as contas e as manchetes conferidas
+  assets/                      logo, fonte e foto da capa, embutidos no HTML
+exemplos/pulse-exemplo.*       um relatório pronto, com a lista fictícia que o gerou
+```
+
 ## Baixar
 
-A versão mais recente, pronta para instalar:
-[bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pricing.zip).
-Descompacte e siga o passo a passo da sua ferramenta abaixo.
+A versão mais recente de cada skill, pronta para instalar:
+
+- [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pricing.zip)
+- [bunker-pulse.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pulse.zip)
+
+Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para a `bunker-pulse`, troque o nome da pasta.
 
 ## Instalação
 
@@ -50,15 +81,18 @@ Copie a pasta da skill para a pasta de skills do seu usuário:
 ```bash
 mkdir -p ~/.claude/skills
 cp -R skills/bunker-pricing ~/.claude/skills/
+cp -R skills/bunker-pulse ~/.claude/skills/
 ```
 
-Para usar só num projeto, copie para `.claude/skills/` dentro do projeto. Depois é só pedir: "quero formar o preço do meu produto" ou "meu preço está certo?".
+Para usar só num projeto, copie para `.claude/skills/` dentro do projeto. Depois é só pedir: "quero formar o preço do meu produto", "meu preço está certo?" ou "monta o status report do projeto com esta lista".
 
 ### Claude.ai (site e aplicativo)
 
 1. Baixe o [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pricing.zip).
 2. No Claude.ai, abra Configurações, procure a área de Skills (em Capacidades) e envie o `bunker-pricing.zip`. Com os artefatos ligados, o simulador abre como artefato na própria conversa.
 3. Numa conversa nova, peça: "quanto devo cobrar pelo meu produto?".
+
+Para a `bunker-pulse`, envie o `bunker-pulse.zip` do mesmo jeito. Ela roda o script de Python, então a execução de código precisa estar ligada. Numa conversa nova, mande a lista (print, planilha, o que tiver) e peça: "monta o status report deste projeto". O relatório abre como artefato, com o botão "Salvar em PDF".
 
 Os nomes dos menus podem mudar. Se não achar, procure por "Skills" na ajuda do Claude.
 
@@ -69,6 +103,7 @@ Copie a pasta para a pasta de skills do Codex:
 ```bash
 mkdir -p ~/.codex/skills
 cp -R skills/bunker-pricing ~/.codex/skills/
+cp -R skills/bunker-pulse ~/.codex/skills/
 ```
 
 Se a sua versão do Codex não carregar skills, coloque no `AGENTS.md` do projeto uma linha pedindo para seguir `skills/bunker-pricing/SKILL.md` quando o assunto for preço.
@@ -81,7 +116,9 @@ Se a sua versão do Codex não carregar skills, coloque no `AGENTS.md` do projet
 
 Para não colar toda vez, use os recursos de instrução fixa da ferramenta (GPTs personalizados no ChatGPT, Gems no Gemini): cole o `SKILL.md` nas instruções e envie os arquivos de `references/` como conhecimento. Envie também `assets/simulador.html`: a IA devolve a página com os seus números, para salvar como `.html` e abrir no navegador.
 
-A skill funciona sem o script. Nesse caso a IA faz a conta passo a passo, do jeito que está em `references/formulas.md`.
+A `bunker-pricing` funciona sem o script. Nesse caso a IA faz a conta passo a passo, do jeito que está em `references/formulas.md`.
+
+A `bunker-pulse` precisa rodar o script de Python: use uma IA que execute código (Claude com execução de código, Claude Code, Codex, ChatGPT com análise de dados) e envie a pasta inteira.
 
 ## O script
 
@@ -116,3 +153,15 @@ python3 -m unittest discover -s skills/bunker-pricing/scripts
 ## Operação grande
 
 Se você tem muitos itens, tabela de preço por canal ou por região, ou vendedores que dão desconto, a mesma conta precisa acontecer em cada linha de cada pedido. O Pricing Designer da Bunker faz isso dentro do Salesforce. Conheça em https://bunkerconsultancy.com.
+
+## O script da bunker-pulse
+
+Precisa de Python 3.9 ou mais novo, sem instalar nada. Para o PDF automático, do Google Chrome.
+
+```bash
+python3 skills/bunker-pulse/scripts/relatorio.py exemplos/pulse-exemplo.json --resumo
+python3 skills/bunker-pulse/scripts/relatorio.py exemplos/pulse-exemplo.json --saida relatorio.html --pdf
+python3 -m unittest discover -s skills/bunker-pulse/scripts
+```
+
+O `--resumo` mostra a pergunta e a manchete de cada slide e o que ficou de fora. O formato da lista está em `skills/bunker-pulse/references/formato.md`.
