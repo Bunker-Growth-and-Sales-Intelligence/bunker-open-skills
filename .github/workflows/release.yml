@@ -1,5 +1,5 @@
 # Cada tag v* publica uma versão com o .zip de cada skill.
-# O link .../releases/latest/download/bunker-pricing.zip sempre entrega a mais recente.
+# O link .../releases/latest/download/<skill>.zip sempre entrega a mais recente.
 name: release
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Testes
-        run: python3 -m unittest discover -s skills/bunker-pricing/scripts
+        run: for s in skills/*/scripts; do python3 -m unittest discover -s "$s" || exit 1; done
       - name: Compactar cada skill
         run: |
           cd skills

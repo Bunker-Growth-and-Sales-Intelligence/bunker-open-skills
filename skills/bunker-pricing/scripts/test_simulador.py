@@ -81,8 +81,12 @@ def aleatorio(rng):
             l["quantidade_sem_desconto"] = rng.choice([1, 10, 80])
         if rng.random() < 0.2:
             l["por_fora"] = [{"nome": "IPI", "aliq": 9.75}, {"nome": "CBS", "aliq": 9.11, "base": "sem_icms_iss"}]
+        if rng.random() < 0.2:
+            l["moeda"] = "USD"
         linhas.append(l)
-    c = {"linhas": linhas, "mc_teto": rng.choice([25, 35, 50, 60.5])}
+    c = {"linhas": linhas, "mc_teto": rng.choice([25, 35, 50, 60.5]), "cambio": {"USD": rng.choice([5.2132, 4.87, 5.5])}}
+    if rng.random() < 0.25:
+        c["regra_margem"] = "piso"
     if rng.random() < 0.3:
         c["custo_fixo_mes"] = rng.choice([800, 4800, 25000])
         c["meta_lucro_pct"] = rng.choice([5, 10, 20])
@@ -225,6 +229,32 @@ class Regua(unittest.TestCase):
         lucro = r2["total"]["mc"] - 4800
         self.assertLess(abs(lucro / r2["total"]["rb"] * 100 - 20), D("0.1"))
 
+    def test_preco_da_meta_com_unidades_diferentes(self):
+        """Mês de contrato e hora não se somam: o fixo vai pela margem de contribuição de cada linha, e a
+        linha que já cobre a sua parte fica no preço de hoje, nunca abaixo dele."""
+        c = {"mc_teto": 50, "regra_margem": "piso", "custo_fixo_mes": 120000, "meta_lucro_pct": 20, "linhas": [
+            {"nome": "Contrato", "unidade": "mês de contrato", "quantidade": 1.45, "custo": 23402,
+             "impostos": {"ISS": 2, "PIS": 0.65, "COFINS": 3}, "preco_especifico": 59200},
+            {"nome": "Hora", "unidade": "hora", "quantidade": 148.87, "custo": 27.1,
+             "impostos": {"ISS": 2, "PIS": 0.65, "COFINS": 3}, "preco_especifico": 330, "preco_praticado": 900}]}
+        r = simulador.calcular(c)
+        e = r["equilibrio"]
+        contrato, hora = r["linhas"]
+        self.assertEqual(hora["p"].unidade, "hora")
+        # a hora a R$ 900 cobre a parte dela do fixo com folga: o preço da meta é o de hoje
+        self.assertEqual(e["precos_meta"][1], hora["negociado"])
+        self.assertGreater(e["precos_meta"][0], contrato["negociado"])
+        # a parte do fixo do contrato é a fatia dele na margem do mês
+        parte = D(120000) * contrato["real"]["mc"] / r["total"]["mc"]
+        p = contrato["p"]
+        esperado = simulador.r2((p.custo + parte / p.qtd) / ((100 - p.variaveis_pct() - 20) / D(100)))
+        self.assertEqual(e["precos_meta"][0], esperado)
+        for l, pm in zip(c["linhas"], e["precos_meta"]):
+            l.pop("preco_praticado", None)
+            l["preco_especifico"] = float(pm)
+        r2 = simulador.calcular(c)
+        self.assertGreaterEqual((r2["total"]["mc"] - 120000) / r2["total"]["rb"] * 100, D("19.9"))
+
     def test_desconto_que_vende_mais(self):
         l = simulador.calcular({"mc_teto": 30, "linhas": [{
             "nome": "Promo", "quantidade": 90, "quantidade_sem_desconto": 30, "custo": 22.40,
@@ -291,6 +321,59 @@ class Regua(unittest.TestCase):
         self.assertNotIn("http://", h.replace("http://www.w3.org", ""))
 
 
+class PisoEMoeda(unittest.TestCase):
+    """Os dois furos do teste com a própria operação de serviço: margem mínima e preço em dólar."""
+
+    SERVICO = {"custo": 67.5, "impostos": {"ISS": 5, "PIS": 1.65, "COFINS": 7.6}, "comissao": 1.48}
+
+    def test_piso_nao_avisa_que_passa_do_teto(self):
+        linhas = [dict(self.SERVICO, nome="Hora A", preco_especifico=371.08),
+                  dict(self.SERVICO, nome="Hora B", preco_especifico=330)]
+        teto = simulador.calcular({"mc_teto": 50, "linhas": linhas})
+        self.assertTrue(any("passa do teto" in a for a in teto["avisos"]))
+        piso = simulador.calcular({"mc_teto": 50, "regra_margem": "piso", "linhas": linhas})
+        self.assertEqual(piso["avisos"], [])
+        l = piso["linhas"][0]
+        self.assertTrue(l["piso"])
+        self.assertEqual(l["niveis"][0]["rotulo"], "Piso")
+        self.assertEqual(l["faixa"], "bom")  # 79% contra o mínimo de 50%
+
+    def test_piso_avisa_o_que_fica_abaixo(self):
+        linhas = [dict(self.SERVICO, nome="Barata", preco_especifico=140),
+                  dict(self.SERVICO, nome="Cheia", preco_especifico=371.08)]
+        r = simulador.calcular({"mc_teto": 50, "regra_margem": "piso", "linhas": linhas})
+        self.assertTrue(any("Barata" in a and "abaixo do piso" in a for a in r["avisos"]))
+        self.assertEqual(r["linhas"][0]["faixa"], "critico")
+
+    def test_faixa_do_piso(self):
+        self.assertEqual(simulador.faixa(D(100), D(1), piso=True), "bom")
+        self.assertEqual(simulador.faixa(D(95), D(1), piso=True), "atencao")
+        self.assertEqual(simulador.faixa(D(80), D(1), piso=True), "critico")
+        self.assertEqual(simulador.faixa(D(80), D(1)), "bom")  # como teto, 80% da meta vai bem
+
+    def test_preco_em_dolar_convertido_pela_taxa(self):
+        c = {"mc_teto": 50, "regra_margem": "piso", "cambio": {"USD": 5.2132},
+             "linhas": [dict(self.SERVICO, nome="Low", moeda="USD", preco_especifico=71.18, desconto=-1.21)]}
+        (n,) = simulador.mesclar(c)
+        self.assertEqual(n["linhas"][0]["preco_especifico"], 371.08)
+        self.assertEqual(n["linhas"][0]["moeda_origem"], {"moeda": "USD", "cambio": 5.2132, "preco_especifico": 71.18})
+        l = simulador.calcular(c)["linhas"][0]
+        self.assertEqual(l["usado"]["preco"], D("371.08"))
+        self.assertEqual(l["negociado"], D("375.57"))
+        # normalizar duas vezes não converte duas vezes
+        self.assertEqual(simulador.normalizar(n)["linhas"][0]["preco_especifico"], 371.08)
+
+    def test_moeda_sem_cambio_recusa(self):
+        with self.assertRaises(SystemExit):
+            simulador.calcular({"mc_teto": 50, "linhas": [dict(self.SERVICO, nome="x", moeda="USD", preco_especifico=10)]})
+
+    def test_despesas_fixas_somam_o_custo_fixo(self):
+        c = {"mc_teto": 30, "despesas_fixas": [{"nome": "Pessoal", "valor": 38000}, {"nome": "Ocupação", "valor": 9500.5}],
+             "linhas": [{"nome": "x", "custo": 10, "preco_especifico": 20, "quantidade": 100}]}
+        e = simulador.calcular(c)["equilibrio"]
+        self.assertEqual(e["fixo"], D("47500.5"))
+
+
 @unittest.skipUnless(shutil.which("node"), "node não está instalado")
 class Paridade(unittest.TestCase):
     """O JS do simulador e o Python dão os mesmos números, na mesma escala."""
@@ -310,7 +393,8 @@ class Paridade(unittest.TestCase):
         cens = [cen(PROVA_A), cen(PROVA_B), cen(PROVA_A, PROVA_B)]
         if os.path.isdir(EXEMPLOS):
             for nome in sorted(os.listdir(EXEMPLOS)):
-                if nome.endswith(".json"):
+                # a pasta é das skills do repositório: só entram os cenários de preço
+                if nome.endswith(".json") and '"linhas"' in open(os.path.join(EXEMPLOS, nome), encoding="utf-8").read():
                     raiz, lista = simulador.carregar(os.path.join(EXEMPLOS, nome))
                     cens += lista
         self.conferir(cens)

@@ -6,12 +6,12 @@ Skills gratuitas da [Bunker](https://bunkerconsultancy.com) para usar com a IA d
 
 Forma ou confere o preço de um produto ou serviço. Você conversa com a IA, responde umas doze perguntas curtas e recebe um simulador visual, num HTML só, que abre como artefato no Claude ou no seu navegador:
 
-- o preço formado em três blocos: custo, margem sobre a receita líquida, e depois impostos, comissão e frete (a mesma conta do Pricing Designer);
+- o preço formado em três blocos: custo, margem sobre a receita líquida gerencial, e depois impostos, comissão e frete (a mesma conta do Pricing Designer);
 - margem diferente por grupo de cliente, quando existe: teto, canal, preço de contrato ou rede, desconto do vendedor;
 - a margem planejada contra a realizada, e o desvio contra o nível usado, o canal e o teto, em pontos, relativo e reais;
-- a composição do preço numa barra só, com a margem cedida no desconto hachurada;
 - campos editáveis: mexa no custo, nas margens, nos impostos, na comissão, no frete e no desconto, e tudo recalcula;
-- o efeito da reforma tributária (CBS e IBS a partir de 2027), com as fontes oficiais.
+- o efeito da reforma tributária (CBS e IBS a partir de 2027), com as fontes oficiais;
+- para entregar ao cliente, um painel editável e um PDF A4 com a marca da Bunker com as duas DREs: a da venda, do custo ao preço negociado, e a do mês, orçado contra realizado.
 
 Serve para empresa de qualquer tamanho e para o contador dela. Não precisa de sistema nenhum.
 
@@ -28,18 +28,26 @@ skills/bunker-pricing/
   references/formulas.md            fórmulas, DRE e exemplos resolvidos
   references/impostos.md            regimes, benefícios por produto e alíquotas, com fontes
   references/reforma-tributaria.md  CBS e IBS, calendário e efeito no preço
-  references/simulador.md           formato do cenário e os três jeitos de abrir
+  references/simulador.md           formato do cenário, as duas camadas da DRE e os três jeitos de abrir
+  references/graficos.md            os blocos do painel, as regras de desenho, o PDF e as conferências
   scripts/preco.py                  a conta de uma linha, sem dependências
   scripts/simulador.py              a régua em níveis; grava e abre o simulador
+  scripts/camadas.py                a DRE da venda e a DRE do mês
+  scripts/entrega.py                o painel editável e o PDF A4 de entrega
+  scripts/grafico/                  formas em SVG, página, marca, PDF e conferências
+  assets/                           logos, o B em contorno e a fonte da casa, embutidos
   scripts/test_*.py                 exemplos, casos de borda e a conferência JS contra Python
 exemplos/                           três simuladores prontos, com o cenário de cada um
 ```
 
 ## Baixar
 
-A versão mais recente, pronta para instalar:
-[bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pricing.zip).
-Descompacte e siga o passo a passo da sua ferramenta abaixo.
+A versão mais recente de cada skill, pronta para instalar:
+
+- [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pricing.zip)
+- [bunker-pulse.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-skills/releases/latest/download/bunker-pulse.zip)
+
+Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para a `bunker-pulse`, troque o nome da pasta.
 
 ## Instalação
 
@@ -103,7 +111,19 @@ python3 skills/bunker-pricing/scripts/simulador.py exemplos/industria.json
 python3 skills/bunker-pricing/scripts/preco.py --custo 50 --imposto PIS=0.65 --imposto COFINS=3 --imposto ISS=5 --comissao 10 --preco-atual 180 --atividade servico
 ```
 
-Percentuais entram em pontos: `18` quer dizer 18%. A margem é em % da receita líquida.
+```bash
+# o painel editável e o PDF A4 para o cliente (o PDF usa o Chrome da máquina)
+python3 skills/bunker-pricing/scripts/entrega.py exemplos/industria.json --painel painel.html --pdf entrega.pdf
+```
+
+Sem Chrome, o `entrega.py` grava o HTML das folhas A4 para imprimir no navegador.
+
+```bash
+# conferir o painel: geometria, legibilidade, sobreposição, e as fotos em 1440 e 390
+cd skills/bunker-pricing/scripts && python3 -m grafico.conferir ../../../painel.html --fotos fotos
+```
+
+Percentuais entram em pontos: `18` quer dizer 18%. A margem é em % da receita líquida gerencial.
 
 O HTML abre sozinho no navegador (`open` no macOS, `start` no Windows, `xdg-open` no Linux). Para só gravar, use `--nao-abrir`.
 

@@ -50,6 +50,8 @@ MODELO = os.path.join(AQUI, "..", "assets", "simulador.html")
 LOGO = os.path.join(AQUI, "..", "assets", "bunker-logo-branco.png")
 
 ROTULOS = {"teto": "Teto", "canal": "Canal", "especifico": "Específico", "desconto": "Desconto do vendedor"}
+# os campos de preço que seguem a moeda da linha; custo, frete e despesas em R$ ficam em reais
+CAMPOS_MOEDA = ("preco_especifico", "preco_praticado", "preco_mercado")
 
 
 def dec(x):
@@ -71,7 +73,7 @@ def premissas_de(linha, cen):
         frete_rs += _num(linha["frete_rs_kg"]) * _num(linha.get("peso_kg", 1))
     ns = argparse.Namespace(
         produto=linha.get("nome"),
-        unidade=cen.get("unidade"),
+        unidade=linha.get("unidade") or cen.get("unidade"),
         quantidade=str(_num(linha.get("quantidade", 1))),
         custo=str(_num(linha["custo"])),
         impostos=None,
@@ -98,13 +100,18 @@ def premissas_de(linha, cen):
     return p
 
 
-def faixa(mantido, mc):
+def faixa(mantido, mc, piso=False):
     """Régua de cor contra a meta: mais de 70% da margem desejada mantida vai bem; de 50 a 70, atenção.
-    Sem meta, neutro: não há contra o que pintar de verde."""
+    Sem meta, neutro: não há contra o que pintar de verde.
+
+    Com a margem como PISO (a menor aceita, e não a maior), só vai bem o que chega ao piso; de 90% dele
+    para cima pede atenção, e abaixo disso é crítico."""
     if mc is not None and mc <= 0:
         return "critico"
     if mantido is None:
         return "neutro"
+    if piso:
+        return "bom" if mantido >= D("99.9") else ("atencao" if mantido >= 90 else "critico")
     if mantido > 70:
         return "bom"
     if mantido >= 50:
@@ -112,9 +119,51 @@ def faixa(mantido, mc):
     return "critico"
 
 
+def e_piso(linha, cen):
+    """A margem do teto é um piso quando a regra do dono é margem MÍNIMA (serviço com margem alta)."""
+    return (linha.get("regra_margem") or cen.get("regra_margem") or "teto") == "piso"
+
+
+def normalizar(cen):
+    """O cenário em reais: preço em outra moeda vira real pela taxa informada, e as despesas fixas abertas
+    somam o custo fixo do mês quando ele não vem escrito.
+
+    `moeda` na linha vale para os campos de preço (tabela, praticado e concorrente); custo, frete e despesas
+    em R$ ficam em reais. A taxa vem de `cambio` no cenário, por moeda: {"USD": 5.2132}. O valor original
+    fica em `moeda_origem`, para as premissas mostrarem. É a mesma regra de `Motor.normalizar` no
+    simulador.html, e o teste de paridade confere as duas.
+    """
+    c = dict(cen)
+    cambio = {str(k).upper(): v for k, v in (c.get("cambio") or {}).items()}
+    linhas = []
+    for l in c.get("linhas") or []:
+        m = str(l.get("moeda") or "BRL").upper()
+        if m != "BRL":
+            if cambio.get(m) in (None, ""):
+                raise SystemExit(f"Linha {l.get('nome')!r} em {m}: informe o câmbio em \"cambio\": {{\"{m}\": taxa}}.")
+            taxa = _num(cambio[m])
+            l = dict(l)
+            orig = {"moeda": m, "cambio": cambio[m]}
+            for k in CAMPOS_MOEDA:
+                if l.get(k) not in (None, ""):
+                    orig[k] = l[k]
+                    l[k] = float(r2(_num(l[k]) * taxa))
+            del l["moeda"]
+            l["moeda_origem"] = orig
+        linhas.append(l)
+    c["linhas"] = linhas
+    if c.get("custo_fixo_mes") in (None, "") and c.get("despesas_fixas"):
+        c["custo_fixo_mes"] = float(sum((_num(d.get("valor", 0)) or ZERO for d in c["despesas_fixas"]), ZERO))
+    return c
+
+
 def calcular_linha(linha, cen):
     p = premissas_de(linha, cen)
-    rot = dict(ROTULOS, **(cen.get("rotulos") or {}))
+    piso = e_piso(linha, cen)
+    rot = dict(ROTULOS)
+    if piso:
+        rot["teto"] = "Piso"
+    rot.update(cen.get("rotulos") or {})
     mc_teto = _num(linha.get("mc_teto", cen.get("mc_teto")))
     mc_canal = _num(linha.get("mc_canal"))
     avisos = []
@@ -215,10 +264,12 @@ def calcular_linha(linha, cen):
         "negociado": negociado,
         "desconto_rs": usado["preco"] - negociado,
         "real": real,
+        "custo_real": custo_real,
         "leituras": leituras,
         "refs": refs,
         "cascata": cascata,
-        "faixa": faixa(mantido, real["mc"]),
+        "faixa": faixa(mantido, real["mc"], piso),
+        "piso": piso,
         "mantido": mantido,
         "meta": meta,
         "meta_nivel": por.get(meta_chave) if meta_chave else None,
@@ -292,14 +343,24 @@ def equilibrio(cen, linhas, total):
     out["unidades_pe"] = (fixo / mc_un) if mc_un > 0 else None
     meta = _num(cen.get("meta_lucro_pct"))
     if meta is not None:
-        # o custo fixo repartido por unidade vendida; cada linha no seu preço deixa L% da própria receita,
-        # e a soma deixa L% da receita do mês
+        # o custo fixo repartido pela margem de contribuição de cada linha, e não por unidade: com
+        # linhas em unidades diferentes (mês de contrato e hora), somar unidades não diz nada. Cada
+        # linha no preço dela paga a sua parte do fixo e deixa L% da própria receita, e a soma deixa
+        # L% da receita do mês. Linha que já cobre a sua parte fica no preço negociado, nunca abaixo.
         out["meta_lucro_pct"] = meta
+        pesos = [max(l["real"]["mc"], ZERO) for l in linhas]
+        if not sum(pesos, ZERO):
+            pesos = [max(l["real"]["rb"], ZERO) for l in linhas]
+        soma_p = sum(pesos, ZERO)
         precos = []
-        for l in linhas:
+        for l, w in zip(linhas, pesos):
             p = l["p"]
             div = CEM - p.variaveis_pct() - meta
-            precos.append(r2((p.custo + p.variaveis_rs() + fixo / q) / (div / CEM)) if div > 0 and q else None)
+            if div <= 0 or not p.qtd or not soma_p:
+                precos.append(None)
+                continue
+            parte = fixo * w / soma_p
+            precos.append(max(r2((p.custo + p.variaveis_rs() + parte / p.qtd) / (div / CEM)), l["negociado"]))
         out["precos_meta"] = precos
         if len(linhas) == 1:
             out["preco_meta"] = precos[0]
@@ -314,6 +375,12 @@ def avisos_niveis(linhas):
         t = por.get("teto")
         for k in ("canal", "especifico"):
             n = por.get(k)
+            if l["piso"]:
+                # piso é a menor margem aceita: margem maior é o esperado, e o aviso é o de baixo
+                if t and n and n["mc_plan"] is not None and n["mc_plan"] < t["mc_plan"] - D("0.005"):
+                    out.append(f"{l['nome']}: a margem de {n['rotulo'].lower()}, {preco.pct(n['mc_plan'])}, fica abaixo do piso de "
+                               f"{preco.pct(t['mc_plan'])}. O piso é a menor margem aceita; confira o preço.")
+                continue
             if t and n and n["mc_plan"] is not None and n["mc_plan"] > t["mc_plan"] + D("0.005"):
                 out.append(f"{l['nome']}: a margem de {n['rotulo'].lower()}, {preco.pct(n['mc_plan'])}, passa do teto de "
                            f"{preco.pct(t['mc_plan'])}. O teto é a maior margem; confira qual é o preço cheio.")
@@ -335,6 +402,7 @@ def avisos_niveis(linhas):
 
 
 def calcular(cen):
+    cen = normalizar(cen)
     linhas = [calcular_linha(l, cen) for l in cen["linhas"]]
     for l, bruta in zip(linhas, cen["linhas"]):
         l["_tabela"] = bruta.get("preco_especifico") is not None
@@ -395,8 +463,10 @@ def resumo(cen, res):
     br, rs, pct = preco.br, preco.rs, preco.pct
     u = cen.get("unidade") or "unidade"
     out = [cen.get("titulo") or "Simulação de preço"]
-    nomes = {"usado": "contra o nível usado", "canal": "contra o canal", "teto": "contra o teto", "meta": "contra a meta"}
     for l in res["linhas"]:
+        nomes = {"usado": "contra o nível usado", "canal": "contra o canal", "teto": "contra o teto", "meta": "contra a meta"}
+        if l["piso"]:
+            nomes.update(teto="contra o piso", meta="contra o piso")
         out.append("")
         out.append(f"{l['nome']}" + (f" ({l['grupo']})" if l.get("grupo") else ""))
         for n in l["niveis"]:
@@ -441,6 +511,9 @@ def resumo(cen, res):
     if len(res["linhas"]) > 1 and t["mc_rl"] is not None:
         out.append("")
         out.append(f"Consolidado das {len(res['linhas'])} linhas: margem {rs(t['mc'], 4)}, {pct(t['mc_rl'])} da receita líquida gerencial")
+        nomes = {"usado": "contra o nível usado", "canal": "contra o canal", "teto": "contra o teto", "meta": "contra a meta"}
+        if all(l["piso"] for l in res["linhas"]):
+            nomes.update(teto="contra o piso", meta="contra o piso")
         tem_canal = any(n["chave"] == "canal" for l in res["linhas"] for n in l["niveis"])
         vistos = set()
         for k in ("meta", "usado", "canal", "teto"):
@@ -485,8 +558,8 @@ def mesclar(cen):
     """
     if "cenarios" in cen:
         herda = {k: v for k, v in cen.items() if k != "cenarios"}
-        return [dict(herda, **c) for c in cen["cenarios"]]
-    return [cen]
+        return [normalizar(dict(herda, **c)) for c in cen["cenarios"]]
+    return [normalizar(cen)]
 
 
 def gerar_html(cen, res=None, apendice_html=None):

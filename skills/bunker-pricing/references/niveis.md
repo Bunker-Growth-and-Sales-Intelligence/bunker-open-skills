@@ -47,6 +47,7 @@ O "ficou na mesa" é outra conta: a margem em R$ da mesma venda no preço do pri
 ## Conflitos entre níveis: avise
 
 - **Margem de um grupo acima do teto.** O teto é a maior margem. Se o canal ou o cliente tem margem maior, o teto está errado: pergunte qual é o preço cheio. O simulador avisa.
+- **Margem que é piso.** Em serviço com equipe própria, a regra do dono costuma ser uma margem MÍNIMA ("todo projeto com pelo menos 50%"), e a tabela fica bem acima dela. Pergunte se a margem é o máximo ou o mínimo e, sendo mínimo, use `"regra_margem": "piso"`: aí a tabela acima do piso é o esperado, o aviso de "passa do teto" não aparece e o aviso passa a ser o de um nível abaixo do piso.
 - **Preço de nível inferior acima da tabela real de outro grupo.** Uma revenda a 18% formada pela margem pode sair mais cara que a tabela real do produtor grande, que tem margem maior. Comercialmente é o avesso. O simulador compara o preço do canal de cada linha com as tabelas reais das outras (a da mesma rota primeiro) e avisa.
 - **Teto de um canal aplicado com os fatores de outro.** Quando o teto é de outro canal (varejo direto) e a linha é do distribuidor, a comparação usa ICMS, comissão e frete do distribuidor. Diga isso na entrega.
 

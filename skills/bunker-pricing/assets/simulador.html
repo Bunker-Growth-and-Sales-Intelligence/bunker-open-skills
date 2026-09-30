@@ -225,9 +225,29 @@ var Motor = (function () {
   // Os cenários de um arquivo: cada um herda os campos de fora de `cenarios`, e os dele mandam.
   // É a mesma regra de simulador.mesclar no Python; o teste de paridade confere as duas.
   function cenarios(bruto) {
-    if (!bruto.cenarios) return [bruto];
+    if (!bruto.cenarios) return [normalizar(bruto)];
     var herda = {}; Object.keys(bruto).forEach(function (k) { if (k !== 'cenarios') herda[k] = bruto[k]; });
-    return bruto.cenarios.map(function (c) { return Object.assign({}, herda, c); });
+    return bruto.cenarios.map(function (c) { return normalizar(Object.assign({}, herda, c)); });
+  }
+  // O cenário em reais: preço em outra moeda vira real pela taxa de `cambio`, e as despesas fixas abertas
+  // somam o custo fixo do mês quando ele não vem escrito. A mesma regra de simulador.normalizar no Python.
+  var CAMPOS_MOEDA = ['preco_especifico', 'preco_praticado', 'preco_mercado'];
+  function normalizar(cen) {
+    var c = Object.assign({}, cen), cambio = {};
+    Object.keys(cen.cambio || {}).forEach(function (k) { cambio[String(k).toUpperCase()] = cen.cambio[k]; });
+    c.linhas = (cen.linhas || []).map(function (l) {
+      var m = String(l.moeda || 'BRL').toUpperCase();
+      if (m === 'BRL') return l;
+      var x = Object.assign({}, l);
+      if (vazio(cambio[m])) { x.erro_moeda = 'Linha em ' + m + ': informe o câmbio no cenário.'; return x; }
+      var taxa = +cambio[m], orig = { moeda: m, cambio: cambio[m] };
+      CAMPOS_MOEDA.forEach(function (k) { if (!vazio(x[k])) { orig[k] = x[k]; x[k] = r2(+x[k] * taxa); } });
+      delete x.moeda; x.moeda_origem = orig;
+      return x;
+    });
+    if (vazio(c.custo_fixo_mes) && c.despesas_fixas && c.despesas_fixas.length)
+      c.custo_fixo_mes = soma(c.despesas_fixas.map(function (d) { return n(d.valor, 0); }));
+    return c;
   }
 
   function premissas(l, cen) {
@@ -288,16 +308,20 @@ var Motor = (function () {
     var rel = ref === 0 ? null : r4((d.mc_rl / ref - 1) * 100);
     return [pts, rel, r4(d.rl * pts / 100)];
   }
-  function faixa(mantido, mc) {
+  function faixa(mantido, mc, piso) {
     if (mc !== null && mc <= 0) return 'critico';
     if (mantido === null) return 'neutro';
+    // margem como piso: só vai bem o que chega a ele
+    if (piso) return mantido >= 99.9 ? 'bom' : (mantido >= 90 ? 'atencao' : 'critico');
     if (mantido > 70) return 'bom';
     if (mantido >= 50) return 'atencao';
     return 'critico';
   }
 
   function linha(l, cen) {
-    var p = premissas(l, cen), rot = Object.assign({}, ROT, cen.rotulos || {});
+    if (l.erro_moeda) return { nome: l.nome || 'Linha', erro: l.erro_moeda, p: premissas(l, cen) };
+    var piso = (l.regra_margem || cen.regra_margem || 'teto') === 'piso';
+    var p = premissas(l, cen), rot = Object.assign({}, ROT, piso ? { teto: 'Piso' } : {}, cen.rotulos || {});
     var mcTeto = ('mc_teto' in l) ? l.mc_teto : cen.mc_teto;
     mcTeto = (mcTeto === null || mcTeto === undefined || mcTeto === '') ? null : +mcTeto;
     var mcCanal = (l.mc_canal === null || l.mc_canal === undefined || l.mc_canal === '') ? null : +l.mc_canal;
@@ -342,7 +366,7 @@ var Motor = (function () {
     if (l.preco_mercado !== null && l.preco_mercado !== undefined && l.preco_mercado !== '') { x = r2(+l.preco_mercado); mercado = { preco: x, mc_max: margemMaxima(p, x) }; }
     return { nome: l.nome || 'Linha', grupo: l.grupo || null, p: p, niveis: niveis, usado: usado, negociado: negociado,
       desconto_rs: limpa(usado.preco - negociado), real: real, mesmo: mesmo, leituras: leituras, refs: refs, cascata: cascata,
-      faixa: faixa(mantido, real.mc), mantido: mantido, meta: meta, meta_nivel: metaChave ? por[metaChave] : null, sem_desconto: semDesc,
+      faixa: faixa(mantido, real.mc, piso), piso: piso, mantido: mantido, meta: meta, meta_nivel: metaChave ? por[metaChave] : null, sem_desconto: semDesc,
       tabela: !vazio(l.preco_especifico), mercado: mercado, minimo: formar(p, 0), avisos: avisos.concat(real.avisos) };
   }
 
@@ -380,10 +404,19 @@ var Motor = (function () {
     var q = soma(ls.map(function (l) { return l.p.q; })), mcu = q ? t.mc / q : 0;
     o.unidades_pe = mcu > 0 ? fixo / mcu : null;
     if (!vazio(cen.meta_lucro_pct)) {
-      // o custo fixo repartido por unidade vendida: cada linha deixa L% da própria receita, e a soma deixa L% do mês
+      // o custo fixo repartido pela margem de contribuição de cada linha, e não por unidade (linhas em unidades
+      // diferentes não se somam); cada linha paga a sua parte e deixa L% da própria receita, e a soma deixa L% do mês.
+      // Linha que já cobre a sua parte fica no preço negociado, nunca abaixo.
       var meta = +cen.meta_lucro_pct;
       o.meta_lucro_pct = meta;
-      o.precos_meta = ls.map(function (l) { var div = 100 - l.p.v - meta; return (div > 0 && q) ? r2((l.p.custo + l.p.vrs + fixo / q) / (div / 100)) : null; });
+      var pesos = ls.map(function (l) { return Math.max(l.real.mc, 0); });
+      if (!soma(pesos)) pesos = ls.map(function (l) { return Math.max(l.real.rb, 0); });
+      var somaP = soma(pesos);
+      o.precos_meta = ls.map(function (l, i) {
+        var div = 100 - l.p.v - meta;
+        if (div <= 0 || !l.p.q || !somaP) return null;
+        return Math.max(r2((l.p.custo + l.p.vrs + fixo * pesos[i] / somaP / l.p.q) / (div / 100)), l.negociado);
+      });
       if (ls.length === 1) o.preco_meta = o.precos_meta[0];
     }
     return o;
@@ -395,6 +428,11 @@ var Motor = (function () {
       var por = {}; l.niveis.forEach(function (x) { por[x.chave] = x; });
       ['canal', 'especifico'].forEach(function (k) {
         var x = por[k];
+        if (l.piso) { // piso é a menor margem aceita: margem maior é o esperado, e o aviso é o de baixo
+          if (por.teto && x && x.mc_plan !== null && x.mc_plan < por.teto.mc_plan - 0.005)
+            out.push(l.nome + ': a margem de ' + x.rotulo.toLowerCase() + ', ' + fmt.pc(x.mc_plan) + ', fica abaixo do piso de ' + fmt.pc(por.teto.mc_plan) + '. O piso é a menor margem aceita; confira o preço.');
+          return;
+        }
         if (por.teto && x && x.mc_plan !== null && x.mc_plan > por.teto.mc_plan + 0.005)
           out.push(l.nome + ': a margem de ' + x.rotulo.toLowerCase() + ', ' + fmt.pc(x.mc_plan) + ', passa do teto de ' + fmt.pc(por.teto.mc_plan) + '. O teto é a maior margem; confira qual é o preço cheio.');
       });
@@ -412,6 +450,7 @@ var Motor = (function () {
     return out;
   }
   function calcular(cen) {
+    cen = normalizar(cen);
     var ls = cen.linhas.map(function (l) { return linha(l, cen); });
     var ok = ls.filter(function (l) { return !l.erro; });
     var t = ok.length ? consolidar(ok) : null;
@@ -438,7 +477,7 @@ var Motor = (function () {
       precos_meta: e.precos_meta ? e.precos_meta.map(function (x) { return s(x, 2); }) : null } : null;
     return o;
   }
-  return { calcular: calcular, cenarios: cenarios, avisosNiveis: avisosNiveis, numeros: numeros, dre: dre, formar: formar, rnd: rnd, r2: r2, r4: r4, limpa: limpa };
+  return { calcular: calcular, cenarios: cenarios, normalizar: normalizar, avisosNiveis: avisosNiveis, numeros: numeros, dre: dre, formar: formar, rnd: rnd, r2: r2, r4: r4, limpa: limpa };
 })();
 /*FIM-MOTOR*/
 
@@ -468,7 +507,7 @@ var Motor = (function () {
   function paraCampo(x) { return x === null || x === undefined || x === '' ? '' : String(Motor.limpa(x)).replace('.', ','); }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function cls(f) { return { bom: 'fb', atencao: 'fa', critico: 'fc', neutro: 'fn' }[f] || 'fn'; }
-  function faixaDe(m, mc) { if (mc !== null && mc <= 0) return 'critico'; if (m === null) return 'neutro'; return m > 70 ? 'bom' : m >= 50 ? 'atencao' : 'critico'; }
+  function faixaDe(m, mc, piso) { if (mc !== null && mc <= 0) return 'critico'; if (m === null) return 'neutro'; if (piso) return m >= 99.9 ? 'bom' : m >= 90 ? 'atencao' : 'critico'; return m > 70 ? 'bom' : m >= 50 ? 'atencao' : 'critico'; }
   function lg(t) { return String(t).length > 7 ? ' longo' : ''; }
   function plural(u) { return /s$/.test(u) ? u : u + 's'; }
   var FMT = { rs: function (x) { return rs(x); }, pc: function (x) { return pc(x); } };
@@ -751,26 +790,27 @@ var Motor = (function () {
     if (focoTotal) {
       var lm = t.leituras.meta; meta = lm ? lm.plan : null; real = t.mc_rl; mcRealRs = t.mc;
       mcMetaRs = null; if (lm) { mcMetaRs = 0; ok.forEach(function (l) { mcMetaRs += l.meta_nivel ? l.meta_nivel.dre.mc : 0; }); }
-      dv = lm ? [lm.pts, lm.rel, lm.rs] : null; mantido = meta > 0 && real !== null ? real / meta * 100 : null; f = faixaDe(mantido, t.mc);
+      dv = lm ? [lm.pts, lm.rel, lm.rs] : null; mantido = meta > 0 && real !== null ? real / meta * 100 : null; f = faixaDe(mantido, t.mc, ok.every(function (l) { return l.piso; }));
     } else {
       meta = L.meta; real = L.real.mc_rl; mcRealRs = L.real.mc; mcMetaRs = L.meta_nivel ? L.meta_nivel.dre.mc : null;
       precoMeta = L.meta_nivel ? L.meta_nivel.preco : null;
       dv = L.leituras.meta || null; mantido = L.mantido; f = L.faixa;
     }
-    var m1, semMeta = meta === null;
+    var m1, semMeta = meta === null, ehPiso = focoTotal ? ok.every(function (l) { return l.piso; }) : L.piso;
     if (real === null) m1 = 'Sem receita líquida gerencial: a margem em % não existe.';
     else if (mcRealRs < 0) m1 = 'Cada venda tira ' + rs(-mcRealRs) + ' do caixa: margem de ' + pc(real, 1) + '.';
     else if (semMeta && res.equilibrio) m1 = 'Margem de ' + pc(real, 1) + ', sem margem desejada. Depois do custo fixo, ' + (res.equilibrio.lucro >= 0 ? 'sobram ' + rs(res.equilibrio.lucro, 0) + (res.equilibrio.lucro_pct_rb !== null ? ', ' + pc(res.equilibrio.lucro_pct_rb, 1) + ' da receita.' : '.') : 'faltam ' + rs(-res.equilibrio.lucro, 0) + '.');
     else if (semMeta) m1 = 'Margem de ' + pc(real, 1) + '. Sem margem desejada, não há meta para comparar.';
+    else if (ehPiso) m1 = (mantido >= 99.9 ? 'Acima do piso: ' : 'Abaixo do piso: ') + pc(real, 1) + ' contra o mínimo de ' + pc(meta, 1) + '.';
     else if (mantido >= 100.05) m1 = 'Acima da meta: ' + pc(real, 1) + ' contra ' + pc(meta, 1) + ' desejados.';
     else if (mantido >= 99.95) m1 = 'Na meta: ' + pc(real, 1) + ' contra ' + pc(meta, 1) + ' desejados.';
     else m1 = 'Ficaram ' + br(mantido, 0) + '% da meta: ' + pc(real, 1) + ' contra ' + pc(meta, 1) + ' desejados.';
     var fc = semMeta && f === 'neutro' ? '' : f;
-    var cards = '<div class="cards"><div class="card"><div class="r">Margem desejada</div><div class="v">' + esc(semMeta ? 'sem meta' : pc(meta, 1)) + '</div><div class="s">' +
+    var cards = '<div class="cards"><div class="card"><div class="r">' + (ehPiso ? 'Piso de margem' : 'Margem desejada') + '</div><div class="v">' + esc(semMeta ? 'sem meta' : pc(meta, 1)) + '</div><div class="s">' +
         esc(semMeta ? 'diga a margem que você quer' : (precoMeta !== null ? rs(precoMeta) + ' por ' + un + ' · ' : '') + rs(mcMetaRs) + ' de margem') + '</div></div>' +
       '<div class="card"><div class="r">Margem realizada</div><div class="v ' + fc + lg(pc(real, 1)) + '">' + esc(pc(real, 1)) + '</div><div class="s">' + esc(rs(mcRealRs)) + ' · ' + esc(pc(focoTotal ? t.mc_rb : L.real.mc_rb, 1)) + ' da receita bruta</div></div>' +
       (semMeta ? '<div class="card"><div class="r">' + (focoTotal ? 'Margem em reais' : 'Preço mínimo') + '</div><div class="v' + lg(focoTotal ? rs(t.mc) : rs(L.minimo)) + '">' + esc(focoTotal ? rs(t.mc) : rs(L.minimo)) + '</div><div class="s">' + esc(focoTotal ? 'margem do período, em reais' : 'margem zero, por ' + un) + '</div></div>'
-        : '<div class="card"><div class="r">Contra a meta</div><div class="v ' + (dv && dv[0] < -0.005 ? 'critico' : 'bom') + lg(dv ? pp(dv[0]) : '') + '">' + esc(dv ? pp(dv[0]) : 'n/d') + '</div><div class="s">' + esc(dv ? sn(dv[2], rs(dv[2])) + ' na receita realizada' : '') + '</div></div>') + '</div>';
+        : '<div class="card"><div class="r">' + (ehPiso ? 'Contra o piso' : 'Contra a meta') + '</div><div class="v ' + (dv && dv[0] < -0.005 ? 'critico' : 'bom') + lg(dv ? pp(dv[0]) : '') + '">' + esc(dv ? pp(dv[0]) : 'n/d') + '</div><div class="s">' + esc(dv ? sn(dv[2], rs(dv[2])) + ' na receita realizada' : '') + '</div></div>') + '</div>';
     B.push(bloco(focoTotal ? 'Quanto da margem desejada as vendas entregam?' : 'Quanto da margem desejada esta venda entrega?', m1,
       (semMeta ? '' : '<div class="g" id="g-des"></div>') + cards,
       'Margem de contribuição sobre a receita líquida gerencial: o preço menos impostos, comissão e frete. 100% é a margem que você quer (a do canal, ou o teto); acima de 70% vai bem, de 50 a 70 pede atenção. Preço de hoje e preço fechado não viram meta.', true));
@@ -905,7 +945,7 @@ var Motor = (function () {
       }
       if (extra.length) corpo9 += '<p class="nota">' + esc(extra.join(' ')) + '</p>';
       B.push(bloco('Lucro depois do custo fixo, outra conta: a margem do mês paga o fixo?', m9, corpo9,
-        'Outra conta, abaixo da margem de contribuição: lucro = margem do mês − custo fixo. IRPJ e CSLL ainda saem dele. O preço para a meta de lucro reparte o custo fixo por unidade vendida; cada linha nesse preço deixa a mesma % de lucro da própria receita.', false));
+        'Outra conta, abaixo da margem de contribuição: lucro = margem do mês − custo fixo. IRPJ e CSLL ainda saem dele. O preço para a meta de lucro reparte o custo fixo pela margem de contribuição de cada linha; cada linha nesse preço deixa a mesma % de lucro da própria receita, e a que já cobre a sua parte fica no preço de hoje.', false));
       depois.push(function () {
         equilibrioSvg(document.getElementById('g-eq'), e, t);
         if (it9.length) pares(document.getElementById('g-meta'), it9, 'hoje', 'para a meta de lucro', function (v) { return rs(v); });

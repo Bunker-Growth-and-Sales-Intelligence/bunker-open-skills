@@ -65,7 +65,7 @@ No Anexo I, da 1ª à 5ª faixa, PIS e Cofins são 15,50% do DAS (Cofins 12,74%,
 
 - PIS 0,65% e Cofins 3%, cumulativos, sem crédito nas compras (Lei 9.718/1998). Juntos, 3,65%.
 - ICMS na venda de mercadoria ou ISS no serviço, por dentro.
-- IRPJ e CSLL incidem sobre um lucro presumido pela lei. São tributos sobre o lucro e não entram na DRE da linha. Avise que a margem de contribuição precisa cobrir esses dois.
+- IRPJ e CSLL incidem sobre um lucro presumido pela lei, que é uma parte da receita. Não entram na DRE da linha. Avise que a margem de contribuição precisa cobrir esses dois. Na DRE do mês, use `"regime": "presumido"` e `irpj_csll_pct` em % da receita bruta (num serviço com o adicional, perto de 8,54%): eles pesam mesmo com prejuízo.
 
 ### Lucro Real
 

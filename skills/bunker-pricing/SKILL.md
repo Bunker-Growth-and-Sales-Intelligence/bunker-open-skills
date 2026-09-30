@@ -1,10 +1,10 @@
 ---
 name: bunker-pricing
-description: Precifique seu produto e descubra o que realmente sobra. Forma e audita o preço de um produto ou serviço para empresário de qualquer tamanho e para o contador dele, sem sistema nenhum. Entrevista curta, uma pergunta por vez; forma o preço em três blocos (custo, margem sobre a receita líquida gerencial, depois impostos, comissão e frete, a conta do Pricing Designer); entende margem diferente por grupo de cliente (teto, canal, preço específico de conta ou rede, desconto do vendedor) e fatores que mudam por critério (ICMS por rota, PIS e Cofins por produto, comissão por canal, frete por rota e peso); lê o desvio contra o nível usado, o canal e o teto, em pontos, relativo e reais. Entrega um simulador visual e editável num HTML só, que abre como artefato no Claude ou no navegador. Trata Simples, Presumido, Real, MEI e a reforma tributária de 2027, com fonte e mandando confirmar com o contador. Use quando a pessoa disser "formar preço", "calcular preço", "markup", "margem de contribuição", "quanto cobrar", "meu preço está certo?", "estou dando desconto demais?", "preço por canal", "margem por cliente", "tabela por região", "reforma tributária no preço" ou trouxer custo e preço de um item para conferir.
+description: Precifique seu produto e descubra o que realmente sobra. Forma e audita o preço de produto ou serviço para empresário de qualquer tamanho e para o contador dele, sem sistema. Entrevista curta, uma pergunta por vez; preço em três blocos (custo, margem sobre a receita líquida gerencial, impostos, comissão e frete); margem por grupo de cliente (teto ou piso, canal, contrato, desconto do vendedor) e fatores por critério (ICMS por rota, comissão por canal, frete por peso), com preço em outra moeda pelo câmbio. Lê o desvio e o que ficou na mesa. Entrega o simulador editável num HTML só e, para o cliente, painel editável e PDF A4 da Bunker que mostram por quanto vender cada produto, com a DRE da venda e a do mês. Trata Simples, Presumido, Real, MEI e a reforma de 2027, mandando confirmar com o contador. Use quando disserem "formar preço", "markup", "margem de contribuição", "quanto cobrar", "meu preço está certo?", "desconto demais?", "preço por canal", "margem por cliente", "reforma tributária no preço" ou trouxerem custo e preço para conferir.
 metadata:
   author: Bunker
   site: https://bunkerconsultancy.com
-  version: "2.1"
+  version: "2.2"
 ---
 
 # Bunker Pricing
@@ -67,7 +67,8 @@ Mostre, com o número do caso, por que custo × (1 + margem) entrega menos do qu
 - Margem realizada no preço negociado, em R$, % da receita líquida gerencial e % da receita bruta.
 - A leitura principal é sempre contra a **meta**, a margem que o dono quer (a do canal, senão a do teto). Preço de hoje e preço fechado são nível usado, nunca meta. Sem meta, diga isso; não pinte de verde.
 - Desvio contra o **nível usado** (custo do desconto), o **canal** (custo do preço específico) e o **teto** (a distância da margem global): pontos, relativo e reais (receita líquida gerencial realizada × pontos ÷ 100). Por linha e no consolidado, pesado pelo volume. "Ficou na mesa" é outra conta (a venda no preço de cada nível), rotulada.
-- Avise quando a margem de um grupo passa do teto, e quando o preço formado de um nível inferior fica acima da tabela real de outro grupo.
+- Avise quando a margem de um grupo passa do teto, e quando o preço formado de um nível inferior fica acima da tabela real de outro grupo. Se a margem do dono é mínima (piso, comum em serviço), use `regra_margem: "piso"`: o aviso passa a ser o de nível abaixo do piso.
+- Preço em outra moeda: `moeda` na linha e `cambio` no cenário, com a fonte da taxa; a conversão aparece nas premissas.
 - Onde vende abaixo do custo: margem negativa, com o preço mínimo (margem zero). Aí não existe ponto de equilíbrio.
 - Preço do concorrente: a maior margem que cabe nele.
 - Quem pediu "lucro limpo": outra conta, rotulada "lucro depois do custo fixo", abaixo da margem: lucro = margem do mês − custo fixo, o ponto de equilíbrio e o preço de cada linha para a meta de lucro, com uma ou várias linhas.
@@ -85,11 +86,13 @@ A entrega é o **simulador**: `assets/simulador.html`, um HTML só, visual e edi
 | Terminal (Claude Code, Codex, agente com comando) | `python3 scripts/simulador.py cenario.json`: grava o HTML e abre no navegador. `--nao-abrir` só grava. |
 | Chat sem artefato e sem terminal | Entregue o HTML com o cenário preenchido num bloco de código, para salvar como `preco.html` e abrir no navegador. |
 
+**Para o cliente, painel e PDF.** O foco é o preço pelo qual cada produto deve ser vendido. Do mesmo cenário, `python3 scripts/entrega.py cenario.json --painel painel.html --pdf entrega.pdf` grava o painel editável e o PDF A4: capa, DRE da venda e DRE do mês, só as tabelas, sem gráfico nem texto. As DREs trazem como o Alumni, a skill e o Pricing Designer chamam cada linha. No painel, cada premissa é um campo na própria célula e a DRE recalcula no navegador. Blocos e regras em `references/simulador.md` e `references/graficos.md`. O PDF sai pelo Chrome headless (Chromium, Edge e Brave servem; `BUNKER_CHROME` aponta outro); **sem Chrome, a skill entrega o HTML das folhas A4** (`entrega.imprimir.html`) para imprimir em A4, margens nenhuma, gráficos de fundo ligados. Antes de mandar, rode `python3 -m grafico.conferir painel.html --fotos fotos/` de dentro de `scripts/`, leia as fotos de 1440 e 390 e as páginas do PDF como imagem. Hipóteses ficam no chat e no cenário, fora do PDF. Sem terminal, o simulador é a entrega.
+
 No chat, junto do simulador, **no máximo seis linhas no total**, contando a linha do arquivo e a do próximo passo: onde está o simulador; preço e meta; margem realizada contra a meta, com a base escrita; o maior desvio ou onde vende abaixo do custo; as hipóteses a confirmar com o contador; o próximo passo. Uma linha é uma frase. Explicação longa fica fora; o simulador tem a ajuda em cada bloco.
 
 ## Passo 6: próximo passo, em escada
 
-Proporcional ao que a pergunta 2 mostrou, uma vez, sem insistir:
+No chat, fora do PDF. Proporcional ao que a pergunta 2 mostrou, uma vez, sem insistir:
 
 1. **Poucos itens, um preço por item**: refazer a conta quando custo, imposto ou comissão mudarem, e em janeiro de 2027.
 2. **Muitos itens e nenhum sistema**: começar pelos itens que o cliente compara (os mais vendidos e os de preço conhecido), uma linha por grupo no simulador, e revisar por categoria com o contador.
@@ -114,3 +117,9 @@ Contador que atende vários clientes: a skill serve para cada um, e o cliente do
 - `assets/simulador.html`: o simulador, sem dependência.
 - `scripts/preco.py`: a conta de uma linha, em Python puro; `--html` grava o simulador.
 - `scripts/simulador.py`: a régua em níveis e o consolidado; grava e abre o simulador.
+- `scripts/camadas.py`: a DRE da venda e a DRE do mês.
+- `scripts/entrega.py`: o painel editável e o PDF A4 de entrega.
+- `assets/painel.js`: a DRE editável do painel, a mesma conta de `camadas.py`, sobre o motor do simulador.
+- `scripts/grafico/`: o método de gráfico da Bunker (formas em SVG, página, marca, PDF e conferências), só com a biblioteca padrão.
+- `references/graficos.md`: os blocos, as regras de desenho, o PDF e as conferências.
+- `assets/`: logo branco e preto, o B em contorno e a Schibsted Grotesk embutida (licença SIL OFL).
