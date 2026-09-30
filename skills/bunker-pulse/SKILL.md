@@ -64,12 +64,21 @@ logo. A cor viva dentro do gráfico é a de quem vai receber o relatório, e sã
 | primária | o que vai bem e o destaque que a manchete nomeia |
 | secundária | o alerta: atraso, bloqueio, trabalho sem dono |
 
-Pergunte: "Quais são a cor principal e a de destaque da sua empresa (ou do seu cliente)?"
-Aceite hexadecimal, nome ("o azul do logo"), print do site ou o logo; tire a cor do
-material, nunca de memória. **Sem preferência, fica o padrão da Bunker**: preto como
-primária e o vermelho `#b03a2e` como alerta, com o resto do dado nos cinzas claros, para
-que só o que importa salte do slide. Se a pessoa só tiver uma cor, ela é a primária e o
-alerta fica no vermelho da Bunker.
+**Sempre pergunte as cores**, antes de gerar: "Quais são a cor principal e a de destaque
+da sua empresa (ou do seu cliente)?" Aceite hexadecimal, nome ("o azul do logo"), print do
+site ou o logo; tire a cor do material, nunca de memória. Se a pessoa só tiver uma cor,
+ela é a primária.
+
+**Sem resposta ou sem preferência, vale a paleta do portal Bunker Alumni**, que é leve e
+deixa o dado em destaque:
+
+| Papel | Cor |
+|---|---|
+| primária, o destaque | azul `#3b82f6` |
+| secundária, o alerta | rosa `#f43f5e` |
+| contexto | os cinzas claros da Bunker |
+
+Nunca reaproveite a cor de outro cliente, nem a de um relatório anterior, como padrão.
 
 ### 5. Gerar, revisar as manchetes e entregar
 

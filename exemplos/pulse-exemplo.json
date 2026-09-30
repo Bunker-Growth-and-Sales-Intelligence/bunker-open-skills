@@ -4,10 +4,6 @@
  "cliente": "Loja Exemplo",
  "medido_em": "2026-09-30",
  "fonte": "planilha de tarefas do time (exemplo fictício)",
- "cores": {
-  "primaria": "#2f6f4f",
-  "secundaria": "#d9822b"
- },
  "atividades": [
   {
    "id": "T-01",

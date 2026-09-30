@@ -153,10 +153,15 @@ class Deck(unittest.TestCase):
         html = R.deck_html(base, hoje, list(b.values()), faltam, atrasados)
         self.assertIn('Frase escrita pela pessoa.', html)
 
-    def test_cor_invalida_cai_na_bunker(self):
+    def test_sem_cor_vale_a_paleta_alumni(self):
+        R.definir_cores({})
+        from pulso import paleta
+        self.assertEqual((paleta.PRIMARIA, paleta.SECUNDARIA), ('#3b82f6', '#f43f5e'))
+
+    def test_cor_invalida_cai_no_padrao(self):
         R.definir_cores({'cores': {'primaria': 'azul'}})
         from pulso import paleta
-        self.assertEqual(paleta.PRIMARIA, R.BUNKER[0])
+        self.assertEqual(paleta.PRIMARIA, R.PADRAO[0])
 
 
 if __name__ == '__main__':

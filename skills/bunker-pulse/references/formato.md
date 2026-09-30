@@ -43,7 +43,7 @@ lê a fonte e escreve aqui.
 | `fonte` | recomendado | de onde a lista veio, em palavras de quem lê: "quadro do Trello do time", "planilha do plano no SharePoint". Vai no rodapé de todo slide |
 | `cliente`, `projeto` | recomendado | vão na capa |
 | `titulo`, `subtitulo` | não | a capa; o padrão serve para quase tudo |
-| `cores` | não | `primaria` e `secundaria` em hexadecimal; `clara` opcional (a segunda série; sem ela, sai uma versão clara da primária). Sem `cores`, o padrão da Bunker |
+| `cores` | não | `primaria` e `secundaria` em hexadecimal; `clara` opcional (a segunda série; sem ela, sai uma versão clara da primária). Sem `cores`, a paleta do portal Bunker Alumni: azul `#3b82f6` e rosa `#f43f5e` |
 | `exibicao` | não | nome curto de frente ou pessoa para caber no gráfico (até 17 caracteres). A manchete continua com o nome inteiro |
 | `manchetes` | não | troca a manchete de um slide pela chave dele (`numeros`, `cascata`, `frentes`, `situacao`, `atrasos`, `dias`, `responsaveis`, `ritmo`). Só a frase muda; confira que o número bate com o desenho |
 

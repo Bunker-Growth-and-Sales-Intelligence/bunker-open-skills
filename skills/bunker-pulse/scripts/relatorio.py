@@ -29,7 +29,9 @@ import unicodedata
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pulso import paleta  # noqa: E402
 
-BUNKER = ('#0a0a0a', '#b03a2e')
+# Sem cor de quem recebe, vale a paleta de gráfico do portal Bunker Alumni: o azul que
+# destaca e o rosa que alerta, os dois com a mesma luminância, sobre os cinzas claros.
+PADRAO = ('#3b82f6', '#f43f5e')
 CONCLUIDA, ANDAMENTO, ABERTA, BLOQUEADA, CANCELADA = (
     'concluida', 'andamento', 'aberta', 'bloqueada', 'cancelada')
 STATUS_NOME = {CONCLUIDA: 'concluída', ANDAMENTO: 'em andamento', ABERTA: 'não começou',
@@ -189,15 +191,15 @@ def clarear(c, quanto=.55):
 
 
 def definir_cores(base):
-    """A cor viva é a de quem recebe o relatório. Sem preferência, preto e vermelho da Bunker,
-    com a moldura e o contexto nos cinzas claros da casa."""
+    """A cor viva é a de quem recebe o relatório. Sem preferência, a paleta do portal Bunker
+    Alumni (azul e rosa), com a moldura preta e branca e o contexto nos cinzas claros."""
     c = base.get('cores') or {}
     try:
-        p = _hex(c['primaria']) if c.get('primaria') else BUNKER[0]
-        s = _hex(c['secundaria']) if c.get('secundaria') else BUNKER[1]
+        p = _hex(c['primaria']) if c.get('primaria') else PADRAO[0]
+        s = _hex(c['secundaria']) if c.get('secundaria') else PADRAO[1]
     except ValueError as e:
-        print(f'aviso: cor "{e}" ilegível; saiu com a cor da Bunker', file=sys.stderr)
-        p, s = BUNKER
+        print(f'aviso: cor "{e}" ilegível; saiu com a paleta padrão', file=sys.stderr)
+        p, s = PADRAO
     clara = _hex(c['clara']) if c.get('clara') else clarear(p)
     paleta.definir_marca(p, s, clara)
     return p, s
