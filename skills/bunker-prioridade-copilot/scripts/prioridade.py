@@ -6,8 +6,9 @@ tamanho), cada uma em 1, 2, 3, 5, 8 ou 13.
 
     python3 prioridade.py demandas.json --saida pasta
 
-Saída: `prioridade.md` (a fila e as matrizes em texto) e `prioridade.html` (as mesmas
-matrizes, com a marca da Bunker, para abrir no navegador ou imprimir em PDF). Só biblioteca
+Saída: `prioridade.md` (a fila e as matrizes em texto), `prioridade.html` (as mesmas matrizes,
+com a marca da Bunker, para abrir no navegador ou imprimir em PDF) e uma imagem por matriz,
+`matriz-N-....svg` (com `--png`, também PNG, se houver Chrome). Só biblioteca
 padrão do Python 3.8 ou mais novo.
 
 A conta, a escala e a régua P0 a P3 são o método WSJF. Os CORTES dos quadrantes (a partir de
@@ -18,7 +19,12 @@ import base64
 import html as _html
 import json
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
+import textwrap
+from xml.sax.saxutils import escape as _xml
 
 NOTAS = (1, 2, 3, 5, 8, 13)
 CAMPOS = ('valor', 'urgencia', 'risco', 'tamanho')
@@ -269,12 +275,115 @@ def relatorio_html(spec, cortes=None):
             f'{"".join(matrizes)}{sem}<p class="nota">{_e(rodape)}</p></body></html>')
 
 
+# ------------------------------------------------------------------ as imagens
+
+ARQUIVOS = {'valor_urgencia': 'matriz-1-valor-urgencia', 'esforco_wsjf': 'matriz-2-esforco-wsjf',
+            'valor_risco': 'matriz-3-valor-risco'}
+FONTE = 'Schibsted Grotesk, Helvetica Neue, Arial, sans-serif'
+
+
+def matriz_svg(m, largura=1600):
+    """Uma matriz de quadrantes como imagem SVG: os quatro quadrantes com a lista de tarefas de
+    cada um, o destaque em preto e os eixos nas bordas. Sem dependência: abre em qualquer navegador."""
+    esq, dir_, topo, gap = 96, 48, 168, 12
+    col = (largura - esq - dir_ - gap) / 2
+    cpl = max(18, int((col - 72) / 14.5))          # caracteres por linha, na fonte de 26 px
+    nomes = list(m['quadrantes'])                   # alto-x alto-y, baixo-x alto-y, alto-x baixo-y, baixo-x baixo-y
+    celula = {}
+    for n in nomes:
+        qd = m['quadrantes'][n]
+        linhas = []
+        for it in qd['itens']:
+            texto = f'{it["nome"]} (WSJF {fmt(wsjf(it))})' if wsjf(it) is not None else it['nome']
+            pedacos = textwrap.wrap(texto, cpl) or ['']
+            linhas.append(pedacos)
+        n_linhas = sum(len(x) for x in linhas) or 1
+        celula[n] = {'leitura': qd['leitura'], 'itens': linhas, 'altura': max(230, 28 + 46 + 30 + 18 + n_linhas * 34 + 14 * len(linhas) + 26)}
+    # linha de cima: baixo-x alto-y (esquerda) e alto-x alto-y (direita); linha de baixo: baixo-x baixo-y e alto-x baixo-y
+    grade = [[nomes[1], nomes[0]], [nomes[3], nomes[2]]]
+    alt_linha = [max(celula[a]['altura'], celula[b]['altura']) for a, b in grade]
+    alt_grade = sum(alt_linha) + gap
+    altura = int(topo + alt_grade + 84)
+    o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {largura} {altura}" width="{largura}" height="{altura}" '
+         f'font-family="{FONTE}">',
+         f'<rect width="{largura}" height="{altura}" fill="#ffffff"/>',
+         f'<text x="{esq}" y="76" font-size="44" font-weight="900" fill="#0a0a0a" letter-spacing="-1">{_xml(m["titulo"])}</text>',
+         f'<text x="{esq}" y="116" font-size="26" fill="#555555">{_xml(m["pergunta"])}</text>']
+    y = topo
+    for r, par in enumerate(grade):
+        for c, nome in enumerate(par):
+            x = esq + c * (col + gap)
+            dados = celula[nome]
+            destaque = nome == m['destaque']
+            fundo, tinta, leve = ('#0a0a0a', '#ffffff', '#bdbdbd') if destaque else ('#f4f4f4', '#0a0a0a', '#969696')
+            o.append(f'<g data-nome="{_xml(nome)}"{" data-destaque=" + chr(34) + "1" + chr(34) if destaque else ""}>')
+            o.append(f'<rect x="{x:.1f}" y="{y}" width="{col:.1f}" height="{alt_linha[r]}" fill="{fundo}" data-celula="1"/>')
+            o.append(f'<text x="{x + 32:.1f}" y="{y + 58}" font-size="34" font-weight="900" fill="{tinta}" letter-spacing="-0.5">{_xml(nome)}</text>')
+            o.append(f'<text x="{x + 32:.1f}" y="{y + 90}" font-size="20" fill="{leve}">{_xml(dados["leitura"])}</text>')
+            ty = y + 136
+            if not dados['itens']:
+                o.append(f'<text x="{x + 32:.1f}" y="{ty}" font-size="22" fill="{leve}">Nada neste quadrante.</text>')
+            for pedacos in dados['itens']:
+                o.append(f'<rect x="{x + 32:.1f}" y="{ty - 15}" width="9" height="9" fill="{tinta}"/>')
+                spans = ''.join(f'<tspan x="{x + 56:.1f}" dy="{0 if i == 0 else 34}">{_xml(t)}</tspan>' for i, t in enumerate(pedacos))
+                o.append(f'<text x="{x + 56:.1f}" y="{ty}" font-size="26" fill="{tinta}">{spans}</text>')
+                ty += 34 * len(pedacos) + 14
+            o.append('</g>')
+        y += alt_linha[r] + gap
+    cx, cy = esq + (largura - esq - dir_) / 2, topo + alt_grade / 2
+    o.append(f'<text transform="translate(52 {cy:.1f}) rotate(-90)" text-anchor="middle" font-size="22" font-weight="700" '
+             f'fill="#555555" letter-spacing="3">{_xml(m["eixo_y"].upper())} &#8594;</text>')
+    o.append(f'<text x="{cx:.1f}" y="{topo + alt_grade + 44}" text-anchor="middle" font-size="22" font-weight="700" '
+             f'fill="#555555" letter-spacing="3">{_xml(m["eixo_x"].upper())} &#8594;</text>')
+    o.append(f'<text x="{esq}" y="{altura - 22}" font-size="16" fill="#969696">Bunker · Growth &amp; Sales Intelligence · '
+             f'notas sugeridas pela IA, quem executa decide</text>')
+    o.append('</svg>')
+    return '\n'.join(o)
+
+
+def imagens_svg(spec, cortes=None):
+    """{nome do arquivo: conteúdo SVG} das três matrizes."""
+    q = quadrantes(spec['demandas'], cortes)
+    return {f'{ARQUIVOS[k]}.svg': matriz_svg(q[k]) for k in ARQUIVOS}
+
+
+def _navegador():
+    for c in ('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+              '/Applications/Chromium.app/Contents/MacOS/Chromium'):
+        if os.path.exists(c):
+            return c
+    for nome in ('google-chrome', 'google-chrome-stable', 'chromium', 'chromium-browser'):
+        achado = shutil.which(nome)
+        if achado:
+            return achado
+    return None
+
+
+def svg_para_png(svg_caminho, png_caminho):
+    """PNG pelo Chrome sem cabeça. Devolve False se não houver navegador."""
+    nav = _navegador()
+    if not nav:
+        return False
+    import re
+    m = re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', open(svg_caminho, encoding='utf-8').read())
+    larg, alt = int(float(m.group(1))), int(float(m.group(2)))
+    pagina = os.path.join(tempfile.mkdtemp(prefix='prioridade-'), 'p.html')
+    with open(pagina, 'w', encoding='utf-8') as f:
+        f.write(f'<!DOCTYPE html><meta charset="utf-8"><style>html,body{{margin:0}}</style>'
+                f'<img src="file://{os.path.abspath(svg_caminho)}" width="{larg}" height="{alt}">')
+    subprocess.run([nav, '--headless=new', '--disable-gpu', '--hide-scrollbars', f'--window-size={larg},{alt}',
+                    f'--screenshot={os.path.abspath(png_caminho)}', f'file://{pagina}'],
+                   capture_output=True, timeout=120)
+    return os.path.exists(png_caminho)
+
+
 # ------------------------------------------------------------------ linha de comando
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('json')
     ap.add_argument('--saida', default='.')
+    ap.add_argument('--png', action='store_true', help='grava também cada matriz em PNG (precisa do Chrome ou Chromium)')
     ap.add_argument('--corte-alto', type=int, help='nota a partir da qual valor, urgência e risco são altos (padrão 8)')
     ap.add_argument('--corte-facil', type=int, help='tamanho até o qual o esforço é pouco (padrão 3)')
     ap.add_argument('--corte-wsjf', type=float, help='WSJF a partir do qual é alto (padrão 5)')
@@ -294,8 +403,21 @@ def main():
         f.write(md)
     with open(os.path.join(a.saida, 'prioridade.html'), 'w', encoding='utf-8') as f:
         f.write(relatorio_html(spec, cortes))
+    arquivos = [os.path.join(a.saida, 'prioridade.md'), os.path.join(a.saida, 'prioridade.html')]
+    for nome, svg in imagens_svg(spec, cortes).items():
+        caminho = os.path.join(a.saida, nome)
+        with open(caminho, 'w', encoding='utf-8') as f:
+            f.write(svg)
+        arquivos.append(caminho)
+        if a.png:
+            png = caminho[:-4] + '.png'
+            if svg_para_png(caminho, png):
+                arquivos.append(png)
+            else:
+                print('aviso: sem Chrome ou Chromium, o PNG não foi gerado; o SVG abre em qualquer navegador', file=sys.stderr)
+                a.png = False
     print(md)
-    print(f'Gravado em {os.path.join(a.saida, "prioridade.md")} e {os.path.join(a.saida, "prioridade.html")}')
+    print('Gravado:\n' + '\n'.join('  ' + x for x in arquivos))
     return 0
 
 

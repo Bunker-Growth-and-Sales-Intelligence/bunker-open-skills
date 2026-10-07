@@ -50,7 +50,10 @@ contrato, porque é pequeno e o risco é enorme.
    viram uma tarefa só, com o valor somado.
 3. **Propor as notas.** Para cada demanda, a IA sugere valor, urgência, risco e tamanho e diz
    em uma frase de onde veio cada nota. **A IA sugere, quem executa decide.** Mostre as notas e
-   deixe a pessoa corrigir. Se faltar informação para uma nota, pergunte, e nunca invente.
+   deixe a pessoa corrigir. **Se o pedido já trouxe a ordem e as imagens, não pare para pedir
+   confirmação:** proponha as notas, mostre-as na própria entrega e avise que a pessoa pode
+   corrigir qualquer uma para refazer. Só pergunte antes se faltar algo que impede a nota
+   (um prazo que você não tem, um valor que ninguém deu), e nunca invente.
 4. **Calcular.** WSJF de cada demanda, ordem da fila e prioridade P0 a P3. Demanda com alguma
    das quatro notas faltando fica sem WSJF e vai para o fim, avisada: meia conta ordenaria a fila
    com um número que ninguém mediu.
@@ -84,11 +87,22 @@ fica à direita.
 grande, com pouco valor direto: backup, LGPD, segurança, que ninguém pressiona). Novidade (traz
 valor, não reduz risco). Pouco valor (não merece lugar na fila).
 
+**Item no topo da fila e em "Estacionar".** Pode acontecer: um backup de WSJF 21 (tamanho 1, risco
+13) cai em Estacionar na matriz 1 se as notas de valor e urgência forem baixas, porque a matriz 1
+só olha valor e urgência. Não é erro: ele lidera a fila por ser pequeno e proteger de um risco
+grande, e a matriz 3 (valor × risco) mostra isso. Explique em uma frase quando acontecer.
+
 **Os cortes são uma convenção desta skill, não uma regra do WSJF, e se ajustam:** nota 8 ou
 mais é alta (valor, urgência e risco); tamanho 3 ou menos é pouco esforço; WSJF 5 ou mais é
 alto. Diga isso ao usuário e ofereça mudar o corte se a fila ficar toda num canto só.
 
 ## A entrega
+
+A entrega tem sempre quatro partes: **(1) a primeira da fila** em uma frase; **(2) a fila** em
+tabela, com as quatro notas, o WSJF e a prioridade, em ordem; **(3) as três matrizes**, cada
+uma com os quatro quadrantes (nome, leitura e a lista de demandas de cada um) e o quadrante de
+destaque marcado; **(4) uma imagem por matriz.** Demandas sem nota e a linha dizendo que as
+notas são sugestão e quais foram os cortes vêm no fim.
 
 **Com Python**, grave as demandas em JSON e rode:
 
@@ -96,16 +110,29 @@ alto. Diga isso ao usuário e ofereça mudar o corte se a fila ficar toda num ca
 python3 scripts/prioridade.py demandas.json --saida pasta
 ```
 
-O formato está em `exemplos/demandas.json`: um nome e as quatro notas por demanda. A saída é
-`prioridade.md` e `prioridade.html`, com a marca da Bunker, que abre no navegador e imprime em
-PDF. Ajuste os cortes com `--corte-alto`, `--corte-facil` e `--corte-wsjf`. Os testes rodam com
-`python3 -m unittest discover -s scripts`.
+O formato está em `exemplos/demandas.json`: um nome e as quatro notas por demanda, e o arquivo pode ter
+qualquer nome. O script imprime o `prioridade.md` na tela e grava os arquivos, então não precisa
+ler duas vezes. A saída é
+`prioridade.md`, `prioridade.html` (com a marca da Bunker, abre no navegador e imprime em PDF)
+e **uma imagem por matriz**, `matriz-1-valor-urgencia.svg`, `matriz-2-esforco-wsjf.svg` e
+`matriz-3-valor-risco.svg`, com a lista de tarefas de cada quadrante e o quadrante de destaque em
+preto. O SVG abre em qualquer navegador. Com `--png`, grava também PNG, se houver Chrome ou
+Chromium. Ajuste os cortes com `--corte-alto`, `--corte-facil` e `--corte-wsjf`. Os testes rodam
+com `python3 -m unittest discover -s scripts`.
 
-**Sem Python**, entregue em texto: (1) a primeira da fila em uma frase; (2) uma tabela da fila
-com as quatro notas, o WSJF e a prioridade, em ordem; (3) para cada uma das três matrizes, os
-quatro quadrantes com o nome, a leitura e a lista de demandas, marcando o destaque; (4) as
-demandas sem nota, se houver; (5) uma linha dizendo que as notas são sugestão e quais foram os
-cortes.
+**Sem Python**, entregue as partes 1 a 3 em texto e a parte 4 como imagem do jeito que a
+ferramenta permitir: um artefato HTML ou SVG com os quatro quadrantes de cada matriz (tarefas
+dentro do quadrante, destaque em preto com texto branco, eixos nomeados nas bordas), ou, se a
+ferramenta só gera texto, uma grade 2 por 2 em tabela. Diga qual caminho usou.
+
+**O pedido que a pessoa deve digitar** deve nomear o método e as imagens. Se ela escrever só
+"organiza minhas demandas", a IA pode responder com uma lista simples. Sugira este texto:
+
+> Use a skill bunker-prioridade-copilot. Organize as minhas demandas pelo método WSJF: dê notas
+> de valor, urgência, risco e tamanho (1, 2, 3, 5, 8 ou 13), calcule o WSJF e ordene a fila de P0
+> a P3. Depois gere uma imagem para cada uma das três matrizes de quadrantes (valor × urgência,
+> esforço × WSJF e valor × risco), com a lista de tarefas de cada quadrante e o quadrante de
+> destaque em preto.
 
 ## Regras de conduta
 
@@ -127,7 +154,7 @@ corte dos quadrantes é uma convenção: confira se faz sentido para a sua lista
 ```
 SKILL.md                       esta skill; colada sozinha numa conversa, já funciona
 references/metodo.md           o porquê da conta: custo do atraso e o exemplo das três tarefas
-scripts/prioridade.py          a conta, os quadrantes e a saída em texto e HTML (só biblioteca padrão)
+scripts/prioridade.py          a conta, os quadrantes e a saída em texto, HTML e imagens (só biblioteca padrão)
 scripts/test_prioridade.py     testes
 exemplos/demandas.json         quatro demandas com as notas, para ver a saída
 assets/bunker-logo-preto.png   logo usado no HTML

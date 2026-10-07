@@ -47,7 +47,7 @@ Organiza a sua lista de demandas e mostra o que fazer primeiro. Você junta o qu
 - calcula o **WSJF**, ordena a fila e dá a prioridade de P0 a P3;
 - monta **três matrizes de quadrantes** (valor por urgência, esforço por WSJF e valor por risco), com a **lista do que cai em cada quadrante** e um quadrante em destaque por matriz, de onde sai a primeira tarefa;
 - aplica a regra "pressão não fura fila": o pedido sob pressão entra na fila, é pontuado pela mesma régua e, se a nota for baixa, a conta é a resposta;
-- entrega a fila e as matrizes em texto e num HTML com a marca da Bunker, que abre no navegador e imprime em PDF.
+- entrega a fila e as matrizes em texto, num HTML com a marca da Bunker (abre no navegador e imprime em PDF) e **uma imagem por matriz**, com a lista de tarefas de cada quadrante e o quadrante de destaque em preto.
 
 As notas são sugestão da IA e quem executa decide. Funciona colando só o `SKILL.md` numa conversa de qualquer IA. Com Python, o script `scripts/prioridade.py` faz a conta e o HTML.
 

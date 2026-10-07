@@ -188,5 +188,94 @@ class TestSaida(unittest.TestCase):
             self.assertNotIn('Traceback', r.stderr)
 
 
+class TestImagens(unittest.TestCase):
+    """Uma imagem por matriz: os quadrantes com a lista de tarefas e o destaque em preto."""
+
+    def spec(self):
+        return json.load(open(EXEMPLO, encoding='utf-8'))
+
+    def svgs(self):
+        import prioridade as p
+        return p.imagens_svg(self.spec())
+
+    def test_tres_imagens_com_nome_de_arquivo(self):
+        s = self.svgs()
+        self.assertEqual(sorted(s), ['matriz-1-valor-urgencia.svg', 'matriz-2-esforco-wsjf.svg',
+                                     'matriz-3-valor-risco.svg'])
+
+    def test_svg_e_xml_valido(self):
+        import xml.etree.ElementTree as ET
+        for nome, conteudo in self.svgs().items():
+            raiz = ET.fromstring(conteudo)
+            self.assertTrue(raiz.tag.endswith('svg'), nome)
+
+    def test_cada_svg_tem_os_quatro_quadrantes_e_as_tarefas(self):
+        s = self.svgs()
+        m1 = s['matriz-1-valor-urgencia.svg']
+        for trecho in ('Fazer agora', 'Armadilha', 'Agendar', 'Estacionar', 'Renovar o contrato',
+                       'Testar o backup', 'URGÊNCIA', 'VALOR'):
+            self.assertIn(trecho, m1)
+        m2 = s['matriz-2-esforco-wsjf.svg']
+        for trecho in ('Rápido e rende', 'Projeto grande', 'Se sobrar tempo', 'Vale a pena?'):
+            self.assertIn(trecho, m2)
+
+    def test_so_o_quadrante_em_destaque_e_preto(self):
+        for nome, conteudo in self.svgs().items():
+            self.assertEqual(conteudo.count('data-destaque="1"'), 1, nome)
+            self.assertEqual(conteudo.count('fill="#0a0a0a" data-celula'), 1, nome)
+
+    def test_o_destaque_de_cada_matriz_e_o_certo(self):
+        s = self.svgs()
+        import re
+        for nome, esperado in (('matriz-1-valor-urgencia.svg', 'Fazer agora'),
+                               ('matriz-2-esforco-wsjf.svg', 'Rápido e rende'),
+                               ('matriz-3-valor-risco.svg', 'Estratégico')):
+            m = re.search(r'data-destaque="1"[^>]*data-nome="([^"]+)"', s[nome]) or \
+                re.search(r'data-nome="([^"]+)"[^>]*data-destaque="1"', s[nome])
+            self.assertEqual(m.group(1), esperado, nome)
+
+    def test_texto_do_usuario_e_escapado_no_svg(self):
+        import prioridade as p
+        spec = {'titulo': 'x', 'demandas': [d('<script>alert(1)</script> & cia', 5, 5, 5, 2)]}
+        for conteudo in p.imagens_svg(spec).values():
+            self.assertNotIn('<script>', conteudo)
+            self.assertIn('&lt;script&gt;', conteudo)
+
+    def test_svg_e_monocromatico(self):
+        for nome, conteudo in self.svgs().items():
+            cores = set(re.findall(r'#[0-9a-fA-F]{6}\b', conteudo))
+            vivas = [c for c in cores if len({c[1:3].lower(), c[3:5].lower(), c[5:7].lower()}) > 1]
+            self.assertEqual(vivas, [], (nome, vivas))
+
+    def test_nome_comprido_quebra_em_linhas_e_a_imagem_cresce(self):
+        import prioridade as p
+        curto = {'titulo': 'x', 'demandas': [d('Curta', 8, 8, 8, 2)]}
+        longo = {'titulo': 'x', 'demandas': [d('Uma demanda com um nome muito comprido que nao cabe em uma linha so ' * 4, 8, 8, 8, 2)]}
+        h = lambda svg: float(re.search(r'viewBox="0 0 [\d.]+ ([\d.]+)"', svg).group(1))
+        a = p.imagens_svg(curto)['matriz-1-valor-urgencia.svg']
+        b = p.imagens_svg(longo)['matriz-1-valor-urgencia.svg']
+        self.assertGreater(h(b), h(a))
+        self.assertGreater(b.count('<tspan'), a.count('<tspan'))
+
+    def test_linha_de_comando_grava_os_tres_svgs(self):
+        with tempfile.TemporaryDirectory() as t:
+            r = subprocess.run([sys.executable, os.path.join(AQUI, 'prioridade.py'), EXEMPLO, '--saida', t],
+                               capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            for n in ('matriz-1-valor-urgencia.svg', 'matriz-2-esforco-wsjf.svg', 'matriz-3-valor-risco.svg'):
+                self.assertTrue(os.path.exists(os.path.join(t, n)), n)
+
+    @unittest.skipUnless(any(os.path.exists(c) for c in (
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',)), 'sem Chrome')
+    def test_png_com_chrome(self):
+        with tempfile.TemporaryDirectory() as t:
+            r = subprocess.run([sys.executable, os.path.join(AQUI, 'prioridade.py'), EXEMPLO, '--saida', t, '--png'],
+                               capture_output=True, text=True)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            caminho = os.path.join(t, 'matriz-1-valor-urgencia.png')
+            self.assertTrue(os.path.exists(caminho))
+            self.assertEqual(open(caminho, 'rb').read(8), b'\x89PNG\r\n\x1a\n')
+
+
 if __name__ == '__main__':
     unittest.main()
