@@ -40,20 +40,32 @@ skills/bunker-pricing/
 exemplos/                           três simuladores prontos, com o cenário de cada um
 ```
 
+## bunker-prioridade-copilot
+
+Organiza a sua lista de demandas e mostra o que fazer primeiro. Você junta o que tem a fazer (e-mail, planilha, lista colada, print), a IA propõe as notas de valor, urgência, risco e tamanho, e a skill:
+
+- calcula o **WSJF**, ordena a fila e dá a prioridade de P0 a P3;
+- monta **três matrizes de quadrantes** (valor por urgência, esforço por WSJF e valor por risco), com a **lista do que cai em cada quadrante** e um quadrante em destaque por matriz, de onde sai a primeira tarefa;
+- aplica a regra "pressão não fura fila": o pedido sob pressão entra na fila, é pontuado pela mesma régua e, se a nota for baixa, a conta é a resposta;
+- entrega a fila e as matrizes em texto e num HTML com a marca da Bunker, que abre no navegador e imprime em PDF.
+
+As notas são sugestão da IA e quem executa decide. Funciona colando só o `SKILL.md` numa conversa de qualquer IA. Com Python, o script `scripts/prioridade.py` faz a conta e o HTML.
+
 ## Baixar
 
 A versão mais recente de cada skill, pronta para instalar:
 
 - [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pricing.zip)
 - [bunker-pulse.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pulse.zip)
+- [bunker-prioridade-copilot.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-prioridade-copilot.zip)
 
-Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para a `bunker-pulse`, troque o nome da pasta.
+Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para a `bunker-pulse` ou a `bunker-prioridade-copilot`, troque o nome da pasta.
 
 ## Instalação
 
 ### Claude Code, como plugin
 
-O jeito mais fácil: instala as duas skills de uma vez e recebe as atualizações.
+O jeito mais fácil: instala todas as skills de uma vez e recebe as atualizações.
 
 ```
 /plugin marketplace add Bunker-Growth-and-Sales-Intelligence/bunker-open-skills

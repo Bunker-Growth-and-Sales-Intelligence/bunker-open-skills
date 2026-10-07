@@ -6,8 +6,8 @@
     {
       "name": "skills",
       "source": "./",
-      "description": "Formação de preço e status report em slides, gratuitos, da Bunker Growth and Sales Intelligence.",
-      "version": "0.5.0",
+      "description": "Formação de preço, status report em slides e prioridade por WSJF com quadrantes, gratuitos, da Bunker Growth and Sales Intelligence.",
+      "version": "0.6.0",
       "author": { "name": "Bunker Growth and Sales Intelligence" }
     }
   ]

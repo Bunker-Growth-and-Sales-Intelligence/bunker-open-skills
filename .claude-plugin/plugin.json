@@ -1,10 +1,10 @@
 {
   "name": "skills",
   "displayName": "Bunker Open Skills",
-  "description": "Skills gratuitas da Bunker Growth and Sales Intelligence: formação de preço (bunker-pricing) e status report em slides a partir de qualquer lista de atividades (bunker-pulse).",
-  "version": "0.5.0",
+  "description": "Skills gratuitas da Bunker Growth and Sales Intelligence: formação de preço (bunker-pricing) status report em slides a partir de qualquer lista de atividades (bunker-pulse) e organização de demandas por WSJF com quadrantes de decisão (bunker-prioridade-copilot).",
+  "version": "0.6.0",
   "author": { "name": "Bunker Growth and Sales Intelligence", "url": "https://bunkerconsultancy.com" },
   "homepage": "https://bunkerconsultancy.com",
   "repository": "https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills",
-  "keywords": ["bunker", "pricing", "status report", "gestão de projetos"]
+  "keywords": ["bunker", "pricing", "status report", "gestão de projetos", "prioridade", "wsjf"]
 }

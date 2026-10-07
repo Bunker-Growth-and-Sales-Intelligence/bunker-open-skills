@@ -1,0 +1,9 @@
+{
+  "titulo": "Minha fila: exemplo do encontro",
+  "demandas": [
+    {"nome": "Renovar o contrato do maior cliente, que vence dia 20", "valor": 13, "urgencia": 13, "risco": 8, "tamanho": 3},
+    {"nome": "Testar o backup do banco, parado há 6 meses", "valor": 8, "urgencia": 5, "risco": 13, "tamanho": 2},
+    {"nome": "Trocar o azul do logo do site, pedido do sócio para hoje", "valor": 1, "urgencia": 1, "risco": 1, "tamanho": 2},
+    {"nome": "Refazer o visual da tela de login", "valor": 2, "urgencia": 1, "risco": 1, "tamanho": 5}
+  ]
+}
