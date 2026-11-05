@@ -40,20 +40,39 @@ skills/bunker-pricing/
 exemplos/                           três simuladores prontos, com o cenário de cada um
 ```
 
+## bunker-fix-bug
+
+O rito da Bunker para consertar defeito em Salesforce, na ordem que impede engano:
+
+1. perguntas de arquitetura e de regra de negócio antes de tudo;
+2. o defeito escolhido por contagem, e a premissa da correção medida antes de escrever código;
+3. um teste que fica vermelho no código de hoje, atacado até não passar por engano;
+4. a correção, o verde, e o vermelho de novo quando a correção sai;
+5. print do antes e do depois, na mesma cena, no perfil de quem sofria o defeito;
+6. deploy com cobertura por classe, e a rodada completa outra vez.
+
+A issue do GitHub é o diário: cada marco vira comentário na hora, e os rótulos dizem a prioridade (WSJF) e a etapa (`e0` a `e6`). Precisa do `gh` autenticado no repositório do projeto e do `sf` autenticado na org; nada vai para produção sem autorização de quem opera.
+
+```
+skills/bunker-fix-bug/
+  SKILL.md                          o rito completo, com as regras e os casos que criaram cada uma
+```
+
 ## Baixar
 
 A versão mais recente de cada skill, pronta para instalar:
 
 - [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pricing.zip)
 - [bunker-pulse.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pulse.zip)
+- [bunker-fix-bug.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-fix-bug.zip)
 
-Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para a `bunker-pulse`, troque o nome da pasta.
+Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para a `bunker-pulse` ou a `bunker-fix-bug`, troque o nome da pasta.
 
 ## Instalação
 
 ### Claude Code, como plugin
 
-O jeito mais fácil: instala as duas skills de uma vez e recebe as atualizações.
+O jeito mais fácil: instala todas as skills de uma vez e recebe as atualizações.
 
 ```
 /plugin marketplace add Bunker-Growth-and-Sales-Intelligence/bunker-open-skills
