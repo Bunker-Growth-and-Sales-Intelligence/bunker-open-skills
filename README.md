@@ -58,6 +58,66 @@ skills/bunker-fix-bug/
   SKILL.md                          o rito completo, com as regras e os casos que criaram cada uma
 ```
 
+## Torre de controle: ignição, WSJF, confetes ou perguntas e grill me
+
+De Guilherme Reis, com a Bunker. Quatro skills que trabalham juntas, para quem toca muitos assuntos ao mesmo tempo e quer que ninguém fique sem resposta:
+
+- **bunker-ignicao**: a skill mãe. Lê os seus canais, garante que ninguém fique sem resposta, mantém um assunto por issue num repositório privado do GitHub, ordena a fila e despacha os cinco primeiros assuntos para conversas filhas. Ela própria só conversa, decide e delega.
+- **bunker-wsjf**: dá as notas de cada issue (valor, urgência, risco e tamanho), grava as notas como etiquetas e mostra a fila em ordem.
+- **bunker-confetes-ou-perguntas**: como o Claude termina cada resposta. Confete quando terminou, caixinha de múltipla escolha quando falta uma decisão sua.
+- **bunker-grill-me**: antes de um trabalho grande, perguntas em rodadas de até quatro caixinhas, até não sobrar nada assumido em silêncio. É a versão em caixinhas da [grill-me de Matt Pocock](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling).
+
+O que depende da sua rotina (canais, prazos de resposta, quem interrompe tudo, horários) está em `skills/bunker-ignicao/references/adaptar.md`, e a ignição pergunta o que faltar, uma pergunta por vez. A `bunker-ignicao` e a `bunker-wsjf` leem e gravam issues pelo terminal, então funcionam por inteiro no Claude Code, no terminal ou na aba Code do Claude Desktop. A `bunker-confetes-ou-perguntas` e a `bunker-grill-me` funcionam em qualquer lugar.
+
+### Já tem skills suas? Peça para o Claude mesclar
+
+Abra o Claude Code na pasta das suas skills e cole:
+
+> Baixe as skills bunker-ignicao, bunker-wsjf, bunker-confetes-ou-perguntas e bunker-grill-me do repositório público github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills. Compare com as minhas skills, aproveite o que tem de melhor nelas e mescle com as minhas, sem apagar nada que é meu. Antes de gravar, me mostre o que muda em cada skill.
+
+### Primeiros passos
+
+1. Peça: "Crie um repositório privado no GitHub chamado torre-de-controle-seunome e clone dentro da minha pasta de trabalho." Se o Claude pedir login no GitHub, ele abre o navegador e mostra um código para colar.
+2. Peça: "Leia tudo o que eu estou tocando nas minhas conversas abertas e transforme cada assunto numa issue nesse repositório, com todos os detalhes."
+3. Abra uma conversa nova dentro da pasta da torre de controle e rode a ignição. Ela pergunta o que falta, uma pergunta por vez, e grava as respostas na própria skill.
+4. Rode a `bunker-wsjf` para dar as notas. Confira os cinco primeiros. Se a ordem estiver errada, diga o porquê: é assim que a régua aprende o seu critério.
+5. A partir daí, trabalhe pela ignição e feche as outras conversas sem medo.
+
+### Como organizar as suas skills
+
+- **Dois repositórios privados.** Um para a torre de controle, só com issues. Outro para as suas skills.
+- **Uma pasta (plugin) por função.** Por exemplo: secretário, jurídico, financeiro. Dentro de cada uma ficam as skills das ações daquela função. Ponha um prefixo seu no nome, porque com o tempo você vai instalar plugins de outras pessoas.
+- **Toda skill decide antes de fazer.** Primeiro ela vê se a tarefa é dela. Se for, faz e vê qual é o próximo passo. Se não for, passa para a skill certa ou devolve uma pergunta a você. Quando uma skill começa a fazer duas coisas bem diferentes, ela se divide em duas.
+- **A conversa mãe fica livre.** A ignição só conversa, decide e despacha. O trabalho acontece nas conversas filhas, no máximo cinco abertas.
+- **Feche tudo, várias vezes por dia.** Arquive as conversas: conversa arquivada ainda pode ser consultada, e o histórico de cada assunto está na issue.
+- **Cada conversa ensina as skills.** Antes de encerrar, pergunte: "O que fica de ensinamento daqui para as minhas skills? O que você vai atualizar, e onde?"
+- **Comando de terminal quem roda é o Claude.** Se ele pedir para você rodar, responda que ele mesmo execute.
+
+### Segurança
+
+- A torre de controle guarda nome de cliente, valores e decisões. Deixe sempre privada.
+- A issue guarda onde achar a conversa (canal, data, id da mensagem), nunca o texto inteiro do WhatsApp ou do e-mail.
+- Nenhuma destas skills envia mensagem sem o seu ok para aquela mensagem.
+
+### O que tem na pasta
+
+```
+skills/bunker-ignicao/
+  SKILL.md                          o ciclo da torre de controle, mãe e filhas, as regras
+  references/adaptar.md             o que preencher com a sua rotina
+  references/estados-e-fup.md       estados, cadência de follow-up e etiquetas
+  references/modelo-de-issue.md     o modelo de issue e de comentário
+skills/bunker-wsjf/
+  SKILL.md                          a conta, as regras de toda nota e o passo do Claude
+  references/regua.md               as âncoras de cada nota, os casos que confundem e as fases da venda
+  scripts/fila.py                   cria as etiquetas, grava as notas e mostra a fila (só precisa do gh)
+  scripts/test_fila.py              testes, sem rede
+skills/bunker-confetes-ou-perguntas/
+  SKILL.md                          como cada resposta termina
+skills/bunker-grill-me/
+  SKILL.md                          as rodadas de perguntas antes de começar
+```
+
 ## Baixar
 
 A versão mais recente de cada skill, pronta para instalar:
@@ -65,8 +125,12 @@ A versão mais recente de cada skill, pronta para instalar:
 - [bunker-pricing.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pricing.zip)
 - [bunker-pulse.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-pulse.zip)
 - [bunker-fix-bug.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-fix-bug.zip)
+- [bunker-ignicao.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-ignicao.zip)
+- [bunker-wsjf.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-wsjf.zip)
+- [bunker-confetes-ou-perguntas.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-confetes-ou-perguntas.zip)
+- [bunker-grill-me.zip](https://github.com/Bunker-Growth-and-Sales-Intelligence/bunker-open-skills/releases/latest/download/bunker-grill-me.zip)
 
-Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para a `bunker-pulse` ou a `bunker-fix-bug`, troque o nome da pasta.
+Descompacte e siga o passo a passo da sua ferramenta abaixo. Os exemplos usam a `bunker-pricing`; para as outras, troque o nome da pasta.
 
 ## Instalação
 

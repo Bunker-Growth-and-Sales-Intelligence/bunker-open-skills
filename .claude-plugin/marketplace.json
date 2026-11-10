@@ -11,8 +11,8 @@
     {
       "name": "skills",
       "source": "./",
-      "description": "Formação de preço, status report em slides e o rito de correção de defeito em Salesforce, gratuitos, da Bunker Growth and Sales Intelligence.",
-      "version": "0.6.0",
+      "description": "Formação de preço, status report em slides, o rito de correção de defeito em Salesforce e a torre de controle para organizar o dia com o Claude (ignição, WSJF, confetes ou perguntas e grill me), gratuitos, da Bunker Growth and Sales Intelligence.",
+      "version": "0.7.0",
       "author": {
         "name": "Bunker Growth and Sales Intelligence"
       }
