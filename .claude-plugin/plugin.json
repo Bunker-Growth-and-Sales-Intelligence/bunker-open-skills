@@ -1,8 +1,8 @@
 {
   "name": "skills",
   "displayName": "Bunker Open Skills",
-  "description": "Skills gratuitas da Bunker Growth and Sales Intelligence: formação de preço (bunker-pricing), status report em slides a partir de qualquer lista de atividades (bunker-pulse) e o rito de correção de defeito em Salesforce (bunker-fix-bug).",
-  "version": "0.6.0",
+  "description": "Skills gratuitas da Bunker Growth and Sales Intelligence: formação de preço (bunker-pricing), status report em slides a partir de qualquer lista de atividades (bunker-pulse), o rito de correção de defeito em Salesforce (bunker-fix-bug) e a torre de controle para organizar o dia com o Claude (bunker-ignicao, bunker-wsjf, bunker-confetes-ou-perguntas e bunker-grill-me).",
+  "version": "0.7.0",
   "author": {
     "name": "Bunker Growth and Sales Intelligence",
     "url": "https://bunkerconsultancy.com"
@@ -16,6 +16,11 @@
     "gestão de projetos",
     "salesforce",
     "correção de defeito",
-    "testes"
+    "testes",
+    "torre de controle",
+    "wsjf",
+    "priorização",
+    "issues",
+    "organização pessoal"
   ]
 }
