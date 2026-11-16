@@ -1,6 +1,6 @@
 ---
 name: bunker-ignicao
-description: A skill mãe, que dá a partida no dia com o Claude. Funciona como torre de controle. Lê os canais do usuário, confere se cada assunto está na última versão, garante que ninguém fique sem resposta (vácuo zero), mantém um assunto por issue num repositório privado do GitHub, reordena a fila pela skill bunker-wsjf e despacha os cinco primeiros assuntos para conversas filhas. Ela própria não executa trabalho concreto. Conversa, decide e delega. Use ao abrir o dia, quando o usuário disser "ignição", "o que eu faço agora", "quem está me esperando", "organiza minha fila", ou depois de fechar todas as conversas para recomeçar.
+description: A skill mãe, que dá a partida no dia com o Claude. Funciona como torre de controle. Na primeira vez, descobre por onde chegam os assuntos do usuário, liga cada canal ao Claude (conector, MCP, linha de comando, exportação ou navegador) e monta a lista de todos os assuntos. Depois, a cada chamada, lê os canais, confere se cada assunto está na última versão, garante que ninguém fique sem resposta (vácuo zero), mantém um assunto por issue num repositório privado do GitHub, reordena a fila pela skill bunker-wsjf e despacha os cinco primeiros assuntos para conversas filhas. Ela própria não executa trabalho concreto. Conversa, decide e delega. Use ao abrir o dia, quando o usuário disser "ignição", "o que eu faço agora", "quem está me esperando", "organiza minha fila", depois de fechar todas as conversas para recomeçar, e também em "conecta meus canais", "liga meu e-mail ao Claude", "lista todos os meus assuntos".
 ---
 
 # Ignição: a torre de controle
@@ -16,13 +16,24 @@ Esta versão foi feita para adaptar. As partes que dependem da rotina de cada um
    - As skills (por exemplo `skills-nome`), com os arquivos das skills versionados. Se o computador quebrar, basta instalar o Claude Code em outra máquina, autenticar no GitHub, clonar os dois repositórios e continuar de onde parou.
 2. **A pasta da torre limpa.** A conversa mãe roda dentro do clone da torre de controle, e essa pasta não guarda outros arquivos. Com a pasta cheia, o Claude lê arquivo à toa em toda conversa e gasta tokens só para se situar.
 3. **`gh` autenticado** na conta do usuário. O login acontece uma vez: o Claude abre o navegador e mostra um código para colar.
-4. **Os canais conectados**: e-mail, WhatsApp, Teams, agenda, CRM, o que o usuário usar. Cada canal precisa de um conector (MCP), de uma linha de comando ou de uma API que o Claude consiga chamar. Canal sem acesso aparece em toda passada como ponto cego.
+4. **Os canais ligados**: e-mail, WhatsApp, agenda, CRM, planilha, o que o usuário usar. Quem ainda não ligou nenhum começa pela primeira vez, abaixo. Canal sem acesso aparece em toda passada como ponto cego.
+
+## A primeira vez: mapear, ligar e listar tudo
+
+Na primeira chamada, ou quando a issue `Mapa dos canais` não existir, a ignição não roda o ciclo ainda. Ela segue [references/canais.md](references/canais.md):
+
+1. **Descobrir os canais.** Pergunta, em caixinhas, por onde chegam os pedidos: mensagens, e-mail, agenda, sistemas de trabalho, documentos, dinheiro. Qualquer sistema serve.
+2. **Ligar cada canal** pelo primeiro caminho que funcionar: conector nativo do Claude, servidor MCP, linha de comando ou API, exportação do próprio sistema, navegador e, por último, colar ou mandar print.
+3. **Testar a leitura** de cada um e gravar o mapa numa issue fixa, `Mapa dos canais`, com o caminho e a situação de cada canal, sem senha nem chave.
+4. **Listar tudo.** Lê os últimos 30 dias de cada canal, junta por assunto, mostra a lista ao usuário, grava uma issue por assunto e chama a `bunker-wsjf`.
+
+A partir daí, cada chamada roda o ciclo abaixo, começando pela leitura do mapa.
 
 ## O ciclo, a cada chamada
 
 Toda chamada roda o ciclo inteiro, porque um fato novo pode mudar a ordem de tudo.
 
-1. **Coletar.** Ler cada canal desde a última passada: mensagens, e-mails, convites, notificações. Canal que falhou entra na resposta com o motivo.
+1. **Coletar.** Ler a issue `Mapa dos canais` e cada canal dela desde a última passada: mensagens, e-mails, convites, notificações. Canal que falhou entra na resposta com o motivo.
 2. **Conferir a versão.** Para cada fato novo, achar a issue do assunto e ver se ela já sabe dele. Se não sabe, comentar na issue o fato com o ponteiro para a fonte. Com isso o usuário para de precisar avisar o Claude de que "isso já mudou".
 3. **Vácuo zero.** Quem escreveu e está esperando recebe pelo menos uma ciência ("Recebi, estou ciente, te dou um retorno em breve"). A ignição rascunha e só envia com o ok do usuário naquela mensagem. A ciência responde à pessoa; o trabalho entra na fila como qualquer outro assunto.
 4. **Mapear em issues.** Assunto novo ganha issue nova, assunto conhecido ganha comentário. Uma issue por assunto, com o cliente ou a frente no título. E-mail, mensagem e reunião do mesmo assunto vão para a mesma issue.

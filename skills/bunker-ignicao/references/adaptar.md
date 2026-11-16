@@ -4,7 +4,7 @@ Responda estas perguntas ao Claude, pode ser falando, e peça para ele gravar as
 
 ## 1. Canais
 
-De onde chegam os pedidos? Para cada canal, anote como o Claude lê.
+De onde chegam os pedidos? Para cada canal, anote como o Claude lê. O passo a passo para descobrir e ligar cada um está em [canais.md](canais.md), e o mapa final fica na issue `Mapa dos canais`.
 
 | Canal | Conta ou número | Como o Claude lê |
 |---|---|---|
