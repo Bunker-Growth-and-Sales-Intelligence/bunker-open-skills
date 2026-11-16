@@ -62,7 +62,7 @@ skills/bunker-fix-bug/
 
 De Guilherme Reis, com a Bunker. Quatro skills que trabalham juntas, para quem toca muitos assuntos ao mesmo tempo e quer que ninguém fique sem resposta:
 
-- **bunker-ignicao**: a skill mãe. Lê os seus canais, garante que ninguém fique sem resposta, mantém um assunto por issue num repositório privado do GitHub, ordena a fila e despacha os cinco primeiros assuntos para conversas filhas. Ela própria só conversa, decide e delega.
+- **bunker-ignicao**: a skill mãe. Na primeira vez, descobre por onde chegam os seus assuntos, liga cada canal ao Claude (conector, MCP, linha de comando, exportação do sistema ou navegador) e lista tudo o que está aberto. Depois, lê os seus canais, garante que ninguém fique sem resposta, mantém um assunto por issue num repositório privado do GitHub, ordena a fila e despacha os cinco primeiros assuntos para conversas filhas. Ela própria só conversa, decide e delega.
 - **bunker-wsjf**: dá as notas de cada issue (valor, urgência, risco e tamanho), grava as notas como etiquetas e mostra a fila em ordem.
 - **bunker-confetes-ou-perguntas**: como o Claude termina cada resposta. Confete quando terminou, caixinha de múltipla escolha quando falta uma decisão sua.
 - **bunker-grill-me**: antes de um trabalho grande, perguntas em rodadas de até quatro caixinhas, até não sobrar nada assumido em silêncio. É a versão em caixinhas da [grill-me de Matt Pocock](https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling).
@@ -78,8 +78,8 @@ Abra o Claude Code na pasta das suas skills e cole:
 ### Primeiros passos
 
 1. Peça: "Crie um repositório privado no GitHub chamado torre-de-controle-seunome e clone dentro da minha pasta de trabalho." Se o Claude pedir login no GitHub, ele abre o navegador e mostra um código para colar.
-2. Peça: "Leia tudo o que eu estou tocando nas minhas conversas abertas e transforme cada assunto numa issue nesse repositório, com todos os detalhes."
-3. Abra uma conversa nova dentro da pasta da torre de controle e rode a ignição. Ela pergunta o que falta, uma pergunta por vez, e grava as respostas na própria skill.
+2. Abra uma conversa nova dentro da pasta da torre de controle e peça: "Rode a ignição e conecte meus canais." Ela pergunta por onde chegam os seus pedidos, liga cada canal ao Claude, um por vez, testa a leitura e grava o mapa numa issue. Serve qualquer sistema: o que não tem conector entra por exportação, pelo navegador ou colado.
+3. Com os canais ligados, ela lê os últimos 30 dias, junta tudo por assunto, mostra a lista para você conferir e grava uma issue por assunto. O que faltar da sua rotina ela pergunta, uma pergunta por vez, e grava na própria skill.
 4. Rode a `bunker-wsjf` para dar as notas. Confira os cinco primeiros. Se a ordem estiver errada, diga o porquê: é assim que a régua aprende o seu critério.
 5. A partir daí, trabalhe pela ignição e feche as outras conversas sem medo.
 
@@ -98,12 +98,14 @@ Abra o Claude Code na pasta das suas skills e cole:
 - A torre de controle guarda nome de cliente, valores e decisões. Deixe sempre privada.
 - A issue guarda onde achar a conversa (canal, data, id da mensagem), nunca o texto inteiro do WhatsApp ou do e-mail.
 - Nenhuma destas skills envia mensagem sem o seu ok para aquela mensagem.
+- Senha nunca vai para a conversa. Cada canal é ligado pelo login do próprio conector ou do fornecedor, e o mapa dos canais guarda só o caminho, nunca chave ou token.
 
 ### O que tem na pasta
 
 ```
 skills/bunker-ignicao/
   SKILL.md                          o ciclo da torre de controle, mãe e filhas, as regras
+  references/canais.md              descobrir, ligar e testar cada canal, e a primeira lista de assuntos
   references/adaptar.md             o que preencher com a sua rotina
   references/estados-e-fup.md       estados, cadência de follow-up e etiquetas
   references/modelo-de-issue.md     o modelo de issue e de comentário
